@@ -2,17 +2,43 @@
   <div class="register-card">
     <h2>Register</h2>
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div *ngIf="errorMessage" class="error-alert">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="success-alert">
+        {{ successMessage }}
+      </div>
+
       <div class="form-group">
-        <label for="name">Full Name</label>
+        <label for="fullName">Full Name</label>
         <input 
           type="text" 
-          id="name" 
-          formControlName="name"
+          id="fullName" 
+          formControlName="fullName"
           class="form-control"
-          [class.error]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
+          [class.error]="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched"
+          [disabled]="isLoading"
         />
-        <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="error-message">
-          Name is required
+        <div *ngIf="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched" class="error-message">
+          Full name is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input 
+          type="text" 
+          id="username" 
+          formControlName="username"
+          class="form-control"
+          [class.error]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched"
+          [disabled]="isLoading"
+        />
+        <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="error-message">
+          <span *ngIf="registerForm.get('username')?.errors?.['required']">Username is required</span>
+          <span *ngIf="registerForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters</span>
+          <span *ngIf="registerForm.get('username')?.errors?.['maxlength']">Username must be at most 50 characters</span>
+          <span *ngIf="registerForm.get('username')?.errors?.['pattern']">Username can only contain letters, numbers, and underscores</span>
         </div>
       </div>
 
@@ -24,6 +50,7 @@
           formControlName="email"
           class="form-control"
           [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+          [disabled]="isLoading"
         />
         <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error-message">
           <span *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</span>
@@ -39,10 +66,12 @@
           formControlName="password"
           class="form-control"
           [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+          [disabled]="isLoading"
         />
         <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-message">
           <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</span>
-          <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+          <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters</span>
+          <span *ngIf="registerForm.get('password')?.errors?.['pattern']">Password must contain at least one letter and one number</span>
         </div>
       </div>
 
@@ -54,6 +83,7 @@
           formControlName="confirmPassword"
           class="form-control"
           [class.error]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched"
+          [disabled]="isLoading"
         />
         <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched" class="error-message">
           <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</span>
@@ -61,8 +91,9 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid">
-        Register
+      <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Register</span>
+        <span *ngIf="isLoading">Registering...</span>
       </button>
     </form>
     <p class="login-link">

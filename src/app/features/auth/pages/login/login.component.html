@@ -2,6 +2,10 @@
   <div class="login-card">
     <h2>Login</h2>
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div *ngIf="errorMessage" class="error-alert">
+        {{ errorMessage }}
+      </div>
+
       <div class="form-group">
         <label for="email">Email</label>
         <input 
@@ -10,6 +14,7 @@
           formControlName="email"
           class="form-control"
           [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+          [disabled]="isLoading"
         />
         <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-message">
           <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
@@ -25,6 +30,7 @@
           formControlName="password"
           class="form-control"
           [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          [disabled]="isLoading"
         />
         <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
           <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
@@ -32,8 +38,9 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">
-        Login
+      <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Login</span>
+        <span *ngIf="isLoading">Logging in...</span>
       </button>
     </form>
     <p class="register-link">
