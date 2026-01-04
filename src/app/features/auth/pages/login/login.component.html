@@ -1,53 +1,66 @@
-<div class="login-container">
-  <div class="login-card">
-    <h2>Login</h2>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+<div class="container">
+  <!-- Left Section - Login Form -->
+  <div class="left-section">
+    <div class="logo">LOGO</div>
+    
+    <h1 class="title">Welcome to Hotel Management System</h1>
+    <p class="subtitle">Sign in to access your account and manage your bookings</p>
+    
+    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div *ngIf="errorMessage" class="error-alert">
         {{ errorMessage }}
       </div>
 
       <div class="form-group">
-        <label for="email">Email</label>
+        <label class="form-label">Email</label>
         <input 
           type="email" 
-          id="email" 
+          class="form-input" 
+          placeholder="Enter your email"
           formControlName="email"
-          class="form-control"
           [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-          [disabled]="isLoading"
-        />
+        >
         <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-message">
           <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
           <span *ngIf="loginForm.get('email')?.errors?.['email']">Invalid email format</span>
         </div>
       </div>
-
+      
       <div class="form-group">
-        <label for="password">Password</label>
+        <label class="form-label">Password</label>
         <input 
           type="password" 
-          id="password" 
+          class="form-input" 
+          placeholder="Enter your password"
           formControlName="password"
-          class="form-control"
           [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-          [disabled]="isLoading"
-        />
+        >
         <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
           <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
           <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
         </div>
       </div>
-
-      <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid || isLoading">
-        <span *ngIf="!isLoading">Login</span>
+      
+      <button type="submit" class="login-btn" [disabled]="loginForm.invalid || isLoading">
+        <span *ngIf="!isLoading">Log In</span>
         <span *ngIf="isLoading">Logging in...</span>
       </button>
+      
+      <div class="remember-me">
+        <div class="checkbox"></div>
+        <span class="remember-text">Remember me for 30 days</span>
+      </div>
+      
+      <a routerLink="/forgot-password" class="forgot-link">Forgot Password?</a>
+      
+      <div class="signup-link">
+        <span class="signup-text">You do not have account yet? <a routerLink="/register" class="link-bold">Sign Up</a></span>
+      </div>
     </form>
-    <p class="register-link">
-      Don't have an account? <a routerLink="/register">Register here</a>
-    </p>
-    <p class="home-link">
-      <a routerLink="/">Back to Home</a>
-    </p>
+  </div>
+  
+  <!-- Right Section - Image Placeholder -->
+  <div class="right-section">
+    <div class="image-placeholder">Image Placeholder</div>
   </div>
 </div>

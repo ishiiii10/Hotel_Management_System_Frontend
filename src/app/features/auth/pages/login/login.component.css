@@ -1,107 +1,183 @@
-.login-container {
+.container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 80vh;
-  padding: 2rem;
-}
-
-.login-card {
-  background: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
   width: 100%;
-  max-width: 400px;
+  min-height: 100vh;
 }
 
-.login-card h2 {
-  margin-bottom: 1.5rem;
-  text-align: center;
+/* Left Section - Login Form */
+.left-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 80px;
+  max-width: 600px;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: bold;
+  border: 2px solid #333;
+  padding: 15px 30px;
+  display: inline-block;
+  margin-bottom: 60px;
+  text-decoration: none;
   color: #333;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border: 2px solid #333;
+  padding: 20px;
+}
+
+.subtitle {
+  font-size: 18px;
+  margin-bottom: 50px;
+  border: 1px solid #ccc;
+  padding: 15px;
+}
+
+.login-form {
+  width: 100%;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 30px;
 }
 
-.form-group label {
+.form-label {
   display: block;
-  margin-bottom: 0.5rem;
-  color: #333;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 5px;
 }
 
-.form-control {
+.form-input {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 0.25rem;
-  font-size: 1rem;
+  padding: 15px;
+  border: 2px solid #333;
+  font-size: 16px;
+  background: #fff;
   box-sizing: border-box;
 }
 
-.form-control:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-.form-control.error {
+.form-input.error {
   border-color: #dc3545;
 }
 
 .error-message {
   color: #dc3545;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-}
-
-.btn {
-  width: 100%;
-  padding: 0.75rem;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background-color: #0056b3;
-}
-
-.btn-primary:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-}
-
-.register-link, .home-link {
-  text-align: center;
-  margin-top: 1rem;
-  color: #666;
-}
-
-.register-link a, .home-link a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.register-link a:hover, .home-link a:hover {
-  text-decoration: underline;
+  font-size: 14px;
+  margin-top: 5px;
 }
 
 .error-alert {
   background-color: #f8d7da;
   color: #721c24;
-  padding: 0.75rem;
-  border-radius: 0.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid #f5c6cb;
+  padding: 12px;
+  border: 2px solid #dc3545;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 18px;
+  border: 3px solid #333;
+  background: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  cursor: pointer;
+}
+
+.login-btn:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #333;
+}
+
+.remember-text {
+  font-size: 14px;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+}
+
+.forgot-link {
+  font-size: 14px;
+  border: 1px solid #333;
+  padding: 8px 15px;
+  display: inline-block;
+  margin-bottom: 30px;
+  text-decoration: none;
+  color: #333;
+}
+
+.signup-link {
+  font-size: 16px;
+  border-top: 1px solid #ccc;
+  padding-top: 20px;
+}
+
+.signup-text {
+  border: 1px solid #ddd;
+  padding: 10px;
+  display: inline-block;
+}
+
+.link-bold {
+  font-weight: bold;
+  text-decoration: none;
+  color: #333;
+  border-bottom: 1px solid #333;
+}
+
+/* Right Section - Image Placeholder */
+.right-section {
+  flex: 1;
+  background: #f5f5f5;
+  border-left: 2px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-placeholder {
+  width: 80%;
+  height: 80%;
+  border: 3px dashed #999;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #999;
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .right-section {
+    display: none;
+  }
+  .left-section {
+    max-width: 100%;
+    padding: 40px;
+  }
 }

@@ -111,10 +111,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr auto;
   gap: 20px;
+  align-items: end;
 }
 
 .search-field {
-  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .field-label {
@@ -140,7 +142,8 @@
   background: #fff;
   font-size: 24px;
   cursor: pointer;
-  align-self: end;
+  height: fit-content;
+  white-space: nowrap;
 }
 
 /* Content Sections */
