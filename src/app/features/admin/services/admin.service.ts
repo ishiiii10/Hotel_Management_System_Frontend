@@ -136,5 +136,43 @@ export class AdminService {
   cancelBooking(bookingId: number, reason: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/bookings/${bookingId}/cancel`, { reason });
   }
+
+  getStaffByHotelId(hotelId: number): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/hotels/${hotelId}/staff`);
+  }
+
+  getCurrentUser(): Observable<UserResponse> {
+    return this.http.get<UserResponse>(`${this.apiUrl}/auth/me`);
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/auth/change-password`, {
+      currentPassword,
+      newPassword
+    });
+  }
+
+  getAdminDashboard(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/reports/dashboard/admin`);
+  }
+
+  getHotelReports(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/reports/hotels`);
+  }
+}
+
+export interface UserResponse {
+  id: number;
+  publicUserId: string;
+  username: string;
+  fullName: string;
+  email: string;
+  role: string;
+  enabled: boolean;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
 }
 

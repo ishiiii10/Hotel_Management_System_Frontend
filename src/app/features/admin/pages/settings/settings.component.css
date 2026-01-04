@@ -1,0 +1,324 @@
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background: #fff;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  border-right: 2px solid #333;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 2px solid #333;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  border: 2px solid #333;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+}
+
+.nav-item {
+  display: block;
+  padding: 15px 20px;
+  border: 1px solid #ccc;
+  margin: 5px 15px;
+  text-decoration: none;
+  color: #333;
+  border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+  background: #e0e0e0;
+}
+
+.nav-item.active {
+  background: #e0e0e0;
+  border-left: 3px solid #333;
+  font-weight: bold;
+}
+
+.sidebar-footer {
+  padding: 20px;
+  border-top: 2px solid #333;
+}
+
+.logout-btn-sidebar {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #333;
+  background: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.logout-btn-sidebar:hover {
+  background: #f5f5f5;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+/* Header */
+.page-header {
+  padding: 20px 30px;
+  border-bottom: 2px solid #333;
+  margin-bottom: 0;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: bold;
+  border: 2px solid #333;
+  padding: 15px 30px;
+  margin: 0;
+  display: inline-block;
+}
+
+/* Settings Content */
+.settings-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.loading-message {
+  padding: 30px;
+  text-align: center;
+  font-size: 18px;
+}
+
+/* Settings Section */
+.settings-section {
+  border: 2px solid #333;
+  margin-bottom: 30px;
+  background: #fff;
+}
+
+.section-header {
+  padding: 15px 20px;
+  border-bottom: 2px solid #333;
+  background: #f5f5f5;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.section-body {
+  padding: 30px;
+}
+
+/* Profile Info */
+.profile-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+
+.info-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.info-value {
+  font-size: 16px;
+  color: #333;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+}
+
+.profile-actions {
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 2px solid #333;
+}
+
+.profile-actions .btn-primary {
+  padding: 12px 30px;
+  font-size: 16px;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border: 2px solid #333;
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  padding: 20px 30px;
+  border-bottom: 2px solid #333;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: 2px solid #333;
+  padding: 5px 12px;
+  font-size: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.close-button:hover {
+  background: #f0f0f0;
+}
+
+.modal-body {
+  padding: 30px;
+}
+
+/* Form */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #333;
+  font-size: 14px;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #666;
+}
+
+.form-input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.password-requirements {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.error-message {
+  padding: 10px;
+  background: #ffebee;
+  border: 1px solid #cc0000;
+  color: #cc0000;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.success-message {
+  padding: 10px;
+  background: #e8f5e9;
+  border: 1px solid #2e7d32;
+  color: #2e7d32;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 30px;
+  border-top: 2px solid #333;
+  padding-top: 20px;
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  border: 2px solid #333;
+  background: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  border: 2px solid #333;
+  background: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

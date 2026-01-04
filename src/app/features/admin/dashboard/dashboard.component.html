@@ -19,77 +19,103 @@
 
   <!-- Main Content -->
   <main class="main-content">
-    <!-- Header -->
     <header class="dashboard-header">
       <h1 class="dashboard-title">Admin Dashboard</h1>
-      <div class="header-right">
-        <div class="user-info">Admin User</div>
-      </div>
     </header>
 
-    <!-- Metrics Cards -->
-    <section class="metrics-section">
+    <div class="dashboard-body">
+      <!-- Metrics Cards -->
       <div class="metrics-grid">
         <div class="metric-card">
           <div class="metric-label">Total Revenue</div>
-          <div class="metric-value">${{ metrics.totalRevenue }}</div>
+          <div class="metric-value">{{ formatCurrency(metrics.totalRevenue) }}</div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Today Revenue</div>
-          <div class="metric-value">${{ metrics.todayRevenue }}</div>
+          <div class="metric-label">Monthly Revenue</div>
+          <div class="metric-value">{{ formatCurrency(metrics.monthlyRevenue) }}</div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Total Bookings</div>
           <div class="metric-value">{{ metrics.totalBookings }}</div>
         </div>
         <div class="metric-card">
-          <div class="metric-label">Today Bookings</div>
-          <div class="metric-value">{{ metrics.todayBookings }}</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Check-ins</div>
-          <div class="metric-value">{{ metrics.checkIns }}</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Check-outs</div>
-          <div class="metric-value">{{ metrics.checkOuts }}</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Available Rooms</div>
-          <div class="metric-value">{{ metrics.availableRooms }}</div>
-        </div>
-        <div class="metric-card">
           <div class="metric-label">Average Rating</div>
-          <div class="metric-value">{{ metrics.averageRating }}</div>
+          <div class="metric-value">{{ metrics.averageRating | number:'1.1-1' }}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Total Check-ins</div>
+          <div class="metric-value">{{ metrics.totalCheckIns }}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Total Check-outs</div>
+          <div class="metric-value">{{ metrics.totalCheckOuts }}</div>
         </div>
       </div>
-    </section>
 
-    <!-- Charts Section -->
-    <section class="charts-section">
-      <div class="chart-grid">
+      <!-- Charts Section -->
+      <div class="charts-grid">
         <div class="chart-card">
-          <div class="chart-title">Revenue by Hour</div>
-          <div class="chart-placeholder">Chart Placeholder</div>
+          <div class="chart-title">Revenue Comparison by Hotels (Histogram)</div>
+          <div class="chart-placeholder">
+            <div *ngIf="revenueByHotel.length === 0" class="empty-chart">No data available</div>
+            <div *ngIf="revenueByHotel.length > 0" class="chart-data">
+              <div *ngFor="let item of revenueByHotel" class="chart-bar-item">
+                <div class="bar-label">{{ item.hotelName }}</div>
+                <div class="bar-container">
+                  <div class="bar" [style.width.%]="getBarPercentage(item.revenue)"></div>
+                  <div class="bar-value">{{ formatCurrency(item.revenue) }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="chart-card">
-          <div class="chart-title">Bookings by Source</div>
-          <div class="chart-placeholder">Chart Placeholder</div>
+          <div class="chart-title">Booking Status Distribution (Pie Chart)</div>
+          <div class="chart-placeholder">
+            <div *ngIf="bookingStatusDistribution.length === 0" class="empty-chart">No data available</div>
+            <div *ngIf="bookingStatusDistribution.length > 0" class="pie-chart-data">
+              <div *ngFor="let item of bookingStatusDistribution" class="pie-item">
+                <div class="pie-label">{{ item.status }}</div>
+                <div class="pie-value">{{ item.count }}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- Hotels Section -->
-    <section class="hotels-section">
-      <div class="section-header">
-        <h2 class="section-title">Hotels</h2>
-        <div class="section-actions">
-          <button class="action-btn">Create Hotel</button>
-          <button class="action-btn">Create Staff</button>
+      <!-- Trend Charts -->
+      <div class="trend-charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">Revenue Trend</div>
+          <div class="chart-placeholder">
+            <div *ngIf="revenueTrend.length === 0" class="empty-chart">No data available</div>
+            <div *ngIf="revenueTrend.length > 0" class="trend-chart-data">
+              <div *ngFor="let item of revenueTrend" class="trend-item">
+                <div class="trend-date">{{ item.date }}</div>
+                <div class="trend-value">{{ formatCurrency(item.amount) }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Booking Trend</div>
+          <div class="chart-placeholder">
+            <div *ngIf="bookingTrend.length === 0" class="empty-chart">No data available</div>
+            <div *ngIf="bookingTrend.length > 0" class="trend-chart-data">
+              <div *ngFor="let item of bookingTrend" class="trend-item">
+                <div class="trend-date">{{ item.date }}</div>
+                <div class="trend-value">{{ item.count }}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <div class="hotels-table">
+
+      <!-- Hotels Table -->
+      <div class="hotels-table-section">
+        <div class="section-header">
+          <h2 class="section-title">Hotels Overview</h2>
+        </div>
         <table>
           <thead>
             <tr>
@@ -97,10 +123,8 @@
               <th>Name</th>
               <th>Category</th>
               <th>City</th>
-              <th>Address</th>
               <th>Status</th>
               <th>Rating</th>
-              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -109,39 +133,18 @@
               <td>{{ hotel.name }}</td>
               <td>{{ hotel.category }}</td>
               <td>{{ hotel.city }}</td>
-              <td>{{ hotel.address }}</td>
               <td>{{ hotel.status }}</td>
               <td>{{ hotel.starRating }}</td>
-              <td>
-                <button class="table-btn">Edit</button>
-                <button class="table-btn">View</button>
-              </td>
             </tr>
             <tr *ngIf="hotels.length === 0 && !isLoading">
-              <td colspan="8" class="empty-state">No hotels found</td>
+              <td colspan="6" class="empty-state">No hotels found</td>
             </tr>
             <tr *ngIf="isLoading">
-              <td colspan="8" class="loading-state">Loading...</td>
+              <td colspan="6" class="loading-state">Loading...</td>
             </tr>
           </tbody>
         </table>
       </div>
-    </section>
-
-    <!-- Recent Bookings Section -->
-    <section class="bookings-section">
-      <h2 class="section-title">Recent Bookings</h2>
-      <div class="bookings-list">
-        <div class="booking-item" *ngFor="let i of [1,2,3]">
-          <div class="booking-details">
-            <div class="booking-id">Booking #{{ i }}</div>
-            <div class="booking-hotel">Hotel Name</div>
-            <div class="booking-date">Date: DD/MM/YYYY</div>
-            <div class="booking-amount">Amount: $XXX</div>
-          </div>
-        </div>
-        <div *ngIf="true" class="empty-state">No recent bookings</div>
-      </div>
-    </section>
+    </div>
   </main>
 </div>

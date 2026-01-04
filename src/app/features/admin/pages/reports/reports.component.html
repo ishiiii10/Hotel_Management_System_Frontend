@@ -1,0 +1,108 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">LOGO</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" class="nav-item">Dashboard</a>
+      <a routerLink="/admin/hotels" class="nav-item">Hotels</a>
+      <a routerLink="/admin/users" class="nav-item">Users</a>
+      <a routerLink="/admin/bookings" class="nav-item">Bookings</a>
+      <a routerLink="/admin/reports" class="nav-item active">Reports</a>
+      <a routerLink="/admin/settings" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn-sidebar" (click)="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="page-header">
+      <h1 class="page-title">Reports</h1>
+    </header>
+
+    <div class="reports-content">
+      <div *ngIf="isLoading" class="loading-message">Loading reports...</div>
+
+      <!-- Hotel Report Card -->
+      <div class="hotel-report-card" *ngFor="let report of hotelReports">
+        <div class="hotel-header">
+          <div class="hotel-name">{{ report.hotelName }}</div>
+          <div class="hotel-info">
+            <div class="info-item">
+              <div class="info-label">Category</div>
+              <div class="info-value">{{ report.category }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">City</div>
+              <div class="info-value">{{ report.city }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Status</div>
+              <div class="info-value">{{ report.status }}</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Rating</div>
+              <div class="info-value">{{ report.starRating }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="hotel-body">
+          <div class="metrics-row">
+            <div class="metric-box">
+              <div class="metric-label">Total Bookings</div>
+              <div class="metric-value">{{ report.totalBookings }}</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Total Revenue</div>
+              <div class="metric-value">{{ formatCurrency(report.totalRevenue) }}</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Monthly Revenue</div>
+              <div class="metric-value">{{ formatCurrency(report.monthlyRevenue) }}</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Average Rating</div>
+              <div class="metric-value">{{ report.averageRating | number:'1.1-1' }}</div>
+            </div>
+          </div>
+          <div class="recent-bookings">
+            <div class="recent-bookings-title">Recent Bookings</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Guest Name</th>
+                  <th>Check-in</th>
+                  <th>Check-out</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let booking of report.recentBookings">
+                  <td>{{ booking.bookingId }}</td>
+                  <td>{{ booking.guestName || 'N/A' }}</td>
+                  <td>{{ booking.checkInDate }}</td>
+                  <td>{{ booking.checkOutDate }}</td>
+                  <td>{{ formatCurrency(booking.amount) }}</td>
+                  <td>{{ booking.status }}</td>
+                </tr>
+                <tr *ngIf="report.recentBookings.length === 0">
+                  <td colspan="6" class="empty-state">No recent bookings</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading && hotelReports.length === 0" class="empty-state-message">
+        No hotel reports available
+      </div>
+    </div>
+  </main>
+</div>
+

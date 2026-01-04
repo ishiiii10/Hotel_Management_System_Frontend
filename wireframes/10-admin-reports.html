@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Reports - Wireframe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: #2c2c2c;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #fff;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            color: #ccc;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item.active {
+            background: #3a3a3a;
+            border-left-color: #fff;
+            color: #fff;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid #444;
+        }
+        
+        .logout-btn {
+            width: 100%;
+            padding: 10px;
+            background: #555;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+        
+        .page-header {
+            padding: 20px 30px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .page-title {
+            font-size: 32px;
+            font-weight: bold;
+            border: 2px solid #333;
+            padding: 15px 30px;
+            display: inline-block;
+        }
+        
+        .reports-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .hotel-report-card {
+            border: 2px solid #333;
+            margin-bottom: 30px;
+            background: #fff;
+        }
+        
+        .hotel-header {
+            padding: 20px;
+            border-bottom: 2px solid #333;
+            background: #f5f5f5;
+        }
+        
+        .hotel-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .hotel-info {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            font-size: 14px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        
+        .info-value {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .hotel-body {
+            padding: 20px;
+        }
+        
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-box {
+            border: 1px solid #ccc;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        
+        .metric-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .recent-bookings {
+            margin-top: 20px;
+        }
+        
+        .recent-bookings-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            padding: 12px;
+            border: 1px solid #333;
+            background: #e0e0e0;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 12px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">LOGO</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item">Dashboard</a>
+                <a href="#" class="nav-item">Hotels</a>
+                <a href="#" class="nav-item">Users</a>
+                <a href="#" class="nav-item">Bookings</a>
+                <a href="#" class="nav-item active">Reports</a>
+                <a href="#" class="nav-item">Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="page-header">
+                <h1 class="page-title">Reports</h1>
+            </header>
+
+            <div class="reports-content">
+                <!-- Hotel Report Card -->
+                <div class="hotel-report-card">
+                    <div class="hotel-header">
+                        <div class="hotel-name">Hotel Name</div>
+                        <div class="hotel-info">
+                            <div class="info-item">
+                                <div class="info-label">Category</div>
+                                <div class="info-value">Category Name</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">City</div>
+                                <div class="info-value">City Name</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Status</div>
+                                <div class="info-value">Active</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Rating</div>
+                                <div class="info-value">4.5</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hotel-body">
+                        <div class="metrics-row">
+                            <div class="metric-box">
+                                <div class="metric-label">Total Bookings</div>
+                                <div class="metric-value">150</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Total Revenue</div>
+                                <div class="metric-value">$75,000</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Monthly Revenue</div>
+                                <div class="metric-value">$12,500</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Average Rating</div>
+                                <div class="metric-value">4.5</div>
+                            </div>
+                        </div>
+                        <div class="recent-bookings">
+                            <div class="recent-bookings-title">Recent Bookings</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Booking ID</th>
+                                        <th>Guest Name</th>
+                                        <th>Check-in</th>
+                                        <th>Check-out</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>123</td>
+                                        <td>John Doe</td>
+                                        <td>2024-01-15</td>
+                                        <td>2024-01-17</td>
+                                        <td>$500</td>
+                                        <td>Confirmed</td>
+                                    </tr>
+                                    <tr>
+                                        <td>124</td>
+                                        <td>Jane Smith</td>
+                                        <td>2024-01-16</td>
+                                        <td>2024-01-18</td>
+                                        <td>$600</td>
+                                        <td>Checked In</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repeat for more hotels -->
+                <div class="hotel-report-card">
+                    <div class="hotel-header">
+                        <div class="hotel-name">Another Hotel</div>
+                        <div class="hotel-info">
+                            <div class="info-item">
+                                <div class="info-label">Category</div>
+                                <div class="info-value">Category Name</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">City</div>
+                                <div class="info-value">City Name</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Status</div>
+                                <div class="info-value">Active</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Rating</div>
+                                <div class="info-value">4.2</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hotel-body">
+                        <div class="metrics-row">
+                            <div class="metric-box">
+                                <div class="metric-label">Total Bookings</div>
+                                <div class="metric-value">200</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Total Revenue</div>
+                                <div class="metric-value">$100,000</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Monthly Revenue</div>
+                                <div class="metric-value">$15,000</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Average Rating</div>
+                                <div class="metric-value">4.2</div>
+                            </div>
+                        </div>
+                        <div class="recent-bookings">
+                            <div class="recent-bookings-title">Recent Bookings</div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Booking ID</th>
+                                        <th>Guest Name</th>
+                                        <th>Check-in</th>
+                                        <th>Check-out</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 20px;">No recent bookings</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
+

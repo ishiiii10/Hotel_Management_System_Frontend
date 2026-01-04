@@ -50,6 +50,10 @@
             <option *ngFor="let status of statuses" [value]="status">{{status | titlecase}}</option>
           </select>
         </div>
+        <div class="filter-group">
+          <label class="filter-label">Hotel ID</label>
+          <input type="number" class="filter-input" [(ngModel)]="searchHotelId" placeholder="Enter hotel ID">
+        </div>
         <div class="filter-actions">
           <button class="btn-primary" (click)="onSearch()">Search</button>
           <button class="btn-secondary" (click)="onReset()">Reset</button>

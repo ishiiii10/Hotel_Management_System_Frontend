@@ -25,7 +25,8 @@ export class AdminUsersComponent implements OnInit {
   searchEmail = '';
   searchRole = '';
   searchStatus = '';
-
+  searchHotelId: number | null = null;
+  
   roles = ['ADMIN', 'GUEST', 'MANAGER', 'RECEPTIONIST'];
   statuses = ['enabled', 'disabled'];
 
@@ -65,6 +66,14 @@ export class AdminUsersComponent implements OnInit {
   }
 
   onSearch() {
+    if (this.searchHotelId && this.searchHotelId > 0) {
+      this.loadUsersByHotel(this.searchHotelId);
+    } else {
+      this.filterUsers();
+    }
+  }
+
+  filterUsers() {
     this.filteredUsers = this.users.filter(user => {
       const nameMatch = !this.searchName || user.fullName.toLowerCase().includes(this.searchName.toLowerCase()) || user.username.toLowerCase().includes(this.searchName.toLowerCase());
       const emailMatch = !this.searchEmail || user.email.toLowerCase().includes(this.searchEmail.toLowerCase());
@@ -74,11 +83,34 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
+  loadUsersByHotel(hotelId: number) {
+    this.isLoading = true;
+    this.adminService.getStaffByHotelId(hotelId).subscribe({
+      next: (response: any) => {
+        const staff = response.data || response;
+        this.filteredUsers = staff.filter((user: User) => {
+          const nameMatch = !this.searchName || user.fullName.toLowerCase().includes(this.searchName.toLowerCase()) || user.username.toLowerCase().includes(this.searchName.toLowerCase());
+          const emailMatch = !this.searchEmail || user.email.toLowerCase().includes(this.searchEmail.toLowerCase());
+          const roleMatch = !this.searchRole || user.role === this.searchRole;
+          const statusMatch = !this.searchStatus || (this.searchStatus === 'enabled' && user.enabled) || (this.searchStatus === 'disabled' && !user.enabled);
+          return nameMatch && emailMatch && roleMatch && statusMatch;
+        });
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading staff by hotel:', error);
+        this.isLoading = false;
+        this.filteredUsers = [];
+      }
+    });
+  }
+
   onReset() {
     this.searchName = '';
     this.searchEmail = '';
     this.searchRole = '';
     this.searchStatus = '';
+    this.searchHotelId = null;
     this.filteredUsers = [...this.users];
   }
 

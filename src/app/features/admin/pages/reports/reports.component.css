@@ -76,13 +76,13 @@
   padding: 20px;
 }
 
-.dashboard-header {
+.page-header {
   padding: 20px 0;
   border-bottom: 2px solid #333;
   margin-bottom: 30px;
 }
 
-.dashboard-title {
+.page-title {
   font-size: 32px;
   font-weight: bold;
   border: 2px solid #333;
@@ -91,179 +91,112 @@
   margin: 0;
 }
 
-.dashboard-body {
+.reports-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 30px;
 }
 
-.metrics-grid {
+.loading-message {
+  text-align: center;
+  padding: 30px;
+  font-size: 18px;
+  color: #666;
+}
+
+.empty-state-message {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+  color: #999;
+  border: 2px solid #ccc;
+  background: #f9f9f9;
+}
+
+.hotel-report-card {
+  border: 2px solid #333;
+  background: #fff;
+}
+
+.hotel-header {
+  padding: 20px;
+  border-bottom: 2px solid #333;
+  background: #f5f5f5;
+}
+
+.hotel-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.hotel-info {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 }
 
-.metric-card {
-  border: 2px solid #333;
+.info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.info-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+.hotel-body {
   padding: 20px;
+}
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.metric-box {
+  border: 1px solid #ccc;
+  padding: 15px;
   background: #f9f9f9;
 }
 
 .metric-label {
-  font-size: 14px;
+  font-size: 12px;
   color: #666;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   text-transform: uppercase;
   font-weight: bold;
 }
 
 .metric-value {
-  font-size: 28px;
+  font-size: 20px;
   font-weight: bold;
+  color: #333;
 }
 
-.charts-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
+.recent-bookings {
+  margin-top: 20px;
 }
 
-.chart-card {
-  border: 2px solid #333;
-  padding: 20px;
-  background: #fff;
-}
-
-.chart-title {
+.recent-bookings-title {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 15px;
   border-bottom: 1px solid #ccc;
   padding-bottom: 10px;
-}
-
-.chart-placeholder {
-  min-height: 300px;
-  border: 1px dashed #ccc;
-  padding: 15px;
-  background: #f9f9f9;
-}
-
-.empty-chart {
-  text-align: center;
-  padding: 50px;
-  color: #999;
-}
-
-.chart-data {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.chart-bar-item {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.bar-label {
-  font-size: 12px;
-  font-weight: bold;
-  color: #333;
-}
-
-.bar-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-}
-
-.bar {
-  height: 30px;
-  background: #666;
-  min-width: 10px;
-  border: 1px solid #333;
-}
-
-.bar-value {
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
-}
-
-.pie-chart-data {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.pie-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px;
-  border: 1px solid #ccc;
-  background: #fff;
-}
-
-.pie-label {
-  font-weight: bold;
-  color: #333;
-}
-
-.pie-value {
-  font-weight: bold;
-  color: #666;
-}
-
-.trend-charts-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.trend-chart-data {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.trend-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border: 1px solid #ccc;
-  background: #fff;
-}
-
-.trend-date {
-  font-size: 12px;
-  color: #666;
-}
-
-.trend-value {
-  font-weight: bold;
-  color: #333;
-}
-
-.hotels-table-section {
-  border: 2px solid #333;
-}
-
-.section-header {
-  padding: 15px 20px;
-  border-bottom: 2px solid #333;
-  background: #f5f5f5;
-}
-
-.section-title {
-  font-size: 20px;
-  font-weight: bold;
-  margin: 0;
 }
 
 table {
@@ -272,7 +205,7 @@ table {
 }
 
 th {
-  padding: 15px;
+  padding: 12px;
   border: 1px solid #333;
   background: #e0e0e0;
   text-align: left;
@@ -280,7 +213,7 @@ th {
 }
 
 td {
-  padding: 15px;
+  padding: 12px;
   border: 1px solid #ccc;
 }
 
@@ -290,8 +223,3 @@ td {
   color: #999;
 }
 
-.loading-state {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-}
