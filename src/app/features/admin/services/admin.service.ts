@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export interface User {
-  userId: number;
+  userId?: number;
+  id?: number;
   publicUserId: string;
   username: string;
   fullName: string;
@@ -12,6 +13,35 @@ export interface User {
   role: string;
   enabled: boolean;
   hotelId: number | null;
+}
+
+export interface Booking {
+  id: number;
+  userId: number;
+  hotelId: number;
+  roomId: number;
+  roomNumber?: string;
+  roomType?: string;
+  checkInDate: string;
+  checkOutDate: string;
+  totalAmount: number;
+  status: string;
+  guestName?: string;
+  guestEmail?: string;
+  guestPhone?: string;
+  numberOfGuests?: number;
+  numberOfNights?: number;
+  specialRequests?: string;
+  cancellationReason?: string;
+  cancelledAt?: string;
+  checkedInAt?: string;
+  checkedOutAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CancelBookingRequest {
+  reason: string;
 }
 
 export interface Hotel {
@@ -89,6 +119,22 @@ export class AdminService {
 
   deactivateUser(userId: number): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/auth/admin/users/${userId}/deactivate`, {});
+  }
+
+  reassignStaffHotel(userId: number, hotelId: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/auth/admin/staff/${userId}/hotel-allotment?hotelId=${hotelId}`, {});
+  }
+
+  getAllBookings(): Observable<Booking[]> {
+    return this.http.get<Booking[]>(`${this.apiUrl}/bookings`);
+  }
+
+  getBookingById(bookingId: number): Observable<Booking> {
+    return this.http.get<Booking>(`${this.apiUrl}/bookings/${bookingId}`);
+  }
+
+  cancelBooking(bookingId: number, reason: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/bookings/${bookingId}/cancel`, { reason });
   }
 }
 
