@@ -1,0 +1,119 @@
+<div class="dashboard-container">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">LOGO</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/manager/dashboard" class="nav-item active">Dashboard</a>
+      <a routerLink="/manager/rooms" class="nav-item">Rooms</a>
+      <a routerLink="/manager/bookings" class="nav-item">Bookings</a>
+      <a routerLink="/manager/availability" class="nav-item">Availability</a>
+      <a routerLink="/manager/hotel" class="nav-item">Hotel Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn-sidebar" (click)="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="dashboard-header">
+      <h1 class="dashboard-title">Manager Dashboard</h1>
+      <div class="header-right">
+        <div class="user-info">{{ hotel?.name || 'Loading...' }}</div>
+      </div>
+    </header>
+
+    <section class="metrics-section">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-label">Total Revenue</div>
+          <div class="metric-value">${{ metrics.totalRevenue }}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Today Revenue</div>
+          <div class="metric-value">${{ metrics.todayRevenue }}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Total Bookings</div>
+          <div class="metric-value">{{ metrics.totalBookings }}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Today Bookings</div>
+          <div class="metric-value">{{ metrics.todayBookings }}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Check-ins Today</div>
+          <div class="metric-value">{{ metrics.checkIns }}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Check-outs Today</div>
+          <div class="metric-value">{{ metrics.checkOuts }}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Available Rooms</div>
+          <div class="metric-value">{{ metrics.availableRooms }}</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Occupied Rooms</div>
+          <div class="metric-value">{{ metrics.occupiedRooms }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="charts-section">
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">Revenue by Hour</div>
+          <div class="chart-placeholder">Chart Placeholder</div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Booking Status</div>
+          <div class="chart-placeholder">Chart Placeholder</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="checkins-section">
+      <h2 class="section-title">Today's Check-ins</h2>
+      <div class="bookings-list">
+        <div class="booking-item" *ngFor="let booking of todayCheckIns">
+          <div class="booking-details">
+            <div class="booking-id">Booking #{{ booking.id }}</div>
+            <div class="booking-room">Room: {{ booking.roomId }}</div>
+            <div class="booking-date">Check-in: {{ booking.checkInDate }}</div>
+            <div class="booking-amount">${{ booking.totalAmount }}</div>
+          </div>
+        </div>
+        <div *ngIf="todayCheckIns.length === 0" class="empty-state">No check-ins today</div>
+      </div>
+    </section>
+
+    <section class="checkouts-section">
+      <h2 class="section-title">Today's Check-outs</h2>
+      <div class="bookings-list">
+        <div class="booking-item" *ngFor="let booking of todayCheckOuts">
+          <div class="booking-details">
+            <div class="booking-id">Booking #{{ booking.id }}</div>
+            <div class="booking-room">Room: {{ booking.roomId }}</div>
+            <div class="booking-date">Check-out: {{ booking.checkOutDate }}</div>
+            <div class="booking-amount">${{ booking.totalAmount }}</div>
+          </div>
+        </div>
+        <div *ngIf="todayCheckOuts.length === 0" class="empty-state">No check-outs today</div>
+      </div>
+    </section>
+
+    <section class="actions-section">
+      <div class="section-header">
+        <h2 class="section-title">Quick Actions</h2>
+      </div>
+      <div class="actions-grid">
+        <button class="action-btn">Create Booking</button>
+        <button class="action-btn">Add Room</button>
+        <button class="action-btn">Update Hotel</button>
+        <button class="action-btn">View Availability</button>
+      </div>
+    </section>
+  </main>
+</div>
+
