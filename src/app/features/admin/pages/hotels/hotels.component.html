@@ -1,0 +1,303 @@
+<div class="dashboard-container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">LOGO</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" class="nav-item">Dashboard</a>
+      <a routerLink="/admin/hotels" class="nav-item active">Hotels</a>
+      <a routerLink="/admin/users" class="nav-item">Users</a>
+      <a routerLink="/admin/bookings" class="nav-item">Bookings</a>
+      <a routerLink="/admin/reports" class="nav-item">Reports</a>
+      <a routerLink="/admin/settings" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn-sidebar" (click)="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="page-header">
+      <h1 class="page-title">Hotels Management</h1>
+      <div class="header-actions">
+        <button class="btn-primary" (click)="openCreateModal()">+ Create Hotel</button>
+      </div>
+    </header>
+
+    <!-- Filters -->
+    <section class="filters-section">
+      <div class="filters-title">Search & Filter</div>
+      <div class="filters-row">
+        <div class="filter-group">
+          <label class="filter-label">Search by Name</label>
+          <input type="text" class="filter-input" [(ngModel)]="searchName" placeholder="Enter hotel name">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">City</label>
+          <select class="filter-input" [(ngModel)]="searchCity">
+            <option value="">All Cities</option>
+            <option *ngFor="let city of cities" [value]="city">{{city}}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Status</label>
+          <select class="filter-input" [(ngModel)]="searchStatus">
+            <option value="">All Status</option>
+            <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button class="btn-primary" (click)="onSearch()">Search</button>
+          <button class="btn-secondary" (click)="onReset()">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hotels Table -->
+    <section class="hotels-section">
+      <div class="section-header">All Hotels</div>
+      <div *ngIf="isLoading" class="loading-message">Loading hotels...</div>
+      <table class="hotels-table" *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>City</th>
+            <th>Address</th>
+            <th>Star Rating</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let hotel of filteredHotels">
+            <td>{{hotel.id}}</td>
+            <td>{{hotel.name}}</td>
+            <td>{{hotel.category}}</td>
+            <td>{{hotel.city}}</td>
+            <td>{{hotel.address}}</td>
+            <td>{{hotel.starRating}}</td>
+            <td>{{hotel.status}}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-action" (click)="openEditModal(hotel)">Edit</button>
+                <button class="btn-action" (click)="openStaffModal(hotel)">Staff</button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filteredHotels.length === 0">
+            <td colspan="8" class="no-data">No hotels found</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<!-- Create Hotel Modal -->
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="closeCreateModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">Create Hotel</div>
+    <form (ngSubmit)="onCreateHotel()">
+      <div class="form-group">
+        <label class="form-label">Hotel Name *</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.name" name="name" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select class="form-select" [(ngModel)]="hotelForm.category" name="category" required>
+          <option *ngFor="let cat of categories" [value]="cat">{{cat}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" [(ngModel)]="hotelForm.description" name="description"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">City *</label>
+        <select class="form-select" [(ngModel)]="hotelForm.city" name="city" required>
+          <option *ngFor="let city of cities" [value]="city">{{city}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.address" name="address">
+      </div>
+      <div class="form-group">
+        <label class="form-label">State</label>
+        <select class="form-select" [(ngModel)]="hotelForm.state" name="state">
+          <option value="">Select State</option>
+          <option *ngFor="let state of states" [value]="state">{{state}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Country</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.country" name="country">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pincode</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.pincode" name="pincode">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contact Number</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.contactNumber" name="contactNumber">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" [(ngModel)]="hotelForm.email" name="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Star Rating</label>
+        <select class="form-select" [(ngModel)]="hotelForm.starRating" name="starRating">
+          <option [value]="1">1</option>
+          <option [value]="2">2</option>
+          <option [value]="3">3</option>
+          <option [value]="4">4</option>
+          <option [value]="5">5</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amenities</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.amenities" name="amenities" placeholder="WiFi, Pool, Gym">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status *</label>
+        <select class="form-select" [(ngModel)]="hotelForm.status" name="status" required>
+          <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Image URL *</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.imageUrl" name="imageUrl" required>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Create</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Hotel Modal -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">Edit Hotel</div>
+    <form (ngSubmit)="onUpdateHotel()">
+      <div class="form-group">
+        <label class="form-label">Hotel Name *</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.name" name="editName" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category *</label>
+        <select class="form-select" [(ngModel)]="hotelForm.category" name="editCategory" required>
+          <option *ngFor="let cat of categories" [value]="cat">{{cat}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <textarea class="form-textarea" [(ngModel)]="hotelForm.description" name="editDescription"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">City *</label>
+        <select class="form-select" [(ngModel)]="hotelForm.city" name="editCity" required>
+          <option *ngFor="let city of cities" [value]="city">{{city}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Address</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.address" name="editAddress">
+      </div>
+      <div class="form-group">
+        <label class="form-label">State</label>
+        <select class="form-select" [(ngModel)]="hotelForm.state" name="editState">
+          <option value="">Select State</option>
+          <option *ngFor="let state of states" [value]="state">{{state}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Country</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.country" name="editCountry">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pincode</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.pincode" name="editPincode">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Contact Number</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.contactNumber" name="editContactNumber">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" [(ngModel)]="hotelForm.email" name="editEmail">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Star Rating</label>
+        <select class="form-select" [(ngModel)]="hotelForm.starRating" name="editStarRating">
+          <option [value]="1">1</option>
+          <option [value]="2">2</option>
+          <option [value]="3">3</option>
+          <option [value]="4">4</option>
+          <option [value]="5">5</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amenities</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.amenities" name="editAmenities" placeholder="WiFi, Pool, Gym">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Status *</label>
+        <select class="form-select" [(ngModel)]="hotelForm.status" name="editStatus" required>
+          <option *ngFor="let status of statuses" [value]="status">{{status}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Image URL *</label>
+        <input type="text" class="form-input" [(ngModel)]="hotelForm.imageUrl" name="editImageUrl" required>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="closeEditModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Create Staff Modal -->
+<div class="modal-overlay" *ngIf="showStaffModal" (click)="closeStaffModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">Create Staff for Hotel #{{selectedHotel?.id}}</div>
+    <form (ngSubmit)="onCreateStaff()">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input type="text" class="form-input" [(ngModel)]="staffForm.fullName" name="staffFullName" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username *</label>
+        <input type="text" class="form-input" [(ngModel)]="staffForm.username" name="staffUsername" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-input" [(ngModel)]="staffForm.email" name="staffEmail" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password *</label>
+        <input type="password" class="form-input" [(ngModel)]="staffForm.password" name="staffPassword" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Role *</label>
+        <select class="form-select" [(ngModel)]="staffForm.role" name="staffRole" required>
+          <option *ngFor="let role of staffRoles" [value]="role">{{role}}</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="closeStaffModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Create Staff</button>
+      </div>
+    </form>
+  </div>
+</div>
+

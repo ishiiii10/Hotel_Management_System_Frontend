@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Hotels - Wireframe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #fff;
+            color: #333;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            border-right: 2px solid #333;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 2px solid #333;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #333;
+            padding: 10px 20px;
+            text-align: center;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            border: 1px solid #ccc;
+            margin: 5px 15px;
+            text-decoration: none;
+            color: #333;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item.active {
+            background: #e0e0e0;
+            border-left: 3px solid #333;
+            font-weight: bold;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 2px solid #333;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #333;
+            background: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* Header */
+        .page-header {
+            padding: 20px 0;
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: bold;
+            border: 2px solid #333;
+            padding: 15px 30px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            border: 2px solid #333;
+            background: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Search and Filters */
+        .filters-section {
+            border: 2px solid #333;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .filters-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #333;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        /* Hotels Table */
+        .hotels-section {
+            border: 2px solid #333;
+        }
+
+        .section-header {
+            padding: 15px 20px;
+            border-bottom: 2px solid #333;
+            background: #f5f5f5;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .hotels-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .hotels-table th {
+            padding: 15px;
+            border: 1px solid #333;
+            background: #e0e0e0;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .hotels-table td {
+            padding: 15px;
+            border: 1px solid #ccc;
+        }
+
+        .hotels-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            border: 1px solid #333;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-action:hover {
+            background: #f0f0f0;
+        }
+
+        /* Modal Placeholder */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fff;
+            border: 2px solid #333;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #333;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+            border-top: 2px solid #333;
+            padding-top: 20px;
+        }
+
+        .btn-secondary {
+            padding: 10px 20px;
+            border: 2px solid #333;
+            background: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">LOGO</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item">Dashboard</a>
+                <a href="#" class="nav-item active">Hotels</a>
+                <a href="#" class="nav-item">Users</a>
+                <a href="#" class="nav-item">Bookings</a>
+                <a href="#" class="nav-item">Reports</a>
+                <a href="#" class="nav-item">Settings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn">Logout</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="page-header">
+                <h1 class="page-title">Hotels Management</h1>
+                <div class="header-actions">
+                    <button class="btn-primary">+ Create Hotel</button>
+                </div>
+            </header>
+
+            <!-- Filters -->
+            <section class="filters-section">
+                <div class="filters-title">Search & Filter</div>
+                <div class="filters-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Search by Name</label>
+                        <input type="text" class="filter-input" placeholder="Enter hotel name">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">City</label>
+                        <select class="filter-input">
+                            <option>All Cities</option>
+                            <option>Mumbai</option>
+                            <option>Delhi</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Status</label>
+                        <select class="filter-input">
+                            <option>All Status</option>
+                            <option>ACTIVE</option>
+                            <option>INACTIVE</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn-primary">Search</button>
+                        <button class="btn-secondary">Reset</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hotels Table -->
+            <section class="hotels-section">
+                <div class="section-header">All Hotels</div>
+                <table class="hotels-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>City</th>
+                            <th>Address</th>
+                            <th>Star Rating</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Grand Plaza Hotel</td>
+                            <td>LUXURY</td>
+                            <td>Mumbai</td>
+                            <td>123 Marine Drive</td>
+                            <td>5</td>
+                            <td>ACTIVE</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action">View</button>
+                                    <button class="btn-action">Edit</button>
+                                    <button class="btn-action">Staff</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Budget Inn</td>
+                            <td>BUDGET</td>
+                            <td>Delhi</td>
+                            <td>456 Main Street</td>
+                            <td>3</td>
+                            <td>ACTIVE</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action">View</button>
+                                    <button class="btn-action">Edit</button>
+                                    <button class="btn-action">Staff</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Business Tower</td>
+                            <td>BUSINESS</td>
+                            <td>Bangalore</td>
+                            <td>789 Tech Park</td>
+                            <td>4</td>
+                            <td>INACTIVE</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action">View</button>
+                                    <button class="btn-action">Edit</button>
+                                    <button class="btn-action">Staff</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- Create/Edit Hotel Modal (Placeholder) -->
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">Create Hotel</div>
+            <form>
+                <div class="form-group">
+                    <label class="form-label">Hotel Name</label>
+                    <input type="text" class="form-input" placeholder="Enter hotel name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select">
+                        <option>LUXURY</option>
+                        <option>BUDGET</option>
+                        <option>BUSINESS</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" placeholder="Enter description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">City</label>
+                    <select class="form-select">
+                        <option>MUMBAI</option>
+                        <option>DELHI</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-input" placeholder="Enter address">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">State</label>
+                    <select class="form-select">
+                        <option>MAHARASHTRA</option>
+                        <option>DELHI</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Country</label>
+                    <input type="text" class="form-input" placeholder="Enter country">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Pincode</label>
+                    <input type="text" class="form-input" placeholder="Enter pincode">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contact Number</label>
+                    <input type="text" class="form-input" placeholder="Enter contact number">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Star Rating</label>
+                    <select class="form-select">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amenities</label>
+                    <input type="text" class="form-input" placeholder="WiFi, Pool, Gym">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select class="form-select">
+                        <option>ACTIVE</option>
+                        <option>INACTIVE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Image URL</label>
+                    <input type="text" class="form-input" placeholder="Enter image URL">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Staff Modal (Placeholder) -->
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">Create Staff for Hotel #1</div>
+            <form>
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="Enter password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select class="form-select">
+                        <option>MANAGER</option>
+                        <option>RECEPTIONIST</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Staff</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+

@@ -18,10 +18,20 @@ export interface Hotel {
   id: number;
   name: string;
   category: string;
+  description?: string;
   city: string;
   address: string;
-  status: string;
+  state?: string;
+  country?: string;
+  pincode?: string;
+  contactNumber?: string;
+  email?: string;
   starRating: number;
+  amenities?: string;
+  status: string;
+  totalRooms?: number;
+  availableRooms?: number;
+  imageUrl?: string;
 }
 
 export interface CreateHotelRequest {
@@ -71,6 +81,10 @@ export class AdminService {
 
   createStaff(hotelId: number, staff: CreateStaffRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/hotels/${hotelId}/staff`, staff);
+  }
+
+  updateHotel(hotelId: number, hotel: CreateHotelRequest): Observable<any> {
+    return this.http.put(`${this.apiUrl}/hotels/${hotelId}`, hotel);
   }
 
   deactivateUser(userId: number): Observable<void> {
