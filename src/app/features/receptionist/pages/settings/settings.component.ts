@@ -1,0 +1,128 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { ReceptionistService } from '../../services/receptionist.service';
+import { AuthService } from '../../../auth/services/auth.service';
+
+export interface UserResponse {
+  id: number;
+  publicUserId: string;
+  username: string;
+  fullName: string;
+  email: string;
+  role: string;
+  enabled: boolean;
+}
+
+@Component({
+  selector: 'app-receptionist-settings',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterLink],
+  templateUrl: './settings.component.html',
+  styleUrl: './settings.component.css'
+})
+export class ReceptionistSettingsComponent implements OnInit {
+  userProfile: UserResponse | null = null;
+  isLoading = false;
+  showChangePasswordModal = false;
+
+  currentPassword: string = '';
+  newPassword: string = '';
+  confirmPassword: string = '';
+  passwordError: string = '';
+  passwordSuccess: string = '';
+
+  constructor(
+    private receptionistService: ReceptionistService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    this.loadUserProfile();
+  }
+
+  loadUserProfile() {
+    this.isLoading = true;
+    this.authService.getCurrentUserInfo().subscribe({
+      next: (user) => {
+        this.userProfile = user;
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading user profile:', error);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  openChangePasswordModal() {
+    this.showChangePasswordModal = true;
+    this.currentPassword = '';
+    this.newPassword = '';
+    this.confirmPassword = '';
+    this.passwordError = '';
+    this.passwordSuccess = '';
+  }
+
+  closeChangePasswordModal() {
+    this.showChangePasswordModal = false;
+    this.currentPassword = '';
+    this.newPassword = '';
+    this.confirmPassword = '';
+    this.passwordError = '';
+    this.passwordSuccess = '';
+  }
+
+  onChangePassword() {
+    this.passwordError = '';
+    this.passwordSuccess = '';
+
+    if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
+      this.passwordError = 'All fields are required';
+      return;
+    }
+
+    if (this.newPassword !== this.confirmPassword) {
+      this.passwordError = 'New password and confirm password do not match';
+      return;
+    }
+
+    if (this.newPassword.length < 8) {
+      this.passwordError = 'Password must be at least 8 characters';
+      return;
+    }
+
+    const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/;
+    if (!strongPasswordRegex.test(this.newPassword)) {
+      this.passwordError = 'Password must contain uppercase, lowercase, digit and special character';
+      return;
+    }
+
+    this.isLoading = true;
+    this.receptionistService.changePassword(this.currentPassword, this.newPassword).subscribe({
+      next: () => {
+        this.passwordSuccess = 'Password changed successfully';
+        this.isLoading = false;
+        setTimeout(() => {
+          this.closeChangePasswordModal();
+        }, 1500);
+      },
+      error: (error) => {
+        console.error('Error changing password:', error);
+        if (error.error && error.error.message) {
+          this.passwordError = error.error.message;
+        } else {
+          this.passwordError = 'Failed to change password. Please check your current password.';
+        }
+        this.isLoading = false;
+      }
+    });
+  }
+
+  logout() {
+    this.authService.logout();
+  }
+}
+

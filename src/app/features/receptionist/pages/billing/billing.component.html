@@ -1,0 +1,120 @@
+<div class="dashboard-container">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">LOGO</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/receptionist/dashboard" class="nav-item">Dashboard</a>
+      <a routerLink="/receptionist/check-in" class="nav-item">Check In</a>
+      <a routerLink="/receptionist/check-out" class="nav-item">Check Out</a>
+      <a routerLink="/receptionist/bookings" class="nav-item">Bookings</a>
+      <a routerLink="/receptionist/billing" class="nav-item active">Billing</a>
+      <a routerLink="/receptionist/settings" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn-sidebar" (click)="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <h1 class="page-title">Billing</h1>
+    </header>
+
+    <div class="search-section">
+      <div class="section-title">Search Bill by Booking ID</div>
+      <div class="search-form">
+        <div class="form-group">
+          <label class="form-label">Booking ID</label>
+          <input type="number" class="form-input" [(ngModel)]="searchBookingId" placeholder="Enter booking ID">
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" (click)="searchBill()">Search Bill</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="payments-section">
+      <div class="section-header">
+        <div class="section-title">My Payments</div>
+      </div>
+      <div *ngIf="isLoading" class="loading-message">Loading payments...</div>
+      <table class="payments-table" *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <th>Payment ID</th>
+            <th>Bill ID</th>
+            <th>Booking ID</th>
+            <th>Amount</th>
+            <th>Payment Method</th>
+            <th>Paid At</th>
+            <th>Paid By</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let payment of payments">
+            <td>{{ payment.id }}</td>
+            <td>{{ payment.billId }}</td>
+            <td>{{ payment.bookingId }}</td>
+            <td>{{ formatCurrency(payment.amount) }}</td>
+            <td>{{ payment.paymentMethod }}</td>
+            <td>{{ payment.paidAt | date:'short' }}</td>
+            <td>{{ payment.paidBy || '-' }}</td>
+          </tr>
+          <tr *ngIf="payments.length === 0">
+            <td colspan="7" class="no-data">No payments found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" *ngIf="showBillModal" (click)="closeBillModal()">
+  <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Bill Details</h2>
+      <button class="close-button" (click)="closeBillModal()">X</button>
+    </div>
+    <div class="modal-body" *ngIf="selectedBill">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <div class="detail-label">Bill Number</div>
+          <div class="detail-value">{{ selectedBill.billNumber }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Booking ID</div>
+          <div class="detail-value">{{ selectedBill.bookingId }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Check In Date</div>
+          <div class="detail-value">{{ selectedBill.checkInDate }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Check Out Date</div>
+          <div class="detail-value">{{ selectedBill.checkOutDate }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Total Amount</div>
+          <div class="detail-value">{{ formatCurrency(selectedBill.totalAmount) }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Status</div>
+          <div class="detail-value">{{ selectedBill.status }}</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label">Generated At</div>
+          <div class="detail-value">{{ selectedBill.generatedAt | date:'short' }}</div>
+        </div>
+        <div class="detail-item" *ngIf="selectedBill.paidAt">
+          <div class="detail-label">Paid At</div>
+          <div class="detail-value">{{ selectedBill.paidAt | date:'short' }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeBillModal()">Close</button>
+    </div>
+  </div>
+</div>
+
