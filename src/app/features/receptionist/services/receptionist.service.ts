@@ -43,6 +43,9 @@ export interface Booking {
   guestEmail?: string;
   guestPhone?: string;
   specialRequests?: string;
+  checkedInAt?: string;
+  checkedOutAt?: string;
+  bookingSource?: string; // WALK_IN or PUBLIC
 }
 
 export interface WalkInBookingRequest {

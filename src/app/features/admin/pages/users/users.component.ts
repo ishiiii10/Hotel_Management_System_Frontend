@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AdminService, User, Hotel } from '../../services/admin.service';
+import { AdminService, User, Hotel, UpdateStaffRequest } from '../../services/admin.service';
 import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
@@ -18,8 +18,16 @@ export class AdminUsersComponent implements OnInit {
   isLoading = false;
   
   showReassignModal = false;
+  showEditModal = false;
   selectedUser: User | null = null;
   selectedHotelId: number | null = null;
+  
+  editForm = {
+    fullName: '',
+    username: '',
+    email: '',
+    hotelId: null as number | null
+  };
   
   searchName = '';
   searchEmail = '';
@@ -126,6 +134,25 @@ export class AdminUsersComponent implements OnInit {
     this.selectedHotelId = null;
   }
 
+  onActivateUser(user: User) {
+    const userId = user.userId || user.id;
+    if (!userId) return;
+    
+    if (confirm(`Are you sure you want to activate ${user.fullName}?`)) {
+      this.adminService.activateUser(userId).subscribe({
+        next: () => {
+          alert('User activated successfully');
+          this.loadData();
+        },
+        error: (error: any) => {
+          console.error('Error activating user:', error);
+          const errorMessage = error?.error?.message || error?.message || 'Failed to activate user';
+          alert(errorMessage);
+        }
+      });
+    }
+  }
+
   onDeactivateUser(user: User) {
     const userId = user.userId || user.id;
     if (!userId) return;
@@ -135,11 +162,66 @@ export class AdminUsersComponent implements OnInit {
         next: () => {
           this.loadData();
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error deactivating user:', error);
+          const errorMessage = error?.error?.message || error?.message || 'Failed to deactivate user';
+          alert(errorMessage);
         }
       });
     }
+  }
+
+  openEditModal(user: User) {
+    this.selectedUser = user;
+    this.editForm = {
+      fullName: user.fullName,
+      username: user.username,
+      email: user.email,
+      hotelId: user.hotelId
+    };
+    this.showEditModal = true;
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.selectedUser = null;
+    this.editForm = {
+      fullName: '',
+      username: '',
+      email: '',
+      hotelId: null
+    };
+  }
+
+  onUpdateStaff() {
+    if (!this.selectedUser) return;
+    const userId = this.selectedUser.userId || this.selectedUser.id;
+    if (!userId) return;
+
+    if (!this.editForm.fullName || !this.editForm.username || !this.editForm.email) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    const updateRequest: UpdateStaffRequest = {
+      fullName: this.editForm.fullName,
+      username: this.editForm.username,
+      email: this.editForm.email,
+      hotelId: this.editForm.hotelId
+    };
+
+    this.adminService.updateStaff(userId, updateRequest).subscribe({
+      next: () => {
+        alert('Staff details updated successfully');
+        this.closeEditModal();
+        this.loadData();
+      },
+      error: (error: any) => {
+        console.error('Error updating staff:', error);
+        const errorMessage = error?.error?.message || error?.message || 'Failed to update staff details';
+        alert(errorMessage);
+      }
+    });
   }
 
   onReassignHotel() {

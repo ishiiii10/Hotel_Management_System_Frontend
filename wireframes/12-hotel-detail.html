@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Detail - Wireframe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            border: 2px solid #333;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #333;
+            padding: 10px 20px;
+        }
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+        }
+        .nav-link {
+            padding: 10px 20px;
+            border: 1px solid #333;
+            text-decoration: none;
+            color: #333;
+        }
+        .hotel-header {
+            border: 2px solid #333;
+            padding: 30px;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+        .hotel-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .hotel-location {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .hotel-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        .meta-item {
+            border: 1px solid #333;
+            padding: 8px 15px;
+        }
+        .hotel-rating {
+            border: 1px solid #333;
+            padding: 8px 15px;
+            font-weight: bold;
+        }
+        .hotel-images {
+            border: 2px solid #333;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .image-placeholder {
+            height: 200px;
+            border: 1px solid #333;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hotel-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .hotel-details {
+            border: 2px solid #333;
+            padding: 20px;
+            background: #fff;
+        }
+        .section-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        .detail-section {
+            margin-bottom: 25px;
+        }
+        .description {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .amenities-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .amenity-item {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+        .booking-section {
+            border: 2px solid #333;
+            padding: 20px;
+            background: #fff;
+        }
+        .booking-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-input {
+            padding: 10px;
+            border: 1px solid #333;
+        }
+        .btn-book {
+            padding: 15px;
+            border: 2px solid #333;
+            background: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-book:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .rooms-section {
+            border: 2px solid #333;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #fff;
+        }
+        .rooms-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .room-item {
+            border: 1px solid #333;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .room-info {
+            flex: 1;
+        }
+        .room-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .room-details {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .room-price {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .room-select {
+            padding: 10px 20px;
+            border: 2px solid #333;
+            background: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">LOGO</div>
+                <nav class="nav-menu">
+                    <a href="#" class="nav-link">Home</a>
+                    <a href="#" class="nav-link">Login</a>
+                    <a href="#" class="nav-link">Register</a>
+                </nav>
+            </div>
+        </header>
+
+        <section class="hotel-header">
+            <div class="hotel-title">Hotel Name</div>
+            <div class="hotel-location">City, Address</div>
+            <div class="hotel-meta">
+                <div class="meta-item">Category: HOTEL</div>
+                <div class="meta-item">Star Rating: 4</div>
+                <div class="hotel-rating">Rating: 4.5/5</div>
+            </div>
+        </section>
+
+        <section class="hotel-images">
+            <div class="image-grid">
+                <div class="image-placeholder">IMAGE 1</div>
+                <div class="image-placeholder">IMAGE 2</div>
+                <div class="image-placeholder">IMAGE 3</div>
+            </div>
+        </section>
+
+        <div class="hotel-content">
+            <div class="hotel-details">
+                <div class="detail-section">
+                    <div class="section-title">Description</div>
+                    <div class="description">
+                        Hotel description text here. This is a detailed description of the hotel, its facilities, location, and what makes it special.
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <div class="section-title">Amenities</div>
+                    <div class="amenities-list">
+                        <div class="amenity-item">WiFi</div>
+                        <div class="amenity-item">Pool</div>
+                        <div class="amenity-item">Gym</div>
+                        <div class="amenity-item">Spa</div>
+                        <div class="amenity-item">Restaurant</div>
+                        <div class="amenity-item">Parking</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="booking-section">
+                <div class="section-title">Book Now</div>
+                <div class="booking-form">
+                    <div class="form-group">
+                        <label class="form-label">Check In</label>
+                        <input type="date" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Check Out</label>
+                        <input type="date" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Guests</label>
+                        <input type="number" class="form-input" min="1" value="1">
+                    </div>
+                    <button class="btn-book">Book Now</button>
+                </div>
+            </div>
+        </div>
+
+        <section class="rooms-section">
+            <div class="section-title">Available Rooms</div>
+            <div class="rooms-list">
+                <div class="room-item">
+                    <div class="room-info">
+                        <div class="room-name">Standard Room</div>
+                        <div class="room-details">Max Occupancy: 2 | Size: 25 sqm</div>
+                        <div class="room-details">Amenities: WiFi, TV, AC</div>
+                        <div class="room-price">$100/night</div>
+                    </div>
+                    <button class="room-select">Select</button>
+                </div>
+                <div class="room-item">
+                    <div class="room-info">
+                        <div class="room-name">Deluxe Room</div>
+                        <div class="room-details">Max Occupancy: 3 | Size: 35 sqm</div>
+                        <div class="room-details">Amenities: WiFi, TV, AC, Mini Bar</div>
+                        <div class="room-price">$150/night</div>
+                    </div>
+                    <button class="room-select">Select</button>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
+

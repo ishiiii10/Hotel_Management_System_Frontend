@@ -216,6 +216,24 @@
   background: #e0e0e0;
 }
 
+.btn-confirm {
+  background: #fff3cd;
+  border-color: #ffc107;
+}
+
+.btn-confirm:hover {
+  background: #ffe69c;
+}
+
+.btn-view-bill {
+  background: #d1ecf1;
+  border-color: #0c5460;
+}
+
+.btn-view-bill:hover {
+  background: #bee5eb;
+}
+
 .status-text {
   font-size: 14px;
   color: #666;
@@ -250,6 +268,71 @@
   position: relative;
   max-height: 90vh;
   overflow-y: auto;
+}
+
+.bill-modal {
+  max-width: 700px;
+}
+
+.warning-message {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+
+.warning-message ul {
+  margin: 10px 0 0 20px;
+  padding: 0;
+}
+
+.bill-details {
+  padding: 10px 0;
+}
+
+.bill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #333;
+}
+
+.bill-number {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.bill-status {
+  padding: 5px 15px;
+  border: 2px solid #333;
+  font-weight: bold;
+}
+
+.bill-status.pending {
+  background: #fff3cd;
+}
+
+.bill-status.paid {
+  background: #d4edda;
+}
+
+.payment-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #333;
+}
+
+.payment-section h3 {
+  margin-top: 0;
+}
+
+.error-message {
+  padding: 20px;
+  color: #cc0000;
+  text-align: center;
 }
 
 .modal-header {

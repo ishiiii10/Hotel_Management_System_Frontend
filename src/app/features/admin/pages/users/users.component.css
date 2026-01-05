@@ -226,6 +226,15 @@
   background: #ffebee;
 }
 
+.btn-success {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.btn-success:hover {
+  background: #d4edda;
+}
+
 .no-data {
   text-align: center;
   padding: 30px;

@@ -1,0 +1,77 @@
+<div class="hotel-list-container">
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">LOGO</div>
+      <nav class="nav-menu">
+        <a routerLink="/" class="nav-link">Home</a>
+        <a routerLink="/login" class="nav-link" *ngIf="!isAuthenticated">Login</a>
+        <a routerLink="/register" class="nav-link" *ngIf="!isAuthenticated">Register</a>
+        <a routerLink="/login" class="nav-link" *ngIf="isAuthenticated">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <section class="search-section">
+      <div class="search-title">Search Hotels</div>
+      <div class="search-filters">
+        <div class="filter-group">
+          <label class="filter-label">City</label>
+          <select class="filter-select" [(ngModel)]="searchForm.city">
+            <option value="">Select City</option>
+            <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Check In</label>
+          <input type="date" class="filter-input" [(ngModel)]="searchForm.checkInDate">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Check Out</label>
+          <input type="date" class="filter-input" [(ngModel)]="searchForm.checkOutDate">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Category</label>
+          <select class="filter-select" [(ngModel)]="searchForm.category">
+            <option value="">All Categories</option>
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="search-actions">
+        <button class="btn-search" (click)="onSearch()">Search</button>
+        <button class="btn-reset" (click)="onReset()">Reset</button>
+      </div>
+    </section>
+
+    <section class="results-section">
+      <div class="results-header">Search Results ({{ searchResults.length }} hotels found)</div>
+      <div *ngIf="isLoading" class="loading-message">Searching hotels...</div>
+      <div *ngIf="!isLoading && searchResults.length === 0" class="no-results">
+        No hotels found matching your criteria
+      </div>
+      <div class="hotels-list" *ngIf="!isLoading && searchResults.length > 0">
+        <div class="hotel-item" *ngFor="let hotel of searchResults">
+          <div class="hotel-image">IMAGE</div>
+          <div class="hotel-content">
+            <div class="hotel-header-row">
+              <div>
+                <div class="hotel-name">{{ hotel.name }}</div>
+                <div class="hotel-location">{{ hotel.city }}, {{ hotel.address }}</div>
+              </div>
+              <div class="hotel-rating">{{ hotel.starRating || 'N/A' }}</div>
+            </div>
+            <div class="hotel-category">{{ hotel.category }}</div>
+            <div class="hotel-description">{{ hotel.description || 'No description available' }}</div>
+            <div class="hotel-amenities" *ngIf="hotel.amenities">Amenities: {{ hotel.amenities }}</div>
+            <div class="hotel-footer">
+              <div class="hotel-rooms">{{ hotel.availableRooms }} rooms available</div>
+              <button class="btn-view" (click)="viewHotelDetails(hotel.id)">View Details</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+

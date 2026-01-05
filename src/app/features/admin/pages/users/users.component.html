@@ -89,7 +89,9 @@
             <td>{{user.hotelId || '-'}}</td>
             <td>
               <div class="action-buttons">
+                <button class="btn-action" *ngIf="(user.role === 'MANAGER' || user.role === 'RECEPTIONIST') && user.enabled" (click)="openEditModal(user)">Edit</button>
                 <button class="btn-action" *ngIf="user.role === 'MANAGER' || user.role === 'RECEPTIONIST'" (click)="openReassignModal(user)">Reassign</button>
+                <button class="btn-action btn-success" *ngIf="!user.enabled" (click)="onActivateUser(user)">Activate</button>
                 <button class="btn-action btn-danger" *ngIf="user.enabled" (click)="onDeactivateUser(user)">Deactivate</button>
               </div>
             </td>
@@ -122,6 +124,38 @@
       <div class="form-actions">
         <button type="button" class="btn-secondary" (click)="closeReassignModal()">Cancel</button>
         <button type="submit" class="btn-primary">Reassign</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Staff Modal -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">Edit Staff Details</div>
+    <form (ngSubmit)="onUpdateStaff()">
+      <div class="form-group">
+        <label class="form-label">Full Name *</label>
+        <input type="text" class="form-input" [(ngModel)]="editForm.fullName" name="fullName" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Username *</label>
+        <input type="text" class="form-input" [(ngModel)]="editForm.username" name="username" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" class="form-input" [(ngModel)]="editForm.email" name="email" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hotel</label>
+        <select class="form-select" [(ngModel)]="editForm.hotelId" name="hotelId">
+          <option [value]="null">None</option>
+          <option *ngFor="let hotel of hotels" [value]="hotel.id">{{hotel.name}} ({{hotel.city}})</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="closeEditModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Update</button>
       </div>
     </form>
   </div>

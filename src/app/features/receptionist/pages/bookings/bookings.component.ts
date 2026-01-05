@@ -4,6 +4,7 @@ import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ReceptionistService, Booking, WalkInBookingRequest, Room } from '../../services/receptionist.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { BillingService, BillResponse, MarkBillPaidRequest } from '../../../../shared/services/billing.service';
 
 @Component({
   selector: 'app-receptionist-bookings',
@@ -22,7 +23,17 @@ export class ReceptionistBookingsComponent implements OnInit {
   showDetailsModal = false;
   showCheckInModal = false;
   showCheckOutModal = false;
+  showBillModal = false;
   selectedBooking: Booking | null = null;
+  createdBookingId: number | null = null;
+  bill: BillResponse | null = null;
+  isLoadingBill = false;
+  paymentForm: MarkBillPaidRequest = {
+    paymentMethod: '',
+    transactionId: '',
+    paymentReference: '',
+    notes: ''
+  };
 
   walkInForm: WalkInBookingRequest = {
     hotelId: 0,
@@ -55,6 +66,7 @@ export class ReceptionistBookingsComponent implements OnInit {
   constructor(
     private receptionistService: ReceptionistService,
     private authService: AuthService,
+    private billingService: BillingService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -83,6 +95,11 @@ export class ReceptionistBookingsComponent implements OnInit {
       next: (response: any) => {
         this.bookings = response.data || response;
         this.filteredBookings = [...this.bookings];
+        console.log('Loaded bookings:', this.bookings);
+        // Log each booking to check bookingSource
+        this.bookings.forEach((booking: Booking) => {
+          console.log(`Booking ${booking.id}: status=${booking.status}, bookingSource=${booking.bookingSource}`);
+        });
         this.isLoading = false;
       },
       error: (error) => {
@@ -172,15 +189,137 @@ export class ReceptionistBookingsComponent implements OnInit {
     }
 
     this.receptionistService.createWalkInBooking(this.walkInForm).subscribe({
-      next: () => {
+      next: (response: any) => {
+        const booking = response.data || response;
+        this.createdBookingId = booking.id;
         this.closeWalkInModal();
-        this.loadBookings();
+        // Wait a moment for bill to be generated, then show bill modal
+        setTimeout(() => {
+          this.loadBillForWalkIn(booking.id);
+        }, 1000);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error creating walk-in booking:', error);
-        alert('Error creating walk-in booking');
+        const errorMessage = error?.error?.message || error?.message || 'Error creating walk-in booking';
+        alert(errorMessage);
       }
     });
+  }
+
+  loadBillForWalkIn(bookingId: number) {
+    this.isLoadingBill = true;
+    // Try to get bill - it should be generated automatically for walk-in bookings
+    this.billingService.getBillByBookingId(bookingId).subscribe({
+      next: (bill) => {
+        this.bill = bill;
+        this.isLoadingBill = false;
+        this.showBillModal = true;
+      },
+      error: (error: any) => {
+        console.error('Error loading bill:', error);
+        // If bill not found, try to manually generate it
+        const errorMessage = error?.error?.message || '';
+        if (errorMessage.includes('Bill not found')) {
+          // Try manual generation (admin only, but we'll try)
+          this.billingService.manuallyGenerateBill(bookingId).subscribe({
+            next: (bill) => {
+              this.bill = bill;
+              this.isLoadingBill = false;
+              this.showBillModal = true;
+            },
+            error: (genError) => {
+              console.error('Error generating bill:', genError);
+              alert('Booking created but bill generation failed. Please try again in a moment.');
+              this.isLoadingBill = false;
+              this.loadBookings();
+            }
+          });
+        } else {
+          alert('Booking created but could not load bill. Please refresh and try again.');
+          this.isLoadingBill = false;
+          this.loadBookings();
+        }
+      }
+    });
+  }
+
+  onMarkBillAsPaid() {
+    if (!this.bill || !this.paymentForm.paymentMethod) {
+      alert('Please select a payment method');
+      return;
+    }
+
+    this.billingService.markBillAsPaid(this.bill.id, this.paymentForm).subscribe({
+      next: (updatedBill) => {
+        alert('Bill marked as paid successfully! Booking has been confirmed and can now be checked in.');
+        this.bill = updatedBill;
+        this.closeBillModal();
+        this.loadBookings();
+      },
+      error: (error: any) => {
+        console.error('Error marking bill as paid:', error);
+        const errorMessage = error?.error?.message || error?.message || 'Failed to mark bill as paid';
+        alert(errorMessage);
+      }
+    });
+  }
+
+  openBillModal(bookingId: number) {
+    console.log('openBillModal called with bookingId:', bookingId);
+    this.createdBookingId = bookingId;
+    this.showBillModal = true;
+    this.loadBill(bookingId);
+  }
+
+  loadBill(bookingId: number) {
+    console.log('loadBill called for bookingId:', bookingId);
+    this.isLoadingBill = true;
+    this.billingService.getBillByBookingId(bookingId).subscribe({
+      next: (bill) => {
+        console.log('Bill loaded successfully:', bill);
+        this.bill = bill;
+        this.isLoadingBill = false;
+      },
+      error: (error: any) => {
+        console.error('Error loading bill:', error);
+        const errorMessage = error?.error?.message || '';
+        if (errorMessage.includes('Bill not found') || errorMessage.includes('not found')) {
+          // For walk-in bookings, try to manually generate the bill
+          console.log('Bill not found, attempting to generate...');
+          this.billingService.manuallyGenerateBill(bookingId).subscribe({
+            next: (bill) => {
+              console.log('Bill generated successfully:', bill);
+              this.bill = bill;
+              this.isLoadingBill = false;
+            },
+            error: (genError: any) => {
+              console.error('Error generating bill:', genError);
+              const genErrorMessage = genError?.error?.message || genError?.message || 'Unknown error';
+              alert('Bill not found. ' + genErrorMessage + ' Please ensure the booking exists and try again.');
+              this.isLoadingBill = false;
+              this.closeBillModal();
+            }
+          });
+        } else {
+          const errorMsg = error?.error?.message || error?.message || 'Unknown error';
+          alert('Error loading bill: ' + errorMsg);
+          this.isLoadingBill = false;
+          this.closeBillModal();
+        }
+      }
+    });
+  }
+
+  closeBillModal() {
+    this.showBillModal = false;
+    this.bill = null;
+    this.createdBookingId = null;
+    this.paymentForm = {
+      paymentMethod: '',
+      transactionId: '',
+      paymentReference: '',
+      notes: ''
+    };
   }
 
   openDetailsModal(booking: Booking) {
@@ -262,6 +401,23 @@ export class ReceptionistBookingsComponent implements OnInit {
 
   canCheckIn(booking: Booking): boolean {
     return booking.status === 'CONFIRMED';
+  }
+
+  canPayBill(booking: Booking): boolean {
+    // For walk-in bookings, show pay bill option if status is CREATED
+    const canPay = booking.status === 'CREATED' && booking.bookingSource === 'WALK_IN';
+    console.log('canPayBill check:', { 
+      bookingId: booking.id, 
+      status: booking.status, 
+      bookingSource: booking.bookingSource, 
+      canPay 
+    });
+    return canPay;
+  }
+
+  hasBill(booking: Booking): boolean {
+    // Check if booking has a bill (for CREATED walk-in bookings, bill should exist)
+    return booking.status === 'CREATED' || booking.status === 'CONFIRMED' || booking.status === 'CHECKED_IN';
   }
 
   canCheckOut(booking: Booking): boolean {

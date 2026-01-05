@@ -1,0 +1,135 @@
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">LOGO</div>
+    <nav class="nav">
+      <a routerLink="/" class="nav-item">Find a Hotel</a>
+      <a routerLink="/dashboard" class="nav-item" *ngIf="isAuthenticated">My Dashboard</a>
+      <div class="nav-item">Help</div>
+    </nav>
+    <div class="user-actions">
+      <a routerLink="/login" class="icon-box" *ngIf="!isAuthenticated" title="Login"></a>
+      <a routerLink="/register" class="icon-box" *ngIf="!isAuthenticated" title="Register"></a>
+      <a routerLink="/dashboard" class="icon-box" *ngIf="isAuthenticated" title="Dashboard"></a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1 class="hero-title">Find a hotel for your vacation</h1>
+    <p class="hero-subtitle">We have several thousand hotels for every taste in every corner of the globe</p>
+    
+    <!-- Search Container -->
+    <div class="search-container">
+      <div class="search-label">FIND</div>
+      
+      <div class="category-tabs">
+        <button 
+          *ngFor="let category of categories" 
+          class="category-tab"
+          [class.active]="selectedCategory === category"
+          (click)="onCategorySelect(category)">
+          {{ category }}
+        </button>
+      </div>
+      
+      <div class="search-fields">
+        <div class="search-field">
+          <span class="field-label">Location</span>
+          <select class="field-input" [(ngModel)]="searchForm.city">
+            <option value="">Which city do you prefer?</option>
+            <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+          </select>
+        </div>
+        <div class="search-field">
+          <span class="field-label">Check In</span>
+          <input type="date" class="field-input" [(ngModel)]="searchForm.checkInDate" placeholder="Add Dates">
+        </div>
+        <div class="search-field">
+          <span class="field-label">Check Out</span>
+          <input type="date" class="field-input" [(ngModel)]="searchForm.checkOutDate" placeholder="Add Dates">
+        </div>
+        <button class="search-btn" (click)="onSearch()">🔍</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Hotels Section -->
+  <section class="section" *ngIf="!hasSearched">
+    <h2 class="section-title">Featured Hotels on our Listing</h2>
+    
+    <div *ngIf="isLoading" class="loading-message">Loading featured hotels...</div>
+    <div class="hotel-grid" *ngIf="!isLoading && featuredHotels.length > 0">
+      <div class="hotel-card" *ngFor="let hotel of featuredHotels" [routerLink]="['/hotels', hotel.id]">
+        <div class="hotel-image">Hotel Image</div>
+        <div class="hotel-content">
+          <div class="hotel-title">{{ hotel.name }}</div>
+          <div class="hotel-location">{{ hotel.address }}, {{ hotel.city }}</div>
+          <div class="hotel-price">$XXX / night</div>
+          <div class="hotel-details">
+            <div class="detail-item">⭐ {{ hotel.starRating || 'N/A' }}</div>
+            <div class="detail-item">🛏️ {{ hotel.availableRooms }} Rooms</div>
+            <div class="detail-item">📍 {{ hotel.category }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="!isLoading && featuredHotels.length === 0" class="empty-state">No featured hotels available.</div>
+  </section>
+
+  <!-- Search Results Section -->
+  <section class="section" *ngIf="hasSearched">
+    <h2 class="section-title">Search Results</h2>
+    
+    <div *ngIf="isLoading" class="loading-message">Searching hotels...</div>
+    <div class="hotel-grid" *ngIf="!isLoading && searchResults.length > 0">
+      <div class="hotel-card" *ngFor="let hotel of searchResults" [routerLink]="['/hotels', hotel.id]">
+        <div class="hotel-image">Hotel Image</div>
+        <div class="hotel-content">
+          <div class="hotel-title">{{ hotel.name }}</div>
+          <div class="hotel-location">{{ hotel.address }}, {{ hotel.city }}</div>
+          <div class="hotel-price">$XXX / night</div>
+          <div class="hotel-details">
+            <div class="detail-item">⭐ {{ hotel.starRating || 'N/A' }}</div>
+            <div class="detail-item">🛏️ {{ hotel.availableRooms }} Rooms</div>
+            <div class="detail-item">📍 {{ hotel.category }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="!isLoading && searchResults.length === 0" class="empty-state">No hotels found matching your criteria.</div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-column">
+        <div class="footer-title">COMPANY</div>
+        <div class="footer-link">About Us</div>
+        <div class="footer-link">Contact</div>
+        <div class="footer-link">Blog</div>
+      </div>
+      <div class="footer-column">
+        <div class="footer-title">HELP</div>
+        <div class="footer-link">FAQ</div>
+        <div class="footer-link">Support</div>
+        <div class="footer-link">Guide</div>
+      </div>
+      <div class="footer-column">
+        <div class="footer-title">LEGAL</div>
+        <div class="footer-link">Terms</div>
+        <div class="footer-link">Privacy</div>
+        <div class="footer-link">Policy</div>
+      </div>
+      <div class="footer-column">
+        <div class="footer-title">CONTACT</div>
+        <div class="footer-link">Phone</div>
+        <div class="footer-link">Email</div>
+        <div class="footer-link">Address</div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copyright">© 2024 Hotel Management System | All rights reserved</div>
+    </div>
+  </footer>
+</div>

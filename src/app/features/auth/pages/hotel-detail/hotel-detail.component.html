@@ -1,0 +1,133 @@
+<header class="header">
+  <div class="logo">LOGO</div>
+  <nav class="nav">
+    <a routerLink="/" class="nav-item">Back to Search</a>
+    <a routerLink="/my-bookings" class="nav-item" *ngIf="isAuthenticated">My Bookings</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div *ngIf="isLoading && !hotel" class="loading-message">Loading hotel details...</div>
+
+  <div *ngIf="!isLoading && hotel">
+    <!-- Hotel Header -->
+    <section class="hotel-header">
+      <h1 class="hotel-title">{{ hotel.name }}</h1>
+      <div class="hotel-subtitle">{{ hotel.address }}, {{ hotel.city }}, {{ hotel.country }}</div>
+      <div class="hotel-meta">
+        <div class="meta-item" *ngIf="hotel.starRating">⭐ {{ hotel.starRating }}</div>
+        <div class="meta-item">📍 {{ hotel.category }}</div>
+        <div class="meta-item">📞 {{ hotel.contactNumber }}</div>
+      </div>
+    </section>
+
+    <!-- Gallery -->
+    <section class="gallery">
+      <div class="main-image">Main Hotel Image</div>
+      <div class="thumbnail-grid">
+        <div class="thumbnail"></div>
+        <div class="thumbnail"></div>
+        <div class="thumbnail"></div>
+        <div class="thumbnail"></div>
+        <div class="thumbnail"></div>
+      </div>
+    </section>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+      <!-- Main Content -->
+      <div class="main-content">
+        <section class="section">
+          <h2 class="section-title">About</h2>
+          <div class="section-content">
+            {{ hotel.description || 'No description available' }}
+          </div>
+        </section>
+
+        <section class="section" *ngIf="hotel.amenities">
+          <h2 class="section-title">Amenities</h2>
+          <div class="amenity-grid">
+            <div class="amenity-item" *ngFor="let amenity of getAmenitiesList()">
+              {{ amenity }}
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">Location</h2>
+          <div class="section-content map-placeholder">
+            Map placeholder
+          </div>
+        </section>
+
+        <section class="rooms-list" *ngIf="availableRooms.length > 0">
+          <h2 class="section-title">Available Rooms</h2>
+          
+          <div class="room-card" *ngFor="let room of availableRooms" [class.selected]="selectedRoom?.roomId === room.roomId">
+            <div class="room-header">
+              <div class="room-title">{{ room.roomType }}</div>
+              <div class="room-price">{{ formatCurrency(room.pricePerNight) }}/night</div>
+            </div>
+            <div class="room-details">
+              <div class="detail-item">🛏️ Max Occupancy: {{ room.maxOccupancy }}</div>
+              <div class="detail-item">📐 Size: Standard</div>
+              <div class="detail-item">🛁 Features: {{ room.amenities || 'Standard amenities' }}</div>
+            </div>
+            <div class="room-description">
+              {{ room.description || 'Comfortable room with all essential amenities' }}
+            </div>
+            <button class="select-btn" (click)="selectRoom(room)">Select Room</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Booking Sidebar -->
+      <aside class="booking-sidebar">
+        <div class="price-box" *ngIf="selectedRoom">
+          <div class="price-label">Price per night</div>
+          <div class="price">{{ formatCurrency(selectedRoom.pricePerNight) }}</div>
+        </div>
+
+        <div class="booking-form">
+          <h3>Book Now</h3>
+          
+          <div class="form-group">
+            <label class="form-label">Check In</label>
+            <input type="date" class="form-input" [(ngModel)]="bookingForm.checkInDate">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Check Out</label>
+            <input type="date" class="form-input" [(ngModel)]="bookingForm.checkOutDate">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Guests</label>
+            <input type="number" class="form-input" [(ngModel)]="bookingForm.numberOfGuests" min="1" placeholder="Number of guests">
+          </div>
+
+          <button class="btn-check-availability" (click)="onAvailabilitySearch()">Check Availability</button>
+          
+          <div class="price-summary" *ngIf="selectedRoom && bookingForm.checkInDate && bookingForm.checkOutDate">
+            <div class="price-row">
+              <span>Room price</span>
+              <span>{{ formatCurrency(calculateTotal()) }}</span>
+            </div>
+            <div class="price-row">
+              <span>Taxes</span>
+              <span>{{ formatCurrency(calculateTaxes()) }}</span>
+            </div>
+            <div class="price-row total">
+              <span>Total</span>
+              <span>{{ formatCurrency(calculateGrandTotal()) }}</span>
+            </div>
+          </div>
+          
+          <button class="book-btn" (click)="onBookNow()" [disabled]="!selectedRoom || !isAuthenticated || isBooking">
+            {{ isBooking ? 'Booking...' : (isAuthenticated ? 'Book Now' : 'Login to Book') }}
+          </button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>

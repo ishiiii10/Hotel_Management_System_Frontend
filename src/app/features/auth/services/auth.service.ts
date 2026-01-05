@@ -35,6 +35,16 @@ export interface UserResponse {
   enabled: boolean;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface AuthState {
   token: string | null;
   user: {
@@ -50,72 +60,78 @@ export interface AuthState {
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly TOKEN_KEY = 'auth_token';
-  private readonly USER_KEY = 'auth_user';
   private apiUrl = `${environment.apiUrl}/auth`;
-
-  private authState$ = new BehaviorSubject<AuthState>(this.getInitialState());
+  private tokenKey = 'auth_token';
+  private userKey = 'auth_user';
+  private authState$ = new BehaviorSubject<AuthState>({
+    token: this.getToken(),
+    user: this.getCurrentUser()
+  });
 
   constructor(
     private http: HttpClient,
     private router: Router
   ) {}
 
-  private getInitialState(): AuthState {
-    const token = localStorage.getItem(this.TOKEN_KEY);
-    const userStr = localStorage.getItem(this.USER_KEY);
-    const user = userStr ? JSON.parse(userStr) : null;
-    return { token, user };
+  login(request: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, request).pipe(
+      tap(response => {
+        this.setAuthState(response);
+      })
+    );
+  }
+
+  register(request: RegisterRequest): Observable<UserResponse> {
+    return this.http.post<UserResponse>(`${this.apiUrl}/register/guest`, request);
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.userKey);
+    this.authState$.next({ token: null, user: null });
+    this.router.navigate(['/']);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
+  }
+
+  getCurrentUser(): { id: number; username: string; email: string; role: string; hotelId: number | null } | null {
+    const userStr = localStorage.getItem(this.userKey);
+    if (!userStr) return null;
+    try {
+      return JSON.parse(userStr);
+    } catch {
+      return null;
+    }
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.getToken();
   }
 
   getAuthState(): Observable<AuthState> {
     return this.authState$.asObservable();
   }
 
-  getCurrentUser() {
-    return this.authState$.value.user;
-  }
-
-  getToken(): string | null {
-    return this.authState$.value.token;
-  }
-
-  isAuthenticated(): boolean {
-    return !!this.authState$.value.token;
-  }
-
-  login(credentials: LoginRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
-      tap(response => {
-        this.setAuthState(response.token, {
-          id: response.userId,
-          username: response.username,
-          email: response.email,
-          role: response.role,
-          hotelId: response.hotelId
-        });
-      })
-    );
-  }
-
-  register(data: RegisterRequest): Observable<UserResponse> {
-    return this.http.post<UserResponse>(`${this.apiUrl}/register/guest`, data);
-  }
-
-  getCurrentUserInfo(): Observable<UserResponse> {
+  getCurrentUserProfile(): Observable<UserResponse> {
     return this.http.get<UserResponse>(`${this.apiUrl}/me`);
   }
 
-  logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
-    this.authState$.next({ token: null, user: null });
-    this.router.navigate(['/login']);
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/change-password`, request);
   }
 
-  private setAuthState(token: string, user: any): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
-    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
-    this.authState$.next({ token, user });
+  private setAuthState(response: LoginResponse): void {
+    localStorage.setItem(this.tokenKey, response.token);
+    const user = {
+      id: response.userId,
+      username: response.username,
+      email: response.email,
+      role: response.role,
+      hotelId: response.hotelId
+    };
+    localStorage.setItem(this.userKey, JSON.stringify(user));
+    this.authState$.next({ token: response.token, user });
   }
 }

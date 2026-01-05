@@ -1,0 +1,89 @@
+<header class="header">
+  <div class="logo">LOGO</div>
+  <nav class="nav">
+    <a routerLink="/" class="nav-item">Search Hotels</a>
+    <div class="nav-item">My Bookings</div>
+    <div class="icon-box"></div>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="page-header">
+    <h1 class="page-title">My Bookings</h1>
+  </div>
+
+  <div class="tabs">
+    <div class="tab" [class.active]="activeTab === 'all'" (click)="setTab('all')">All Bookings</div>
+    <div class="tab" [class.active]="activeTab === 'upcoming'" (click)="setTab('upcoming')">Upcoming</div>
+    <div class="tab" [class.active]="activeTab === 'past'" (click)="setTab('past')">Past</div>
+    <div class="tab" [class.active]="activeTab === 'cancelled'" (click)="setTab('cancelled')">Cancelled</div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-message">Loading bookings...</div>
+
+  <div *ngIf="!isLoading && getFilteredBookings().length === 0" class="empty-state">
+    <div class="empty-title">No Bookings Found</div>
+    <div class="empty-text">You don't have any bookings in this category</div>
+    <button class="empty-btn" routerLink="/">Search Hotels</button>
+  </div>
+
+  <div *ngIf="!isLoading && getFilteredBookings().length > 0">
+    <div class="booking-card" *ngFor="let booking of getFilteredBookings()">
+      <div class="booking-header">
+        <div class="booking-id">Booking #{{ booking.id }}</div>
+        <div class="booking-status" [ngClass]="getStatusClass(booking.status)">
+          {{ booking.status }}
+        </div>
+      </div>
+      <div class="booking-content">
+        <div class="booking-details">
+          <div class="detail-row">
+            <div class="detail-label">Hotel</div>
+            <div class="detail-value">Hotel ID: {{ booking.hotelId }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Room</div>
+            <div class="detail-value">{{ booking.roomNumber }} - {{ booking.roomType }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Check In</div>
+            <div class="detail-value">{{ formatDate(booking.checkInDate) }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Check Out</div>
+            <div class="detail-value">{{ formatDate(booking.checkOutDate) }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Guests</div>
+            <div class="detail-value">{{ booking.numberOfGuests }} {{ booking.numberOfGuests === 1 ? 'Guest' : 'Guests' }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Total Amount</div>
+            <div class="detail-value">{{ formatCurrency(booking.totalAmount) }}</div>
+          </div>
+        </div>
+        <div class="booking-image">Hotel Image</div>
+      </div>
+      <div class="booking-actions">
+        <button class="action-btn">View Details</button>
+        <button 
+          class="action-btn" 
+          *ngIf="booking.status === 'CONFIRMED' || booking.status === 'CREATED'"
+          (click)="cancelBooking(booking)">
+          Cancel Booking
+        </button>
+        <button 
+          class="action-btn" 
+          *ngIf="booking.status === 'CHECKED_IN' || booking.status === 'CHECKED_OUT'">
+          View Invoice
+        </button>
+        <button 
+          class="action-btn" 
+          *ngIf="booking.status === 'CHECKED_OUT'">
+          Leave Review
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

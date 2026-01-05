@@ -3,17 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ReceptionistService } from '../../services/receptionist.service';
-import { AuthService } from '../../../auth/services/auth.service';
-
-export interface UserResponse {
-  id: number;
-  publicUserId: string;
-  username: string;
-  fullName: string;
-  email: string;
-  role: string;
-  enabled: boolean;
-}
+import { AuthService, UserResponse } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-receptionist-settings',
@@ -45,12 +35,12 @@ export class ReceptionistSettingsComponent implements OnInit {
 
   loadUserProfile() {
     this.isLoading = true;
-    this.authService.getCurrentUserInfo().subscribe({
-      next: (user) => {
+    this.authService.getCurrentUserProfile().subscribe({
+      next: (user: UserResponse) => {
         this.userProfile = user;
         this.isLoading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading user profile:', error);
         this.isLoading = false;
       }

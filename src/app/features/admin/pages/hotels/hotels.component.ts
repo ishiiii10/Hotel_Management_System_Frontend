@@ -51,7 +51,7 @@ export class AdminHotelsComponent implements OnInit {
     role: 'MANAGER'
   };
   
-  categories = ['HOTEL', 'VILLA', 'APARTMENT', 'RESORT', 'HOSTEL', 'GUEST_HOUSE', 'HOMESTAY', 'SERVICED_APARTMENT', 'BOUTIQUE_HOTEL'];
+  categories = ['HOTEL', 'VILLA', 'APARTMENT', 'RESORT', 'HOSTEL', 'GUEST_HOUSE', 'HOMESTAY', 'BOUTIQUE'];
   cities = ['DELHI', 'MUMBAI', 'BANGALORE', 'CHENNAI', 'HYDERABAD', 'KOLKATA', 'PUNE', 'JAIPUR', 'AHMEDABAD', 'PATNA', 'KOCHI'];
   states = ['DELHI', 'MAHARASHTRA', 'KARNATAKA', 'TAMIL_NADU', 'TELANGANA', 'WEST_BENGAL', 'RAJASTHAN', 'GUJARAT', 'BIHAR', 'KERALA'];
   statuses = ['ACTIVE', 'INACTIVE'];

@@ -224,3 +224,56 @@
   font-weight: bold;
   color: #666;
 }
+
+.rooms-category-section {
+  margin-top: 30px;
+}
+
+.category-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
+}
+
+.category-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.category-label {
+  min-width: 150px;
+  font-weight: bold;
+  color: #333;
+}
+
+.category-bar-wrapper {
+  flex: 1;
+  height: 30px;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  position: relative;
+}
+
+.category-bar {
+  height: 100%;
+  background: #4CAF50;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  transition: width 0.3s ease;
+}
+
+.category-count {
+  color: #fff;
+  font-weight: bold;
+  font-size: 14px;
+}

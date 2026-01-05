@@ -1,0 +1,174 @@
+<header class="header">
+  <div class="logo">LOGO</div>
+  <nav class="nav">
+    <a routerLink="/" class="nav-item">Search Hotels</a>
+    <div class="nav-item active">My Dashboard</div>
+    <button class="nav-item logout-btn" (click)="logout()">Logout</button>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="page-header">
+    <h1 class="page-title">My Dashboard</h1>
+  </div>
+
+  <div class="tabs">
+    <div class="tab" [class.active]="activeTab === 'profile'" (click)="setTab('profile')">Profile</div>
+    <div class="tab" [class.active]="activeTab === 'bookings'" (click)="setTab('bookings')">My Bookings</div>
+    <div class="tab" [class.active]="activeTab === 'password'" (click)="setTab('password')">Change Password</div>
+  </div>
+
+  <!-- Profile Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'profile'">
+    <div *ngIf="isLoading" class="loading-message">Loading profile...</div>
+    <div class="profile-card" *ngIf="!isLoading && user">
+      <div class="profile-header">
+        <h2 class="section-title">Profile Information</h2>
+      </div>
+      <div class="profile-content">
+        <div class="profile-field">
+          <div class="field-label">Full Name</div>
+          <div class="field-value">{{ user.fullName }}</div>
+        </div>
+        <div class="profile-field">
+          <div class="field-label">Username</div>
+          <div class="field-value">{{ user.username }}</div>
+        </div>
+        <div class="profile-field">
+          <div class="field-label">Email</div>
+          <div class="field-value">{{ user.email }}</div>
+        </div>
+        <div class="profile-field">
+          <div class="field-label">Role</div>
+          <div class="field-value">{{ user.role }}</div>
+        </div>
+        <div class="profile-field">
+          <div class="field-label">Account Status</div>
+          <div class="field-value" [class.enabled]="user.enabled" [class.disabled]="!user.enabled">
+            {{ user.enabled ? 'Active' : 'Inactive' }}
+          </div>
+        </div>
+        <div class="profile-field">
+          <div class="field-label">User ID</div>
+          <div class="field-value">{{ user.publicUserId }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bookings Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'bookings'">
+    <div class="booking-tabs">
+      <div class="booking-tab" [class.active]="bookingTab === 'all'" (click)="setBookingTab('all')">All Bookings</div>
+      <div class="booking-tab" [class.active]="bookingTab === 'upcoming'" (click)="setBookingTab('upcoming')">Upcoming</div>
+      <div class="booking-tab" [class.active]="bookingTab === 'past'" (click)="setBookingTab('past')">Past</div>
+      <div class="booking-tab" [class.active]="bookingTab === 'cancelled'" (click)="setBookingTab('cancelled')">Cancelled</div>
+    </div>
+
+    <div *ngIf="isLoadingBookings" class="loading-message">Loading bookings...</div>
+    <div *ngIf="!isLoadingBookings && getFilteredBookings().length === 0" class="empty-state">
+      <div class="empty-title">No Bookings Found</div>
+      <div class="empty-text">You don't have any bookings in this category</div>
+      <button class="empty-btn" routerLink="/">Search Hotels</button>
+    </div>
+
+    <div *ngIf="!isLoadingBookings && getFilteredBookings().length > 0">
+      <div class="booking-card" *ngFor="let booking of getFilteredBookings()">
+        <div class="booking-header">
+          <div class="booking-id">Booking #{{ booking.id }}</div>
+          <div class="booking-status" [ngClass]="getStatusClass(booking.status)">
+            {{ booking.status }}
+          </div>
+        </div>
+        <div class="booking-content">
+          <div class="booking-details">
+            <div class="detail-row">
+              <div class="detail-label">Hotel</div>
+              <div class="detail-value">Hotel ID: {{ booking.hotelId }}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Room</div>
+              <div class="detail-value">{{ booking.roomNumber }} - {{ booking.roomType }}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Check In</div>
+              <div class="detail-value">{{ formatDate(booking.checkInDate) }}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Check Out</div>
+              <div class="detail-value">{{ formatDate(booking.checkOutDate) }}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Guests</div>
+              <div class="detail-value">{{ booking.numberOfGuests }} {{ booking.numberOfGuests === 1 ? 'Guest' : 'Guests' }}</div>
+            </div>
+            <div class="detail-row">
+              <div class="detail-label">Total Amount</div>
+              <div class="detail-value">{{ formatCurrency(booking.totalAmount) }}</div>
+            </div>
+          </div>
+          <div class="booking-image">Hotel Image</div>
+        </div>
+        <div class="booking-actions">
+          <button class="action-btn">View Details</button>
+          <button 
+            class="action-btn" 
+            *ngIf="booking.status === 'CONFIRMED' || booking.status === 'CREATED'"
+            (click)="cancelBooking(booking)">
+            Cancel Booking
+          </button>
+          <button 
+            class="action-btn" 
+            *ngIf="booking.status === 'CHECKED_IN' || booking.status === 'CHECKED_OUT'">
+            View Invoice
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Tab -->
+  <div class="tab-content" *ngIf="activeTab === 'password'">
+    <div class="password-card">
+      <div class="password-header">
+        <h2 class="section-title">Change Password</h2>
+      </div>
+      <div class="password-form">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input 
+            type="password" 
+            class="form-input" 
+            [(ngModel)]="passwordForm.currentPassword"
+            placeholder="Enter current password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input 
+            type="password" 
+            class="form-input" 
+            [(ngModel)]="passwordForm.newPassword"
+            placeholder="Enter new password">
+          <div class="form-hint">Password must be at least 8 characters and contain uppercase, lowercase, digit and special character</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input 
+            type="password" 
+            class="form-input" 
+            [(ngModel)]="passwordForm.confirmPassword"
+            placeholder="Confirm new password">
+        </div>
+        <div class="error-message" *ngIf="passwordError">{{ passwordError }}</div>
+        <div class="success-message" *ngIf="passwordSuccess">{{ passwordSuccess }}</div>
+        <button 
+          class="submit-btn" 
+          (click)="onChangePassword()" 
+          [disabled]="isChangingPassword">
+          {{ isChangingPassword ? 'Changing Password...' : 'Change Password' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

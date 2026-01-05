@@ -97,6 +97,28 @@
           </div>
         </div>
       </div>
+
+      <!-- Available Rooms by Category -->
+      <div class="rooms-category-section">
+        <div class="chart-card">
+          <div class="chart-title">Available Rooms by Category</div>
+          <div class="chart-placeholder">
+            <div *ngIf="availableRoomsByCategory.length === 0" class="empty-chart">No available rooms</div>
+            <div *ngIf="availableRoomsByCategory.length > 0" class="category-chart">
+              <div *ngFor="let item of availableRoomsByCategory" class="category-item">
+                <div class="category-bar-container">
+                  <div class="category-label">{{ item.category }}</div>
+                  <div class="category-bar-wrapper">
+                    <div class="category-bar" [style.width.%]="(item.count / getMaxCount()) * 100">
+                      <span class="category-count">{{ item.count }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </div>

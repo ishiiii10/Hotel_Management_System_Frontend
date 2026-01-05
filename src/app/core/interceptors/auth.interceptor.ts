@@ -8,12 +8,31 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const token = authService.getToken();
+  const user = authService.getCurrentUser();
 
   if (token) {
-    req = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
+    const headers: { [key: string]: string } = {
+      Authorization: `Bearer ${token}`
+    };
+
+    // Add user headers if user is authenticated
+    if (user) {
+      if (user.id) {
+        headers['X-User-Id'] = user.id.toString();
       }
+      if (user.role) {
+        headers['X-User-Role'] = user.role;
+      }
+      if (user.email) {
+        headers['X-User-Email'] = user.email;
+      }
+      if (user.username) {
+        headers['X-User-Username'] = user.username;
+      }
+    }
+
+    req = req.clone({
+      setHeaders: headers
     });
   }
 

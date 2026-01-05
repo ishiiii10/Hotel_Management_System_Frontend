@@ -5,7 +5,25 @@ import { roleGuard } from './core/guards/role.guard';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./shared/pages/home/home.component').then(m => m.HomeComponent)
+    loadComponent: () => import('./features/auth/pages/home/home.component').then(m => m.HomeComponent)
+  },
+  {
+    path: 'hotels',
+    loadComponent: () => import('./features/auth/pages/hotel-list/hotel-list.component').then(m => m.HotelListComponent)
+  },
+  {
+    path: 'hotels/:id',
+    loadComponent: () => import('./features/auth/pages/hotel-detail/hotel-detail.component').then(m => m.HotelDetailComponent)
+  },
+  {
+    path: 'my-bookings',
+    loadComponent: () => import('./features/auth/pages/my-bookings/my-bookings.component').then(m => m.MyBookingsComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./features/auth/pages/dashboard/dashboard.component').then(m => m.UserDashboardComponent),
+    canActivate: [authGuard]
   },
   {
     path: 'login',

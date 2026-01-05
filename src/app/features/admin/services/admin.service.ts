@@ -89,6 +89,13 @@ export interface CreateStaffRequest {
   role: string;
 }
 
+export interface UpdateStaffRequest {
+  fullName: string;
+  username: string;
+  email: string;
+  hotelId?: number | null;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -119,6 +126,14 @@ export class AdminService {
 
   deactivateUser(userId: number): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/auth/admin/users/${userId}/deactivate`, {});
+  }
+
+  activateUser(userId: number): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/auth/admin/users/${userId}/activate`, {});
+  }
+
+  updateStaff(userId: number, staff: UpdateStaffRequest): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/auth/admin/staff/${userId}`, staff);
   }
 
   reassignStaffHotel(userId: number, hotelId: number): Observable<void> {
