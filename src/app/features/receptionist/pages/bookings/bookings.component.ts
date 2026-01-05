@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ReceptionistService, Booking, WalkInBookingRequest, Room } from '../../services/receptionist.service';
 import { AuthService } from '../../../auth/services/auth.service';
@@ -55,7 +55,8 @@ export class ReceptionistBookingsComponent implements OnInit {
   constructor(
     private receptionistService: ReceptionistService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -66,6 +67,12 @@ export class ReceptionistBookingsComponent implements OnInit {
     }
     this.hotelId = user.hotelId;
     this.loadBookings();
+
+    this.route.queryParams.subscribe(params => {
+      if (params['action'] === 'walk-in') {
+        this.openWalkInModal();
+      }
+    });
   }
 
   loadBookings() {

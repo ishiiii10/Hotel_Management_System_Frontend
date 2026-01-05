@@ -13,6 +13,8 @@ export interface HotelDetail {
   status: string;
   totalRooms: number;
   availableRooms: number;
+  starRating?: number;
+  amenities?: string;
 }
 
 export interface Room {

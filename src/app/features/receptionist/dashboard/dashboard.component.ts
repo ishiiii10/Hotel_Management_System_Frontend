@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ReceptionistService, HotelDetail, Room, Booking } from '../services/receptionist.service';
 import { AuthService } from '../../auth/services/auth.service';
 
 @Component({
   selector: 'app-receptionist-dashboard',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -22,6 +23,11 @@ export class ReceptionistDashboardComponent implements OnInit {
     maintenance: 0,
     outOfService: 0
   };
+
+  showUpdateRoomStatusModal = false;
+  selectedRoom: Room | null = null;
+  selectedStatus = 'AVAILABLE';
+  roomStatuses = ['AVAILABLE', 'OCCUPIED', 'MAINTENANCE', 'OUT_OF_SERVICE'];
 
   constructor(
     private receptionistService: ReceptionistService,
@@ -93,6 +99,39 @@ export class ReceptionistDashboardComponent implements OnInit {
     this.roomStatusCounts.occupied = this.rooms.filter(r => r.status === 'OCCUPIED').length;
     this.roomStatusCounts.maintenance = this.rooms.filter(r => r.status === 'MAINTENANCE').length;
     this.roomStatusCounts.outOfService = this.rooms.filter(r => r.status === 'OUT_OF_SERVICE').length;
+  }
+
+  navigateToWalkIn() {
+    this.router.navigate(['/receptionist/bookings'], { queryParams: { action: 'walk-in' } });
+  }
+
+  openUpdateRoomStatusModal() {
+    this.showUpdateRoomStatusModal = true;
+    this.selectedRoom = null;
+    this.selectedStatus = 'AVAILABLE';
+  }
+
+  closeUpdateRoomStatusModal() {
+    this.showUpdateRoomStatusModal = false;
+    this.selectedRoom = null;
+  }
+
+  onUpdateRoomStatus() {
+    if (!this.selectedRoom) {
+      alert('Please select a room');
+      return;
+    }
+
+    this.receptionistService.updateRoomStatus(this.selectedRoom.id, this.selectedStatus).subscribe({
+      next: () => {
+        this.closeUpdateRoomStatusModal();
+        this.loadHotelData(this.hotel!.id);
+      },
+      error: (error) => {
+        console.error('Error updating room status:', error);
+        alert('Error updating room status');
+      }
+    });
   }
 
   logout() {

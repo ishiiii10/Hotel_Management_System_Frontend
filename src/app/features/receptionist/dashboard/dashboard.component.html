@@ -8,6 +8,7 @@
       <a routerLink="/receptionist/check-in" class="nav-item">Check In</a>
       <a routerLink="/receptionist/check-out" class="nav-item">Check Out</a>
       <a routerLink="/receptionist/bookings" class="nav-item">Bookings</a>
+      <a routerLink="/receptionist/hotel-info" class="nav-item">Hotel Info</a>
       <a routerLink="/receptionist/billing" class="nav-item">Billing</a>
       <a routerLink="/receptionist/settings" class="nav-item">Settings</a>
     </nav>
@@ -56,10 +57,10 @@
     <section class="quick-actions-section">
       <h2 class="section-title">Quick Actions</h2>
       <div class="actions-grid">
-        <button class="action-btn">Create Walk-in</button>
-        <button class="action-btn">Check In Guest</button>
-        <button class="action-btn">Check Out Guest</button>
-        <button class="action-btn">Update Room Status</button>
+        <button class="action-btn" (click)="navigateToWalkIn()">Create Walk-in</button>
+        <button class="action-btn" routerLink="/receptionist/check-in">Check In Guest</button>
+        <button class="action-btn" routerLink="/receptionist/check-out">Check Out Guest</button>
+        <button class="action-btn" (click)="openUpdateRoomStatusModal()">Update Room Status</button>
       </div>
     </section>
 
@@ -106,5 +107,39 @@
       </div>
     </section>
   </main>
+</div>
+
+<div class="modal-overlay" *ngIf="showUpdateRoomStatusModal" (click)="closeUpdateRoomStatusModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Update Room Status</h2>
+      <button class="close-button" (click)="closeUpdateRoomStatusModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Select Room</label>
+        <select class="form-input" [(ngModel)]="selectedRoom" (ngModelChange)="selectedRoom = $any($event)">
+          <option [ngValue]="null">Select a room</option>
+          <option *ngFor="let room of rooms" [ngValue]="room">
+            {{ room.roomNumber }} - {{ room.roomType }} ({{ room.status }})
+          </option>
+        </select>
+      </div>
+      <div class="form-group" *ngIf="selectedRoom">
+        <label class="form-label">Current Status</label>
+        <div class="form-input" style="background: #f5f5f5;">{{ selectedRoom.status }}</div>
+      </div>
+      <div class="form-group" *ngIf="selectedRoom">
+        <label class="form-label">New Status</label>
+        <select class="form-input" [(ngModel)]="selectedStatus">
+          <option *ngFor="let status of roomStatuses" [value]="status">{{status}}</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeUpdateRoomStatusModal()">Cancel</button>
+        <button type="button" class="btn-primary" (click)="onUpdateRoomStatus()" [disabled]="!selectedRoom">Update Status</button>
+      </div>
+    </div>
+  </div>
 </div>
 

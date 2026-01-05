@@ -101,6 +101,11 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
   },
   {
+    path: 'receptionist/hotel-info',
+    loadComponent: () => import('./features/receptionist/pages/hotel-info/hotel-info.component').then(m => m.ReceptionistHotelInfoComponent),
+    canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
+  },
+  {
     path: 'receptionist/billing',
     loadComponent: () => import('./features/receptionist/pages/billing/billing.component').then(m => m.ReceptionistBillingComponent),
     canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
