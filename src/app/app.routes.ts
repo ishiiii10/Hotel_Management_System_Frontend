@@ -56,6 +56,11 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['MANAGER'])]
   },
   {
+    path: 'manager/rooms',
+    loadComponent: () => import('./features/manager/pages/rooms/rooms.component').then(m => m.ManagerRoomsComponent),
+    canActivate: [authGuard, roleGuard(['MANAGER'])]
+  },
+  {
     path: 'manager/bookings',
     loadComponent: () => import('./features/manager/pages/bookings/bookings.component').then(m => m.ManagerBookingsComponent),
     canActivate: [authGuard, roleGuard(['MANAGER'])]
@@ -63,6 +68,16 @@ export const routes: Routes = [
   {
     path: 'manager/availability',
     loadComponent: () => import('./features/manager/pages/availability/availability.component').then(m => m.ManagerAvailabilityComponent),
+    canActivate: [authGuard, roleGuard(['MANAGER'])]
+  },
+  {
+    path: 'manager/billing',
+    loadComponent: () => import('./features/manager/pages/billing/billing.component').then(m => m.ManagerBillingComponent),
+    canActivate: [authGuard, roleGuard(['MANAGER'])]
+  },
+  {
+    path: 'manager/settings',
+    loadComponent: () => import('./features/manager/pages/settings/settings.component').then(m => m.ManagerSettingsComponent),
     canActivate: [authGuard, roleGuard(['MANAGER'])]
   },
   {

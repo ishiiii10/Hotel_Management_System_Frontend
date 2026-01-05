@@ -1,0 +1,232 @@
+<div class="dashboard-container">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">LOGO</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/manager/dashboard" class="nav-item">Dashboard</a>
+      <a routerLink="/manager/hotel-info" class="nav-item">Hotel Info</a>
+      <a routerLink="/manager/rooms" class="nav-item active">Rooms</a>
+      <a routerLink="/manager/bookings" class="nav-item">Bookings</a>
+      <a routerLink="/manager/availability" class="nav-item">Availability</a>
+      <a routerLink="/manager/billing" class="nav-item">Billing</a>
+      <a routerLink="/manager/settings" class="nav-item">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn-sidebar" (click)="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <h1 class="page-title">Rooms Management</h1>
+      <div class="header-actions">
+        <button class="btn-primary" (click)="openCreateModal()">+ Create Room</button>
+      </div>
+    </header>
+
+    <div class="filters-section">
+      <div class="filters-title">Search & Filter</div>
+      <div class="filters-row">
+        <div class="filter-group">
+          <label class="filter-label">Room Number</label>
+          <input type="text" class="filter-input" [(ngModel)]="searchRoomNumber" placeholder="Enter room number">
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Type</label>
+          <select class="filter-input" [(ngModel)]="searchType">
+            <option value="">All Types</option>
+            <option *ngFor="let type of roomTypes" [value]="type">{{type}}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label">Status</label>
+          <select class="filter-input" [(ngModel)]="searchStatus">
+            <option value="">All Status</option>
+            <option *ngFor="let status of roomStatuses" [value]="status">{{status}}</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button class="btn-primary" (click)="onSearch()">Search</button>
+          <button class="btn-secondary" (click)="onReset()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="rooms-section">
+      <div class="section-header">All Rooms</div>
+      <div *ngIf="isLoading" class="loading-message">Loading rooms...</div>
+      <table class="rooms-table" *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <th>Room Number</th>
+            <th>Type</th>
+            <th>Price/Night</th>
+            <th>Max Occupancy</th>
+            <th>Status</th>
+            <th>Active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let room of filteredRooms">
+            <td>{{ room.roomNumber }}</td>
+            <td>{{ room.roomType }}</td>
+            <td>{{ formatCurrency(room.pricePerNight) }}</td>
+            <td>{{ room.maxOccupancy }}</td>
+            <td>
+              <select class="status-select" [value]="room.status" (change)="onStatusChange(room, $any($event.target).value)">
+                <option *ngFor="let status of roomStatuses" [value]="status">{{status}}</option>
+              </select>
+            </td>
+            <td>{{ room.isActive ? 'Yes' : 'No' }}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-action" (click)="openEditModal(room)">Edit</button>
+                <button class="btn-action btn-danger" (click)="onDeleteRoom(room)">Delete</button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filteredRooms.length === 0">
+            <td colspan="7" class="no-data">No rooms found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="closeCreateModal()">
+  <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create Room</h2>
+      <button class="close-button" (click)="closeCreateModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="onCreateRoom()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Room Number *</label>
+            <input type="text" class="form-input" [(ngModel)]="roomForm.roomNumber" name="roomNumber" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Room Type *</label>
+            <select class="form-input" [(ngModel)]="roomForm.roomType" name="roomType" required>
+              <option *ngFor="let type of roomTypes" [value]="type">{{type}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Price per Night *</label>
+            <input type="number" class="form-input" [(ngModel)]="roomForm.pricePerNight" name="pricePerNight" step="0.01" min="0.01" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Max Occupancy *</label>
+            <input type="number" class="form-input" [(ngModel)]="roomForm.maxOccupancy" name="maxOccupancy" min="1" max="10" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Floor Number</label>
+            <input type="number" class="form-input" [(ngModel)]="roomForm.floorNumber" name="floorNumber" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bed Type</label>
+            <input type="text" class="form-input" [(ngModel)]="roomForm.bedType" name="bedType">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Room Size (sq ft)</label>
+          <input type="number" class="form-input" [(ngModel)]="roomForm.roomSize" name="roomSize" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amenities</label>
+          <textarea class="form-input" [(ngModel)]="roomForm.amenities" name="amenities" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-input" [(ngModel)]="roomForm.description" name="description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status *</label>
+          <select class="form-input" [(ngModel)]="roomForm.status" name="status" required>
+            <option *ngFor="let status of roomStatuses" [value]="status">{{status}}</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Create Room</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+  <div class="modal-content modal-large" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Edit Room</h2>
+      <button class="close-button" (click)="closeEditModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="onUpdateRoom()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Room Number *</label>
+            <input type="text" class="form-input" [(ngModel)]="roomForm.roomNumber" name="roomNumber" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Room Type *</label>
+            <select class="form-input" [(ngModel)]="roomForm.roomType" name="roomType" required>
+              <option *ngFor="let type of roomTypes" [value]="type">{{type}}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Price per Night *</label>
+            <input type="number" class="form-input" [(ngModel)]="roomForm.pricePerNight" name="pricePerNight" step="0.01" min="0.01" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Max Occupancy *</label>
+            <input type="number" class="form-input" [(ngModel)]="roomForm.maxOccupancy" name="maxOccupancy" min="1" max="10" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Floor Number</label>
+            <input type="number" class="form-input" [(ngModel)]="roomForm.floorNumber" name="floorNumber" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bed Type</label>
+            <input type="text" class="form-input" [(ngModel)]="roomForm.bedType" name="bedType">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Room Size (sq ft)</label>
+          <input type="number" class="form-input" [(ngModel)]="roomForm.roomSize" name="roomSize" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amenities</label>
+          <textarea class="form-input" [(ngModel)]="roomForm.amenities" name="amenities" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-input" [(ngModel)]="roomForm.description" name="description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status *</label>
+          <select class="form-input" [(ngModel)]="roomForm.status" name="status" required>
+            <option *ngFor="let status of roomStatuses" [value]="status">{{status}}</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeEditModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Update Room</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+

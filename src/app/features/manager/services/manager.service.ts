@@ -28,8 +28,11 @@ export interface Room {
   roomType: string;
   pricePerNight: number;
   maxOccupancy: number;
-  amenities: string;
-  description: string;
+  floorNumber?: number;
+  bedType?: string;
+  roomSize?: number;
+  amenities?: string;
+  description?: string;
   status: string;
   isActive: boolean;
 }
@@ -62,8 +65,13 @@ export interface CreateRoomRequest {
   roomType: string;
   pricePerNight: number;
   maxOccupancy: number;
-  amenities: string;
-  description: string;
+  floorNumber?: number;
+  bedType?: string;
+  roomSize?: number;
+  amenities?: string;
+  description?: string;
+  status?: string;
+  isActive?: boolean;
 }
 
 export interface BlockRoomRequest {
@@ -92,6 +100,38 @@ export interface CheckOutRequest {
   lateCheckOut?: boolean;
 }
 
+export interface BillResponse {
+  id: number;
+  bookingId: number;
+  userId: number;
+  hotelId: number;
+  roomId: number;
+  checkInDate: string;
+  checkOutDate: string;
+  totalAmount: number;
+  status: string;
+  billNumber: string;
+  generatedAt: string;
+  paidAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentResponse {
+  id: number;
+  billId: number;
+  bookingId: number;
+  userId: number;
+  amount: number;
+  paymentMethod: string;
+  transactionId?: string;
+  paymentReference?: string;
+  notes?: string;
+  paidBy?: string;
+  paidAt: string;
+  createdAt: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -106,6 +146,10 @@ export class ManagerService {
 
   getHotelRooms(hotelId: number): Observable<Room[]> {
     return this.http.get<Room[]>(`${this.apiUrl}/hotels/rooms/hotel/${hotelId}`);
+  }
+
+  getRoomById(roomId: number): Observable<Room> {
+    return this.http.get<Room>(`${this.apiUrl}/hotels/rooms/${roomId}`);
   }
 
   getHotelBookings(hotelId: number): Observable<Booking[]> {
@@ -132,7 +176,7 @@ export class ManagerService {
     return this.http.put(`${this.apiUrl}/hotels/${hotelId}`, hotel);
   }
 
-  updateRoom(roomId: number, room: any): Observable<any> {
+  updateRoom(roomId: number, room: CreateRoomRequest): Observable<any> {
     return this.http.put(`${this.apiUrl}/hotels/rooms/${roomId}`, room);
   }
 
@@ -174,5 +218,20 @@ export class ManagerService {
 
   searchAvailability(hotelId: number, checkIn: string, checkOut: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/hotels/availability/search?hotelId=${hotelId}&checkIn=${checkIn}&checkOut=${checkOut}`);
+  }
+
+  getBillByBookingId(bookingId: number): Observable<BillResponse> {
+    return this.http.get<BillResponse>(`${this.apiUrl}/bills/booking/${bookingId}`);
+  }
+
+  getMyPayments(): Observable<PaymentResponse[]> {
+    return this.http.get<PaymentResponse[]>(`${this.apiUrl}/bills/my-payments`);
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/auth/change-password`, {
+      currentPassword,
+      newPassword
+    });
   }
 }
