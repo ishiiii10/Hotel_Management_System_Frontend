@@ -1,7 +1,7 @@
 <div class="dashboard-container">
   <aside class="sidebar">
     <div class="sidebar-header">
-      <div class="logo">LOGO</div>
+      <div class="logo">BELLE VUE</div>
     </div>
     <nav class="sidebar-nav">
       <a routerLink="/receptionist/dashboard" class="nav-item">Dashboard</a>
@@ -102,11 +102,11 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">Check-in Date *</label>
-            <input type="date" class="form-input" [(ngModel)]="searchCheckIn">
+            <input type="date" class="form-input" [(ngModel)]="searchCheckIn" [min]="minDate">
           </div>
           <div class="form-group">
             <label class="form-label">Check-out Date *</label>
-            <input type="date" class="form-input" [(ngModel)]="searchCheckOut">
+            <input type="date" class="form-input" [(ngModel)]="searchCheckOut" [min]="minSearchCheckOutDate">
           </div>
           <div class="form-group">
             <label class="form-label">&nbsp;</label>
@@ -154,11 +154,11 @@
           </div>
           <div class="form-group">
             <label class="form-label">Check-in Date *</label>
-            <input type="date" class="form-input" [(ngModel)]="walkInForm.checkInDate" required>
+            <input type="date" class="form-input" [(ngModel)]="walkInForm.checkInDate" [min]="minDate" required>
           </div>
           <div class="form-group">
             <label class="form-label">Check-out Date *</label>
-            <input type="date" class="form-input" [(ngModel)]="walkInForm.checkOutDate" required>
+            <input type="date" class="form-input" [(ngModel)]="walkInForm.checkOutDate" [min]="minCheckOutDate" required>
           </div>
         </div>
         <div class="form-group">

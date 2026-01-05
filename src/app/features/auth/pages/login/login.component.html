@@ -1,66 +1,77 @@
 <div class="container">
-  <!-- Left Section - Login Form -->
+  <!-- Left Section - Aesthetic Image -->
   <div class="left-section">
-    <div class="logo">LOGO</div>
-    
-    <h1 class="title">Welcome to Hotel Management System</h1>
-    <p class="subtitle">Sign in to access your account and manage your bookings</p>
-    
-    <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <div *ngIf="errorMessage" class="error-alert">
-        {{ errorMessage }}
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Email</label>
-        <input 
-          type="email" 
-          class="form-input" 
-          placeholder="Enter your email"
-          formControlName="email"
-          [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
-        >
-        <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-message">
-          <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
-          <span *ngIf="loginForm.get('email')?.errors?.['email']">Invalid email format</span>
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">Password</label>
-        <input 
-          type="password" 
-          class="form-input" 
-          placeholder="Enter your password"
-          formControlName="password"
-          [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
-        >
-        <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
-          <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
-          <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
-        </div>
-      </div>
-      
-      <button type="submit" class="login-btn" [disabled]="loginForm.invalid || isLoading">
-        <span *ngIf="!isLoading">Log In</span>
-        <span *ngIf="isLoading">Logging in...</span>
-      </button>
-      
-      <div class="remember-me">
-        <div class="checkbox"></div>
-        <span class="remember-text">Remember me for 30 days</span>
-      </div>
-      
-      <a routerLink="/forgot-password" class="forgot-link">Forgot Password?</a>
-      
-      <div class="signup-link">
-        <span class="signup-text">You do not have account yet? <a routerLink="/register" class="link-bold">Sign Up</a></span>
-      </div>
-    </form>
+    <div class="image-overlay"></div>
+    <div class="image-content">
+      <div class="logo-image">BELLE VUE</div>
+      <div class="image-tagline">A Celebration of Beautiful Views and Quiet Luxury</div>
+    </div>
   </div>
   
-  <!-- Right Section - Image Placeholder -->
+  <!-- Right Section - Login Form -->
   <div class="right-section">
-    <div class="image-placeholder">Image Placeholder</div>
+    <div class="form-container">
+      <div class="form-header">
+        <div class="logo">BELLE VUE</div>
+      </div>
+      
+      <div class="welcome-section">
+        <h1 class="welcome-title">Allo Users</h1>
+        <p class="welcome-subtitle">Welcome to BELLE VUE</p>
+      </div>
+      
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div *ngIf="errorMessage" class="error-alert">
+          {{ errorMessage }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input 
+            type="email" 
+            class="form-input" 
+            placeholder="Enter your email"
+            formControlName="email"
+            [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+          >
+          <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-message">
+            <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
+            <span *ngIf="loginForm.get('email')?.errors?.['email']">Invalid email format</span>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="password-header">
+            <label class="form-label">Password</label>
+            <a routerLink="/forgot-password" class="forgot-link">Forgot password?</a>
+          </div>
+          <input 
+            type="password" 
+            class="form-input" 
+            placeholder="Enter your password"
+            formControlName="password"
+            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          >
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
+            <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+            <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+          </div>
+        </div>
+        
+        <div class="divider">
+          <span class="divider-text">or</span>
+        </div>
+        
+        
+        <button type="submit" class="login-btn" [disabled]="loginForm.invalid || isLoading">
+          <span *ngIf="!isLoading">Login</span>
+          <span *ngIf="isLoading">Logging in...</span>
+        </button>
+        
+        <div class="signup-link">
+          <span class="signup-text">Don't have an account? <a routerLink="/register" class="link-bold">Sign up</a></span>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

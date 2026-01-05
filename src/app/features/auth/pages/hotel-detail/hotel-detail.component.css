@@ -378,3 +378,186 @@
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* Booking Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.booking-modal {
+  background: #fff;
+  border: 2px solid #333;
+  padding: 30px;
+  max-width: 700px;
+  width: 90%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #333;
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+}
+
+.close-button {
+  background: none;
+  border: 2px solid #333;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px 10px;
+  line-height: 1;
+}
+
+.close-button:hover {
+  background: #e0e0e0;
+}
+
+.modal-body {
+  padding-top: 10px;
+}
+
+.booking-confirmation {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #d4edda;
+  border: 1px solid #28a745;
+  border-radius: 4px;
+}
+
+.success-message {
+  background: #d4edda;
+  border: 1px solid #28a745;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.success-message h3 {
+  margin: 0 0 10px 0;
+  color: #155724;
+}
+
+.bill-section {
+  margin-top: 20px;
+}
+
+.bill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #333;
+}
+
+.bill-number {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.bill-status {
+  padding: 5px 15px;
+  border: 2px solid #333;
+  font-weight: bold;
+}
+
+.bill-status.pending {
+  background: #fff3cd;
+}
+
+.bill-status.paid {
+  background: #d4edda;
+}
+
+.bill-info {
+  margin-bottom: 20px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.info-label {
+  font-weight: bold;
+}
+
+.payment-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #333;
+}
+
+.payment-section h3 {
+  margin-top: 0;
+}
+
+.info-message {
+  background: #d1ecf1;
+  border: 1px solid #0c5460;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.error-message {
+  padding: 20px;
+  color: #cc0000;
+  text-align: center;
+}
+
+.form-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  border: 2px solid #333;
+  background: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  background: #e0e0e0;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  border: 2px solid #333;
+  background: #fff;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-secondary:hover {
+  background: #e0e0e0;
+}

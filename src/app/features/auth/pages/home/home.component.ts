@@ -29,6 +29,20 @@ export class HomeComponent implements OnInit {
   hasSearched = false;
   isAuthenticated = false;
 
+  get minDate(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }
+
+  get minCheckOutDate(): string {
+    if (!this.searchForm.checkInDate) {
+      return this.minDate;
+    }
+    const checkIn = new Date(this.searchForm.checkInDate);
+    checkIn.setDate(checkIn.getDate() + 1);
+    return checkIn.toISOString().split('T')[0];
+  }
+
   constructor(
     private hotelSearchService: HotelSearchService,
     private authService: AuthService,

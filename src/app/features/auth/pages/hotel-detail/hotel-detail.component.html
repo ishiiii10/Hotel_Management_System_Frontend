@@ -1,5 +1,5 @@
 <header class="header">
-  <div class="logo">LOGO</div>
+  <div class="logo">BELLE VUE</div>
   <nav class="nav">
     <a routerLink="/" class="nav-item">Back to Search</a>
     <a routerLink="/my-bookings" class="nav-item" *ngIf="isAuthenticated">My Bookings</a>
@@ -93,12 +93,12 @@
           
           <div class="form-group">
             <label class="form-label">Check In</label>
-            <input type="date" class="form-input" [(ngModel)]="bookingForm.checkInDate">
+            <input type="date" class="form-input" [(ngModel)]="bookingForm.checkInDate" [min]="minDate">
           </div>
           
           <div class="form-group">
             <label class="form-label">Check Out</label>
-            <input type="date" class="form-input" [(ngModel)]="bookingForm.checkOutDate">
+            <input type="date" class="form-input" [(ngModel)]="bookingForm.checkOutDate" [min]="minCheckOutDate">
           </div>
           
           <div class="form-group">
@@ -128,6 +128,87 @@
           </button>
         </div>
       </aside>
+    </div>
+  </div>
+</div>
+
+<!-- Booking & Payment Modal -->
+<div class="modal-overlay" *ngIf="showBookingModal" (click)="closeBookingModal()">
+  <div class="modal-content booking-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Booking Confirmation & Payment</h2>
+      <button class="close-button" (click)="closeBookingModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="createdBooking" class="booking-confirmation">
+        <div class="success-message">
+          <h3>✅ Booking Created Successfully!</h3>
+          <p>Booking ID: <strong>{{ createdBooking.id }}</strong></p>
+        </div>
+      </div>
+
+      <div *ngIf="isLoadingBill" class="loading-message">Loading bill...</div>
+      
+      <div *ngIf="!isLoadingBill && bill" class="bill-section">
+        <div class="bill-header">
+          <div class="bill-number">Bill #{{ bill.billNumber }}</div>
+          <div class="bill-status" [class.pending]="bill.status === 'PENDING'" [class.paid]="bill.status === 'PAID'">
+            {{ bill.status }}
+          </div>
+        </div>
+        
+        <div class="bill-info">
+          <div class="info-row">
+            <span class="info-label">Total Amount:</span>
+            <span class="info-value">{{ formatCurrency(bill.totalAmount) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Generated At:</span>
+            <span class="info-value">{{ bill.generatedAt | date:'medium' }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="bill.status === 'PENDING'" class="payment-section">
+          <h3>Complete Payment</h3>
+          <p class="info-message">After payment, your booking will be automatically confirmed.</p>
+          <form (ngSubmit)="onPayBill()">
+            <div class="form-group">
+              <label class="form-label">Payment Method *</label>
+              <select class="form-input" [(ngModel)]="paymentForm.paymentMethod" name="paymentMethod" required>
+                <option value="">Select payment method</option>
+                <option value="CASH">Cash</option>
+                <option value="CARD">Card</option>
+                <option value="UPI">UPI</option>
+                <option value="NET_BANKING">Net Banking</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Transaction ID (Optional)</label>
+              <input type="text" class="form-input" [(ngModel)]="paymentForm.transactionId" name="transactionId">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment Reference (Optional)</label>
+              <input type="text" class="form-input" [(ngModel)]="paymentForm.paymentReference" name="paymentReference">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Notes (Optional)</label>
+              <textarea class="form-input" [(ngModel)]="paymentForm.notes" name="notes" rows="3"></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" (click)="closeBookingModal()">Close</button>
+              <button type="submit" class="btn-primary">Pay Now</button>
+            </div>
+          </form>
+        </div>
+
+        <div *ngIf="bill.status === 'PAID'" class="success-message">
+          <p>✅ Payment completed! Your booking is confirmed and ready for check-in.</p>
+        </div>
+      </div>
+      
+      <div *ngIf="!isLoadingBill && !bill" class="error-message">
+        Bill not found. Please wait a moment and try again.
+      </div>
     </div>
   </div>
 </div>

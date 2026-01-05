@@ -63,6 +63,29 @@ export class ReceptionistBookingsComponent implements OnInit {
 
   statuses = ['CREATED', 'CONFIRMED', 'CHECKED_IN', 'CHECKED_OUT', 'CANCELLED'];
 
+  get minDate(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }
+
+  get minCheckOutDate(): string {
+    if (!this.walkInForm.checkInDate) {
+      return this.minDate;
+    }
+    const checkIn = new Date(this.walkInForm.checkInDate);
+    checkIn.setDate(checkIn.getDate() + 1);
+    return checkIn.toISOString().split('T')[0];
+  }
+
+  get minSearchCheckOutDate(): string {
+    if (!this.searchCheckIn) {
+      return this.minDate;
+    }
+    const checkIn = new Date(this.searchCheckIn);
+    checkIn.setDate(checkIn.getDate() + 1);
+    return checkIn.toISOString().split('T')[0];
+  }
+
   constructor(
     private receptionistService: ReceptionistService,
     private authService: AuthService,

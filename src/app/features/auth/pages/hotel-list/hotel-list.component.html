@@ -1,7 +1,7 @@
 <div class="hotel-list-container">
   <header class="header">
     <div class="header-content">
-      <div class="logo">LOGO</div>
+      <div class="logo">BELLE VUE</div>
       <nav class="nav-menu">
         <a routerLink="/" class="nav-link">Home</a>
         <a routerLink="/login" class="nav-link" *ngIf="!isAuthenticated">Login</a>
@@ -24,11 +24,11 @@
         </div>
         <div class="filter-group">
           <label class="filter-label">Check In</label>
-          <input type="date" class="filter-input" [(ngModel)]="searchForm.checkInDate">
+          <input type="date" class="filter-input" [(ngModel)]="searchForm.checkInDate" [min]="minDate">
         </div>
         <div class="filter-group">
           <label class="filter-label">Check Out</label>
-          <input type="date" class="filter-input" [(ngModel)]="searchForm.checkOutDate">
+          <input type="date" class="filter-input" [(ngModel)]="searchForm.checkOutDate" [min]="minCheckOutDate">
         </div>
         <div class="filter-group">
           <label class="filter-label">Category</label>

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { HotelSearchService, HotelDetail, AvailableRoom } from '../../../../shared/services/hotel-search.service';
-import { BookingService, CreateBookingRequest } from '../../../../shared/services/booking.service';
+import { BookingService, CreateBookingRequest, Booking } from '../../../../shared/services/booking.service';
+import { BillingService, BillResponse, MarkBillPaidRequest } from '../../../../shared/services/billing.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -28,10 +29,36 @@ export class HotelDetailComponent implements OnInit {
 
   selectedRoom: AvailableRoom | null = null;
   isBooking = false;
+  
+  showBookingModal = false;
+  createdBooking: Booking | null = null;
+  bill: BillResponse | null = null;
+  isLoadingBill = false;
+  paymentForm: MarkBillPaidRequest = {
+    paymentMethod: '',
+    transactionId: '',
+    paymentReference: '',
+    notes: ''
+  };
+  
+  get minDate(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }
+  
+  get minCheckOutDate(): string {
+    if (!this.bookingForm.checkInDate) {
+      return this.minDate;
+    }
+    const checkIn = new Date(this.bookingForm.checkInDate);
+    checkIn.setDate(checkIn.getDate() + 1);
+    return checkIn.toISOString().split('T')[0];
+  }
 
   constructor(
     private hotelSearchService: HotelSearchService,
     private bookingService: BookingService,
+    private billingService: BillingService,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute
@@ -166,8 +193,11 @@ export class HotelDetailComponent implements OnInit {
     this.bookingService.createBooking(bookingRequest).subscribe({
       next: (booking) => {
         this.isBooking = false;
-        alert('Booking created successfully! Booking ID: ' + booking.id);
-        this.router.navigate(['/my-bookings']);
+        this.createdBooking = booking;
+        // Wait a moment for bill to be generated, then load it
+        setTimeout(() => {
+          this.loadBill(booking.id);
+        }, 1000);
       },
       error: (error) => {
         this.isBooking = false;
@@ -176,6 +206,77 @@ export class HotelDetailComponent implements OnInit {
         alert(errorMessage);
       }
     });
+  }
+
+  loadBill(bookingId: number) {
+    this.isLoadingBill = true;
+    this.billingService.getBillByBookingId(bookingId).subscribe({
+      next: (bill) => {
+        this.bill = bill;
+        this.isLoadingBill = false;
+        this.showBookingModal = true;
+      },
+      error: (error: any) => {
+        console.error('Error loading bill:', error);
+        // If bill not found, try to manually generate it
+        const errorMessage = error?.error?.message || '';
+        if (errorMessage.includes('Bill not found') || errorMessage.includes('not found')) {
+          this.billingService.manuallyGenerateBill(bookingId).subscribe({
+            next: (bill) => {
+              this.bill = bill;
+              this.isLoadingBill = false;
+              this.showBookingModal = true;
+            },
+            error: (genError: any) => {
+              console.error('Error generating bill:', genError);
+              alert('Booking created but bill generation failed. Please try again in a moment.');
+              this.isLoadingBill = false;
+              this.closeBookingModal();
+            }
+          });
+        } else {
+          alert('Booking created but could not load bill. Please refresh and try again.');
+          this.isLoadingBill = false;
+          this.closeBookingModal();
+        }
+      }
+    });
+  }
+
+  onPayBill() {
+    if (!this.bill || !this.paymentForm.paymentMethod) {
+      alert('Please select a payment method');
+      return;
+    }
+
+    this.billingService.markBillAsPaid(this.bill.id, this.paymentForm).subscribe({
+      next: (updatedBill) => {
+        alert('Payment successful! Your booking has been confirmed. You can now check in at the hotel.');
+        this.bill = updatedBill;
+        // Close modal and navigate to my bookings after a short delay
+        setTimeout(() => {
+          this.closeBookingModal();
+          this.router.navigate(['/my-bookings']);
+        }, 2000);
+      },
+      error: (error: any) => {
+        console.error('Error marking bill as paid:', error);
+        const errorMessage = error?.error?.message || error?.message || 'Failed to process payment';
+        alert(errorMessage);
+      }
+    });
+  }
+
+  closeBookingModal() {
+    this.showBookingModal = false;
+    this.createdBooking = null;
+    this.bill = null;
+    this.paymentForm = {
+      paymentMethod: '',
+      transactionId: '',
+      paymentReference: '',
+      notes: ''
+    };
   }
 
   formatCurrency(value: number): string {

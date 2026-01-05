@@ -1,55 +1,61 @@
 <div class="container">
   <!-- Header -->
   <header class="header">
-    <div class="logo">LOGO</div>
+    <div class="logo">BELLE VUE</div>
     <nav class="nav">
       <a routerLink="/" class="nav-item">Find a Hotel</a>
       <a routerLink="/dashboard" class="nav-item" *ngIf="isAuthenticated">My Dashboard</a>
-      <div class="nav-item">Help</div>
+      <a routerLink="/help" class="nav-item">Help</a>
     </nav>
     <div class="user-actions">
-      <a routerLink="/login" class="icon-box" *ngIf="!isAuthenticated" title="Login"></a>
-      <a routerLink="/register" class="icon-box" *ngIf="!isAuthenticated" title="Register"></a>
-      <a routerLink="/dashboard" class="icon-box" *ngIf="isAuthenticated" title="Dashboard"></a>
+      <a routerLink="/login" class="btn-login" *ngIf="!isAuthenticated">Login</a>
+      <a routerLink="/register" class="btn-register" *ngIf="!isAuthenticated">Register</a>
+      <a routerLink="/dashboard" class="btn-dashboard" *ngIf="isAuthenticated">Dashboard</a>
     </div>
   </header>
 
-  <!-- Hero Section -->
+  <!-- Hero Section with Background Image -->
   <section class="hero">
-    <h1 class="hero-title">Find a hotel for your vacation</h1>
-    <p class="hero-subtitle">We have several thousand hotels for every taste in every corner of the globe</p>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge">BELLE VUE</div>
+      <h1 class="hero-title">A CELEBRATION OF BEAUTIFUL VIEWS AND QUITE LUXURY.</h1>
+      <a routerLink="/hotels" class="btn-book">BOOK YOUR STAY</a>
+    </div>
     
-    <!-- Search Container -->
-    <div class="search-container">
-      <div class="search-label">FIND</div>
-      
-      <div class="category-tabs">
-        <button 
-          *ngFor="let category of categories" 
-          class="category-tab"
-          [class.active]="selectedCategory === category"
-          (click)="onCategorySelect(category)">
-          {{ category }}
-        </button>
+    <!-- Booking Bar -->
+    <div class="booking-bar">
+      <!-- Hotel Categories -->
+      <div class="categories-section">
+        <div class="category-tabs">
+          <button 
+            *ngFor="let category of categories" 
+            class="category-tab"
+            [class.active]="selectedCategory === category"
+            (click)="onCategorySelect(category)">
+            {{ category }}
+          </button>
+        </div>
       </div>
       
-      <div class="search-fields">
-        <div class="search-field">
-          <span class="field-label">Location</span>
-          <select class="field-input" [(ngModel)]="searchForm.city">
-            <option value="">Which city do you prefer?</option>
+      <!-- Search Fields -->
+      <div class="search-fields-section">
+        <div class="booking-field">
+          <label class="booking-label">City</label>
+          <select class="booking-input" [(ngModel)]="searchForm.city">
+            <option value="">Select City</option>
             <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
           </select>
         </div>
-        <div class="search-field">
-          <span class="field-label">Check In</span>
-          <input type="date" class="field-input" [(ngModel)]="searchForm.checkInDate" placeholder="Add Dates">
+        <div class="booking-field">
+          <label class="booking-label">Check In</label>
+          <input type="date" class="booking-input" [(ngModel)]="searchForm.checkInDate" [min]="minDate">
         </div>
-        <div class="search-field">
-          <span class="field-label">Check Out</span>
-          <input type="date" class="field-input" [(ngModel)]="searchForm.checkOutDate" placeholder="Add Dates">
+        <div class="booking-field">
+          <label class="booking-label">Check Out</label>
+          <input type="date" class="booking-input" [(ngModel)]="searchForm.checkOutDate" [min]="minCheckOutDate">
         </div>
-        <button class="search-btn" (click)="onSearch()">🔍</button>
+        <button class="btn-search" (click)="onSearch()">Search</button>
       </div>
     </div>
   </section>

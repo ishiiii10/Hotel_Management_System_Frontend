@@ -31,6 +31,38 @@ export class ManagerAvailabilityComponent implements OnInit {
   searchCheckOut = '';
   availabilityResults: any = null;
 
+  get minDate(): string {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }
+
+  get minSearchCheckOutDate(): string {
+    if (!this.searchCheckIn) {
+      return this.minDate;
+    }
+    const checkIn = new Date(this.searchCheckIn);
+    checkIn.setDate(checkIn.getDate() + 1);
+    return checkIn.toISOString().split('T')[0];
+  }
+
+  get minBlockToDate(): string {
+    if (!this.blockFromDate) {
+      return this.minDate;
+    }
+    const fromDate = new Date(this.blockFromDate);
+    fromDate.setDate(fromDate.getDate() + 1);
+    return fromDate.toISOString().split('T')[0];
+  }
+
+  get minUnblockToDate(): string {
+    if (!this.unblockFromDate) {
+      return this.minDate;
+    }
+    const fromDate = new Date(this.unblockFromDate);
+    fromDate.setDate(fromDate.getDate() + 1);
+    return fromDate.toISOString().split('T')[0];
+  }
+
   constructor(
     private managerService: ManagerService,
     private authService: AuthService,
