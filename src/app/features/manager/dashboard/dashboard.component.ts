@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { ManagerService, HotelDetail, Room, Booking } from '../services/manager.service';
+import { ManagerService } from '../services/manager.service';
 import { AuthService } from '../../auth/services/auth.service';
 
 @Component({
@@ -11,22 +11,20 @@ import { AuthService } from '../../auth/services/auth.service';
   styleUrl: './dashboard.component.css'
 })
 export class ManagerDashboardComponent implements OnInit {
-  hotel: HotelDetail | null = null;
-  rooms: Room[] = [];
-  bookings: Booking[] = [];
-  todayCheckIns: Booking[] = [];
-  todayCheckOuts: Booking[] = [];
   isLoading = false;
   metrics = {
     totalRevenue: 0,
-    todayRevenue: 0,
+    monthlyRevenue: 0,
     totalBookings: 0,
-    todayBookings: 0,
-    checkIns: 0,
-    checkOuts: 0,
-    availableRooms: 0,
-    occupiedRooms: 0
+    totalCheckIns: 0,
+    totalCheckOuts: 0,
+    averageRating: 0
   };
+
+  revenueTrend: any[] = [];
+  bookingTrend: any[] = [];
+  bookingStatusDistribution: any[] = [];
+  hotelName: string = 'Loading...';
 
   constructor(
     private managerService: ManagerService,
@@ -35,90 +33,63 @@ export class ManagerDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadData();
+    this.loadDashboardData();
+    this.loadHotelInfo();
   }
 
-  loadData() {
+  loadDashboardData() {
     this.isLoading = true;
+    this.managerService.getManagerDashboard().subscribe({
+      next: (response: any) => {
+        const data = response.data || response;
+        this.metrics = {
+          totalRevenue: data.totalRevenue || 0,
+          monthlyRevenue: data.monthlyRevenue || 0,
+          totalBookings: data.totalBookings || 0,
+          totalCheckIns: data.totalCheckIns || 0,
+          totalCheckOuts: data.totalCheckOuts || 0,
+          averageRating: data.averageRating || 0
+        };
+        this.revenueTrend = data.revenueTrend || [];
+        this.bookingTrend = data.bookingTrend || [];
+        this.bookingStatusDistribution = data.bookingStatusDistribution || [];
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading dashboard:', error);
+        this.isLoading = false;
+      }
+    });
+  }
 
+  loadHotelInfo() {
     const user = this.authService.getCurrentUser();
     if (!user || !user.hotelId) {
       console.error('User not assigned to a hotel');
-      this.isLoading = false;
       return;
     }
 
     this.managerService.getHotelById(user.hotelId).subscribe({
       next: (response: any) => {
-        this.hotel = response.data || response;
-        if (this.hotel) {
-          this.loadHotelData(this.hotel.id);
-        }
-        this.isLoading = false;
+        const hotel = response.data || response;
+        this.hotelName = hotel.name || 'Hotel';
       },
       error: (error) => {
-        console.error('Error loading hotel:', error);
-        this.isLoading = false;
+        console.error('Error loading hotel info:', error);
       }
     });
   }
 
-  loadHotelData(hotelId: number) {
-    this.managerService.getHotelRooms(hotelId).subscribe({
-      next: (response: any) => {
-        this.rooms = response.data || response;
-        this.calculateMetrics();
-      },
-      error: (error) => {
-        console.error('Error loading rooms:', error);
-      }
-    });
-
-    this.managerService.getHotelBookings(hotelId).subscribe({
-      next: (response: any) => {
-        this.bookings = response.data || response;
-        this.calculateMetrics();
-      },
-      error: (error) => {
-        console.error('Error loading bookings:', error);
-      }
-    });
-
-    this.managerService.getTodayCheckIns(hotelId).subscribe({
-      next: (response: any) => {
-        this.todayCheckIns = response.data || response;
-        this.metrics.checkIns = this.todayCheckIns.length;
-      },
-      error: (error) => {
-        console.error('Error loading check-ins:', error);
-      }
-    });
-
-    this.managerService.getTodayCheckOuts(hotelId).subscribe({
-      next: (response: any) => {
-        this.todayCheckOuts = response.data || response;
-        this.metrics.checkOuts = this.todayCheckOuts.length;
-      },
-      error: (error) => {
-        console.error('Error loading check-outs:', error);
-      }
-    });
-  }
-
-  calculateMetrics() {
-    if (this.rooms) {
-      this.metrics.availableRooms = this.rooms.filter(r => r.status === 'AVAILABLE' && r.isActive).length;
-      this.metrics.occupiedRooms = this.rooms.filter(r => r.status === 'OCCUPIED').length;
-    }
-    if (this.bookings) {
-      this.metrics.totalBookings = this.bookings.length;
-      const today = new Date().toISOString().split('T')[0];
-      this.metrics.todayBookings = this.bookings.filter(b => b.checkInDate === today).length;
-    }
+  formatCurrency(value: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
   }
 
   logout() {
     this.authService.logout();
   }
 }
-

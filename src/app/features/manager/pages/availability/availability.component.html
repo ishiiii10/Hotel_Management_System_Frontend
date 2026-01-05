@@ -1,0 +1,160 @@
+<div class="dashboard-container">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">LOGO</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/manager/dashboard" class="nav-item">Dashboard</a>
+      <a routerLink="/manager/hotel-info" class="nav-item">Hotel Info</a>
+      <a routerLink="/manager/rooms" class="nav-item">Rooms</a>
+      <a routerLink="/manager/bookings" class="nav-item">Bookings</a>
+      <a routerLink="/manager/availability" class="nav-item active">Availability</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn-sidebar" (click)="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <h1 class="page-title">Room Availability</h1>
+    </header>
+
+    <div class="search-section">
+      <div class="section-title">Search Availability</div>
+      <div class="search-form">
+        <div class="form-group">
+          <label class="form-label">Check-in Date</label>
+          <input type="date" class="form-input" [(ngModel)]="searchCheckIn">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Check-out Date</label>
+          <input type="date" class="form-input" [(ngModel)]="searchCheckOut">
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" (click)="searchAvailability()">Search</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="availability-results" *ngIf="availabilityResults">
+      <div class="section-title">Availability Results</div>
+      <div class="results-info">
+        <div class="info-item">
+          <div class="info-label">Available Rooms</div>
+          <div class="info-value">{{ availabilityResults.availableRooms || 0 }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Room IDs</div>
+          <div class="info-value">{{ availabilityResults.availableRoomIds?.length || 0 }}</div>
+        </div>
+      </div>
+      <div class="rooms-list" *ngIf="availabilityResults.availableRoomIds && availabilityResults.availableRoomIds.length > 0">
+        <div class="room-item" *ngFor="let roomId of availabilityResults.availableRoomIds">
+          <div class="room-info">
+            <div class="room-number">Room ID: {{ roomId }}</div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="!availabilityResults.availableRoomIds || availabilityResults.availableRoomIds.length === 0" class="no-data">
+        No available rooms for selected dates
+      </div>
+    </div>
+
+    <div class="rooms-section">
+      <div class="section-header">
+        <div class="section-title">All Rooms</div>
+      </div>
+      <div *ngIf="isLoading" class="loading-message">Loading rooms...</div>
+      <table class="rooms-table" *ngIf="!isLoading">
+        <thead>
+          <tr>
+            <th>Room Number</th>
+            <th>Type</th>
+            <th>Price/Night</th>
+            <th>Max Occupancy</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let room of rooms">
+            <td>{{ room.roomNumber }}</td>
+            <td>{{ room.roomType }}</td>
+            <td>{{ room.pricePerNight | currency:'USD':'symbol':'1.2-2' }}</td>
+            <td>{{ room.maxOccupancy }}</td>
+            <td>{{ room.status }}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-action" (click)="openBlockModal(room)">Block</button>
+                <button class="btn-action" (click)="openUnblockModal(room)">Unblock</button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="rooms.length === 0">
+            <td colspan="6" class="no-data">No rooms found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<div class="modal-overlay" *ngIf="showBlockModal" (click)="closeBlockModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Block Room</h2>
+      <button class="close-button" (click)="closeBlockModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Room</label>
+        <input type="text" class="form-input" [value]="selectedRoom?.roomNumber" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">From Date</label>
+        <input type="date" class="form-input" [(ngModel)]="blockFromDate" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">To Date</label>
+        <input type="date" class="form-input" [(ngModel)]="blockToDate" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reason</label>
+        <textarea class="form-input" [(ngModel)]="blockReason" rows="3" placeholder="Enter reason for blocking" required></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeBlockModal()">Cancel</button>
+        <button type="button" class="btn-primary" (click)="onBlockRoom()">Block Room</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="showUnblockModal" (click)="closeUnblockModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Unblock Room</h2>
+      <button class="close-button" (click)="closeUnblockModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Room</label>
+        <input type="text" class="form-input" [value]="selectedRoom?.roomNumber" readonly>
+      </div>
+      <div class="form-group">
+        <label class="form-label">From Date</label>
+        <input type="date" class="form-input" [(ngModel)]="unblockFromDate" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">To Date</label>
+        <input type="date" class="form-input" [(ngModel)]="unblockToDate" required>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="closeUnblockModal()">Cancel</button>
+        <button type="button" class="btn-primary" (click)="onUnblockRoom()">Unblock Room</button>
+      </div>
+    </div>
+  </div>
+</div>
+

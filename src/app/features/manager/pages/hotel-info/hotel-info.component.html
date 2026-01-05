@@ -1,0 +1,95 @@
+<div class="dashboard-container">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">LOGO</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a routerLink="/manager/dashboard" class="nav-item">Dashboard</a>
+      <a routerLink="/manager/hotel-info" class="nav-item active">Hotel Info</a>
+      <a routerLink="/manager/rooms" class="nav-item">Rooms</a>
+      <a routerLink="/manager/bookings" class="nav-item">Bookings</a>
+      <a routerLink="/manager/availability" class="nav-item">Availability</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn-sidebar" (click)="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <header class="page-header">
+      <h1 class="page-title">Hotel Info</h1>
+    </header>
+
+    <div class="content-body">
+      <div *ngIf="isLoading" class="loading-message">Loading hotel information...</div>
+
+      <div *ngIf="!isLoading && hotel" class="hotel-info-section">
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Hotel Name</div>
+            <div class="info-value">{{ hotel.name }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Category</div>
+            <div class="info-value">{{ hotel.category }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">City</div>
+            <div class="info-value">{{ hotel.city }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">State</div>
+            <div class="info-value">{{ hotel.state }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Country</div>
+            <div class="info-value">{{ hotel.country }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Address</div>
+            <div class="info-value">{{ hotel.address }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Contact Number</div>
+            <div class="info-value">{{ hotel.contactNumber }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Email</div>
+            <div class="info-value">{{ hotel.email }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Star Rating</div>
+            <div class="info-value">{{ hotel.starRating }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Status</div>
+            <div class="info-value">{{ hotel.status }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Total Rooms</div>
+            <div class="info-value">{{ hotel.totalRooms }}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Available Rooms</div>
+            <div class="info-value">{{ hotel.availableRooms }}</div>
+          </div>
+        </div>
+
+        <div class="description-section">
+          <div class="section-label">Description</div>
+          <div class="section-value">{{ hotel.description || 'No description available' }}</div>
+        </div>
+
+        <div class="amenities-section">
+          <div class="section-label">Amenities</div>
+          <div class="section-value">{{ hotel.amenities || 'No amenities listed' }}</div>
+        </div>
+      </div>
+
+      <div *ngIf="!isLoading && !hotel" class="empty-state">
+        Hotel information not available
+      </div>
+    </div>
+  </main>
+</div>
+

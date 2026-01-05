@@ -39,11 +39,21 @@ export interface Booking {
   userId: number;
   hotelId: number;
   roomId: number;
+  roomNumber?: string;
+  roomType?: string;
   checkInDate: string;
   checkOutDate: string;
   status: string;
   totalAmount: number;
-  numberOfGuests: number;
+  numberOfGuests?: number;
+  guestName?: string;
+  guestEmail?: string;
+  guestPhone?: string;
+  specialRequests?: string;
+  cancellationReason?: string;
+  checkedInAt?: string;
+  checkedOutAt?: string;
+  createdAt?: string;
 }
 
 export interface CreateRoomRequest {
@@ -54,6 +64,32 @@ export interface CreateRoomRequest {
   maxOccupancy: number;
   amenities: string;
   description: string;
+}
+
+export interface BlockRoomRequest {
+  hotelId: number;
+  roomId: number;
+  fromDate: string;
+  toDate: string;
+  reason: string;
+}
+
+export interface UnblockRoomRequest {
+  hotelId: number;
+  roomId: number;
+  fromDate: string;
+  toDate: string;
+}
+
+export interface CheckInRequest {
+  notes?: string;
+}
+
+export interface CheckOutRequest {
+  notes?: string;
+  rating?: number;
+  feedback?: string;
+  lateCheckOut?: boolean;
 }
 
 @Injectable({
@@ -74,6 +110,10 @@ export class ManagerService {
 
   getHotelBookings(hotelId: number): Observable<Booking[]> {
     return this.http.get<Booking[]>(`${this.apiUrl}/bookings/hotel/${hotelId}`);
+  }
+
+  getBookingById(bookingId: number): Observable<Booking> {
+    return this.http.get<Booking>(`${this.apiUrl}/bookings/${bookingId}`);
   }
 
   getTodayCheckIns(hotelId: number): Observable<Booking[]> {
@@ -104,12 +144,35 @@ export class ManagerService {
     return this.http.delete<void>(`${this.apiUrl}/hotels/rooms/${roomId}`);
   }
 
-  blockRoom(blockRequest: any): Observable<any> {
+  blockRoom(blockRequest: BlockRoomRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/hotels/availability/block`, blockRequest);
   }
 
-  unblockRoom(unblockRequest: any): Observable<any> {
+  unblockRoom(unblockRequest: UnblockRoomRequest): Observable<any> {
     return this.http.post(`${this.apiUrl}/hotels/availability/unblock`, unblockRequest);
   }
-}
 
+  getManagerDashboard(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/reports/dashboard/manager`);
+  }
+
+  checkIn(bookingId: number, request: CheckInRequest): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/bookings/${bookingId}/check-in`, request);
+  }
+
+  checkOut(bookingId: number, request: CheckOutRequest): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/bookings/${bookingId}/check-out`, request);
+  }
+
+  cancelBooking(bookingId: number, reason: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/bookings/${bookingId}/cancel`, { reason });
+  }
+
+  confirmBooking(bookingId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/bookings/${bookingId}/confirm`, {});
+  }
+
+  searchAvailability(hotelId: number, checkIn: string, checkOut: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/hotels/availability/search?hotelId=${hotelId}&checkIn=${checkIn}&checkOut=${checkOut}`);
+  }
+}
