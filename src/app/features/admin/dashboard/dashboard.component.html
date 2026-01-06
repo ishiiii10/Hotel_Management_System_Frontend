@@ -41,55 +41,199 @@
       <div class="charts-grid">
         <div class="chart-card">
           <div class="chart-title">Revenue Comparison by Hotels (Histogram)</div>
-          <div class="chart-placeholder">
+          <div class="chart-placeholder histogram-container">
             <div *ngIf="revenueByHotel.length === 0" class="empty-chart">No data available</div>
-            <div *ngIf="revenueByHotel.length > 0" class="chart-data">
-              <div *ngFor="let item of revenueByHotel" class="chart-bar-item">
-                <div class="bar-label">{{ item.hotelName }}</div>
-                <div class="bar-container">
-                  <div class="bar" [style.width.%]="getBarPercentage(item.revenue)"></div>
-                  <div class="bar-value">{{ formatCurrency(item.revenue) }}</div>
+            <div *ngIf="revenueByHotel.length > 0" class="histogram-chart">
+              <div class="histogram-bars">
+                <div *ngFor="let item of revenueByHotel; let i = index" class="histogram-bar-wrapper">
+                  <div class="histogram-bar" [style.height.%]="getBarHeight(item.revenue)" [attr.data-value]="item.revenue">
+                    <div class="bar-value-label">{{ formatCurrency(item.revenue) }}</div>
+                  </div>
+                  <div class="bar-category-label">{{ item.hotelName }}</div>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="chart-card">
-          <div class="chart-title">Booking Status Distribution (Pie Chart)</div>
-          <div class="chart-placeholder">
+          <div class="chart-title">Booking Status Distribution (Donut Chart)</div>
+          <div class="chart-placeholder donut-container">
             <div *ngIf="bookingStatusDistribution.length === 0" class="empty-chart">No data available</div>
-            <div *ngIf="bookingStatusDistribution.length > 0" class="pie-chart-data">
-              <div *ngFor="let item of bookingStatusDistribution" class="pie-item">
-                <div class="pie-label">{{ item.status }}</div>
-                <div class="pie-value">{{ item.count }}</div>
+            <div *ngIf="bookingStatusDistribution.length > 0" class="donut-chart-wrapper">
+              <div class="donut-chart">
+                <svg class="donut-svg" viewBox="0 0 200 200">
+                  <circle class="donut-ring" cx="100" cy="100" r="80" fill="none" stroke="#f0f0f0" stroke-width="40"></circle>
+                  <g class="donut-segments">
+                    <circle 
+                      *ngFor="let item of bookingStatusDistribution; let i = index" 
+                      class="donut-segment"
+                      [attr.data-index]="i"
+                      [attr.data-value]="item.count"
+                      cx="100" 
+                      cy="100" 
+                      r="80" 
+                      fill="none" 
+                      [attr.stroke]="getDonutColor(i)"
+                      stroke-width="40"
+                      [attr.stroke-dasharray]="getDonutSegment(item.count, i)"
+                      [attr.stroke-dashoffset]="getDonutOffset(i)"
+                      stroke-linecap="round"
+                      transform="rotate(-90 100 100)">
+                    </circle>
+                  </g>
+                </svg>
+                <div class="donut-center">
+                  <div class="donut-total">{{ getTotalBookings() }}</div>
+                  <div class="donut-label">Total</div>
+                </div>
+              </div>
+              <div class="donut-legend">
+                <div *ngFor="let item of bookingStatusDistribution; let i = index" class="legend-item">
+                  <div class="legend-color" [style.background-color]="getDonutColor(i)"></div>
+                  <div class="legend-label">{{ item.status }}</div>
+                  <div class="legend-value">{{ item.count }}</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Trend Charts -->
+      <!-- Combined Trend Chart -->
       <div class="trend-charts-grid">
-        <div class="chart-card">
-          <div class="chart-title">Revenue Trend</div>
-          <div class="chart-placeholder">
-            <div *ngIf="revenueTrend.length === 0" class="empty-chart">No data available</div>
-            <div *ngIf="revenueTrend.length > 0" class="trend-chart-data">
-              <div *ngFor="let item of revenueTrend" class="trend-item">
-                <div class="trend-date">{{ item.date }}</div>
-                <div class="trend-value">{{ formatCurrency(item.amount) }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="chart-card">
-          <div class="chart-title">Booking Trend</div>
-          <div class="chart-placeholder">
-            <div *ngIf="bookingTrend.length === 0" class="empty-chart">No data available</div>
-            <div *ngIf="bookingTrend.length > 0" class="trend-chart-data">
-              <div *ngFor="let item of bookingTrend" class="trend-item">
-                <div class="trend-date">{{ item.date }}</div>
-                <div class="trend-value">{{ item.count }}</div>
+        <div class="chart-card combined-trend-card">
+          <div class="chart-title">Revenue & Booking Trends</div>
+          <div class="chart-placeholder line-chart-container">
+            <div *ngIf="revenueTrend.length === 0 && bookingTrend.length === 0" class="empty-chart">No data available</div>
+            <div *ngIf="revenueTrend.length > 0 || bookingTrend.length > 0" class="line-chart-wrapper">
+              <svg class="line-chart-svg" [attr.viewBox]="getCombinedChartViewBox()">
+                <defs>
+                  <linearGradient id="revenueGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#ff6b35;stop-opacity:0" />
+                  </linearGradient>
+                  <linearGradient id="bookingGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#36a2eb;stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#36a2eb;stop-opacity:0" />
+                  </linearGradient>
+                </defs>
+                <!-- Grid lines -->
+                <g class="grid-lines">
+                  <line *ngFor="let i of [0,1,2,3,4]" 
+                    [attr.x1]="0" 
+                    [attr.y1]="i * 60" 
+                    [attr.x2]="getCombinedChartWidth()" 
+                    [attr.y2]="i * 60" 
+                    stroke="#e0e0e0" 
+                    stroke-width="1" 
+                    stroke-dasharray="2,2">
+                  </line>
+                </g>
+                <!-- Revenue Area -->
+                <path 
+                  *ngIf="revenueTrend.length > 0"
+                  class="line-area revenue-area" 
+                  [attr.d]="getCombinedLineAreaPath(revenueTrend, 'amount', true)" 
+                  fill="url(#revenueGradient)">
+                </path>
+                <!-- Booking Area -->
+                <path 
+                  *ngIf="bookingTrend.length > 0"
+                  class="line-area booking-area" 
+                  [attr.d]="getCombinedLineAreaPath(bookingTrend, 'count', false)" 
+                  fill="url(#bookingGradient)">
+                </path>
+                <!-- Revenue Line -->
+                <path 
+                  *ngIf="revenueTrend.length > 0"
+                  class="line-path revenue-line" 
+                  [attr.d]="getCombinedLinePath(revenueTrend, 'amount', true)" 
+                  fill="none" 
+                  stroke="#ff6b35" 
+                  stroke-width="3">
+                </path>
+                <!-- Booking Line -->
+                <path 
+                  *ngIf="bookingTrend.length > 0"
+                  class="line-path booking-line" 
+                  [attr.d]="getCombinedLinePath(bookingTrend, 'count', false)" 
+                  fill="none" 
+                  stroke="#36a2eb" 
+                  stroke-width="3">
+                </path>
+                <!-- Revenue Data points -->
+                <g class="data-points revenue-points">
+                  <circle 
+                    *ngFor="let item of revenueTrend; let i = index" 
+                    [attr.cx]="getCombinedChartXPosition(i)" 
+                    [attr.cy]="getCombinedLineYPosition(item.amount, revenueTrend, 'amount', true)" 
+                    r="4" 
+                    fill="#ff6b35" 
+                    stroke="#fff" 
+                    stroke-width="2">
+                  </circle>
+                </g>
+                <!-- Booking Data points -->
+                <g class="data-points booking-points">
+                  <circle 
+                    *ngFor="let item of bookingTrend; let i = index" 
+                    [attr.cx]="getCombinedChartXPosition(i)" 
+                    [attr.cy]="getCombinedLineYPosition(item.count, bookingTrend, 'count', false)" 
+                    r="4" 
+                    fill="#36a2eb" 
+                    stroke="#fff" 
+                    stroke-width="2">
+                  </circle>
+                </g>
+                <!-- X-axis labels -->
+                <g class="x-axis-labels">
+                  <text 
+                    *ngFor="let item of getCombinedDates(); let i = index" 
+                    [attr.x]="getCombinedChartXPosition(i)" 
+                    y="290" 
+                    text-anchor="middle" 
+                    font-size="10" 
+                    fill="#666">
+                    {{ formatDateLabel(item) }}
+                  </text>
+                </g>
+                <!-- Y-axis labels for Revenue (left) -->
+                <g class="y-axis-labels revenue-y-axis">
+                  <text 
+                    *ngFor="let label of getRevenueYAxisLabels()" 
+                    x="10" 
+                    [attr.y]="label.y" 
+                    text-anchor="start" 
+                    font-size="9" 
+                    fill="#ff6b35"
+                    font-weight="500">
+                    {{ label.value }}
+                  </text>
+                </g>
+                <!-- Y-axis labels for Booking (right) -->
+                <g class="y-axis-labels booking-y-axis">
+                  <text 
+                    *ngFor="let label of getBookingYAxisLabels()" 
+                    [attr.x]="getCombinedChartWidth() - 10" 
+                    [attr.y]="label.y" 
+                    text-anchor="end" 
+                    font-size="9" 
+                    fill="#36a2eb"
+                    font-weight="500">
+                    {{ label.value }}
+                  </text>
+                </g>
+              </svg>
+              <!-- Legend -->
+              <div class="combined-chart-legend">
+                <div class="legend-item">
+                  <div class="legend-line revenue-legend-line"></div>
+                  <span class="legend-text">Revenue</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-line booking-legend-line"></div>
+                  <span class="legend-text">Bookings</span>
+                </div>
               </div>
             </div>
           </div>

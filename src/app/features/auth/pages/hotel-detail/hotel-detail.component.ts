@@ -170,7 +170,13 @@ export class HotelDetailComponent implements OnInit {
     });
   }
 
-  onAvailabilitySearch() {
+  onAvailabilitySearch(event?: Event) {
+    // Prevent default form submission behavior
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
     if (!this.bookingForm.checkInDate || !this.bookingForm.checkOutDate) {
       alert('Please select check-in and check-out dates');
       return;

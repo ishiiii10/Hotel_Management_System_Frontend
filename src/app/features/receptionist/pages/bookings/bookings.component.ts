@@ -403,6 +403,13 @@ export class ReceptionistBookingsComponent implements OnInit {
   }
 
   openCheckInModal(booking: Booking) {
+    // Validate that check-in is allowed before opening modal
+    if (!this.canCheckIn(booking)) {
+      const status = this.getCheckInDateStatus(booking);
+      alert(`Cannot check in: ${status}`);
+      return;
+    }
+
     this.selectedBooking = booking;
     this.checkInNotes = '';
     this.showCheckInModal = true;
@@ -417,15 +424,25 @@ export class ReceptionistBookingsComponent implements OnInit {
   onCheckIn() {
     if (!this.selectedBooking) return;
 
+    // Double-check that check-in is allowed before making API call
+    if (!this.canCheckIn(this.selectedBooking)) {
+      const status = this.getCheckInDateStatus(this.selectedBooking);
+      alert(`Cannot check in: ${status}`);
+      this.closeCheckInModal();
+      return;
+    }
+
     const request = this.checkInNotes.trim() ? { notes: this.checkInNotes } : {};
     this.receptionistService.checkIn(this.selectedBooking.id, request).subscribe({
       next: () => {
+        alert('Guest checked in successfully!');
         this.closeCheckInModal();
         this.loadBookings();
       },
       error: (error) => {
         console.error('Error checking in:', error);
-        alert('Error checking in guest');
+        const errorMessage = error?.error?.message || error?.message || 'Error checking in guest';
+        alert(errorMessage);
       }
     });
   }
@@ -470,7 +487,65 @@ export class ReceptionistBookingsComponent implements OnInit {
   }
 
   canCheckIn(booking: Booking): boolean {
-    return booking.status === 'CONFIRMED';
+    // Check-in is only allowed if:
+    // 1. Booking status is CONFIRMED
+    // 2. Today's date exactly matches the check-in date
+    if (booking.status !== 'CONFIRMED') {
+      return false;
+    }
+
+    if (!booking.checkInDate) {
+      return false;
+    }
+
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date();
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth();
+    const todayDay = today.getDate();
+    const todayStr = `${todayYear}-${String(todayMonth + 1).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`;
+
+    // Parse booking check-in date
+    const checkInDate = new Date(booking.checkInDate);
+    const checkInYear = checkInDate.getFullYear();
+    const checkInMonth = checkInDate.getMonth();
+    const checkInDay = checkInDate.getDate();
+    const checkInStr = `${checkInYear}-${String(checkInMonth + 1).padStart(2, '0')}-${String(checkInDay).padStart(2, '0')}`;
+
+    // Check-in is only allowed on the exact check-in date
+    return todayStr === checkInStr;
+  }
+
+  getCheckInDateStatus(booking: Booking): string {
+    if (booking.status !== 'CONFIRMED') {
+      return `Status: ${booking.status}`;
+    }
+
+    if (!booking.checkInDate) {
+      return 'Check-in date not available';
+    }
+
+    // Get today's date
+    const today = new Date();
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth();
+    const todayDay = today.getDate();
+    const todayStr = `${todayYear}-${String(todayMonth + 1).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`;
+
+    // Parse booking check-in date
+    const checkInDate = new Date(booking.checkInDate);
+    const checkInYear = checkInDate.getFullYear();
+    const checkInMonth = checkInDate.getMonth();
+    const checkInDay = checkInDate.getDate();
+    const checkInStr = `${checkInYear}-${String(checkInMonth + 1).padStart(2, '0')}-${String(checkInDay).padStart(2, '0')}`;
+
+    if (checkInStr < todayStr) {
+      return `Check-in date (${booking.checkInDate}) has passed`;
+    } else if (checkInStr > todayStr) {
+      return `Check-in available on ${booking.checkInDate}`;
+    } else {
+      return 'Check-in available today';
+    }
   }
 
   canPayBill(booking: Booking): boolean {

@@ -298,7 +298,7 @@
 .modal-content {
   background: var(--color-bg-card);
   border: 1px solid var(--color-border-light);
-  padding: var(--spacing-2xl);
+  padding: 0;
   max-width: 500px;
   width: 90%;
   max-height: 90vh;
@@ -307,25 +307,28 @@
   box-shadow: var(--shadow-medium);
 }
 
+.modal-content.bill-modal {
+  max-width: 700px;
+}
+
 .modal-large {
   max-width: 700px;
 }
 
 .modal-header {
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-xl);
-  padding-bottom: var(--spacing-md);
+  padding: var(--spacing-xl) var(--spacing-2xl);
   border-bottom: 1px solid var(--color-border-light);
-  color: var(--color-text-primary);
-  letter-spacing: 0.5px;
+  background: var(--color-bg-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .modal-header h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
   margin: 0;
+  color: var(--color-text-primary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -359,16 +362,16 @@
 }
 
 .modal-body {
-  padding-top: var(--spacing-md);
+  padding: var(--spacing-2xl);
 }
 
 .modal-footer {
-  display: flex;
-  gap: var(--spacing-md);
-  justify-content: flex-end;
-  margin-top: var(--spacing-xl);
-  padding-top: var(--spacing-lg);
+  padding: var(--spacing-xl) var(--spacing-2xl);
   border-top: 1px solid var(--color-border-light);
+  background: var(--color-bg-primary);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
 }
 
 .form-group {
@@ -450,4 +453,138 @@
   min-height: 20px;
   color: var(--color-text-primary);
   font-weight: var(--font-weight-medium);
+}
+
+.btn-action.btn-view-bill {
+  background: rgba(110, 90, 69, 0.1);
+  border-color: var(--color-accent-primary);
+  color: var(--color-accent-primary);
+}
+
+.btn-action.btn-view-bill:hover {
+  background: rgba(110, 90, 69, 0.2);
+}
+
+/* Bill Modal Styles */
+.bill-details {
+  padding: var(--spacing-md) 0;
+}
+
+.bill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  border-bottom: 2px solid var(--color-border-light);
+  margin-bottom: var(--spacing-xl);
+}
+
+.bill-number {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.bill-status {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bill-status.pending {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ff9800;
+  border: 1px solid #ff9800;
+}
+
+.bill-status.paid {
+  background: rgba(76, 175, 80, 0.2);
+  color: #4caf50;
+  border: 1px solid #4caf50;
+}
+
+.bill-info {
+  margin-bottom: var(--spacing-xl);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.info-value {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+}
+
+.payment-section {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-xl);
+  border-top: 2px solid var(--color-border-light);
+}
+
+.payment-section h3 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+.info-message {
+  padding: var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border-left: 4px solid var(--color-accent-primary);
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  margin-top: var(--spacing-xl);
+}
+
+.success-message {
+  padding: var(--spacing-lg);
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid #4caf50;
+  border-radius: var(--radius-md);
+  color: #4caf50;
+  text-align: center;
+  font-weight: var(--font-weight-medium);
+}
+
+.error-message {
+  padding: var(--spacing-lg);
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid #f44336;
+  border-radius: var(--radius-md);
+  color: #f44336;
+  text-align: center;
+  font-weight: var(--font-weight-medium);
+}
+
+.loading-message {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
 }

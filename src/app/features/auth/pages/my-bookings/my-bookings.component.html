@@ -265,21 +265,26 @@
 
 <!-- Bill Modal -->
 <div class="modal-overlay" *ngIf="showBillModal" (click)="closeBillModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
+  <div class="modal-content bill-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>Bill Details</h2>
       <button class="close-button" (click)="closeBillModal()">X</button>
     </div>
     <div class="modal-body">
       <div *ngIf="isLoadingBill" class="loading-message">Loading bill...</div>
-      <div *ngIf="!isLoadingBill && selectedBill">
+      <div *ngIf="!isLoadingBill && selectedBill" class="bill-details">
         <div class="bill-header">
           <div class="bill-number">Bill #{{ selectedBill.billNumber }}</div>
           <div class="bill-status" [class.pending]="selectedBill.status === 'PENDING'" [class.paid]="selectedBill.status === 'PAID'">
             {{ selectedBill.status }}
           </div>
         </div>
+        
         <div class="bill-info">
+          <div class="info-row">
+            <span class="info-label">Booking ID:</span>
+            <span class="info-value">{{ selectedBill.bookingId }}</span>
+          </div>
           <div class="info-row">
             <span class="info-label">Total Amount:</span>
             <span class="info-value">{{ formatCurrency(selectedBill.totalAmount) }}</span>
@@ -293,7 +298,17 @@
             <span class="info-value">{{ selectedBill.paidAt | date:'medium' }}</span>
           </div>
         </div>
+
+        <div *ngIf="selectedBill.status === 'PAID'" class="success-message">
+          <p>✅ Bill has been paid. The booking is confirmed.</p>
+        </div>
       </div>
+      <div *ngIf="!isLoadingBill && !selectedBill" class="error-message">
+        Bill not found. Please wait a moment and try again, or contact support.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeBillModal()">Close</button>
     </div>
   </div>
 </div>

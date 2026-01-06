@@ -54,7 +54,7 @@
               <div class="action-buttons">
                 <button class="btn-action" (click)="openDetailsModal(booking)">View</button>
                 <button class="btn-action" *ngIf="canConfirm(booking)" (click)="onConfirmBooking(booking)">Confirm</button>
-                <button class="btn-action" *ngIf="canCheckIn(booking)" (click)="openCheckInModal(booking)">Check-in</button>
+                <button class="btn-action btn-view-bill" *ngIf="hasBill(booking)" (click)="openBillModal(booking.id)">View Bill</button>
                 <button class="btn-action" *ngIf="canCheckOut(booking)" (click)="openCheckOutModal(booking)">Check-out</button>
                 <button class="btn-action btn-danger" *ngIf="canCancel(booking)" (click)="openCancelModal(booking)">Cancel</button>
               </div>
@@ -122,25 +122,6 @@
   </div>
 </div>
 
-<div class="modal-overlay" *ngIf="showCheckInModal" (click)="closeCheckInModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header">
-      <h2>Check-In Guest</h2>
-      <button class="close-button" (click)="closeCheckInModal()">X</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Notes (Optional)</label>
-        <textarea class="form-input" [(ngModel)]="checkInNotes" rows="3" placeholder="Enter check-in notes"></textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-secondary" (click)="closeCheckInModal()">Cancel</button>
-        <button type="button" class="btn-primary" (click)="onCheckIn()">Check-In</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="modal-overlay" *ngIf="showCheckOutModal" (click)="closeCheckOutModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
@@ -188,6 +169,89 @@
         <button type="button" class="btn-secondary" (click)="closeCancelModal()">Cancel</button>
         <button type="button" class="btn-primary btn-danger" (click)="onCancelBooking()">Confirm Cancel</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bill Modal -->
+<div class="modal-overlay" *ngIf="showBillModal" (click)="closeBillModal()">
+  <div class="modal-content bill-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Bill Details</h2>
+      <button class="close-button" (click)="closeBillModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="isLoadingBill" class="loading-message">Loading bill...</div>
+      <div *ngIf="!isLoadingBill && bill" class="bill-details">
+        <div class="bill-header">
+          <div class="bill-number">Bill #{{ bill.billNumber }}</div>
+          <div class="bill-status" [class.pending]="bill.status === 'PENDING'" [class.paid]="bill.status === 'PAID'">
+            {{ bill.status }}
+          </div>
+        </div>
+        
+        <div class="bill-info">
+          <div class="info-row">
+            <span class="info-label">Booking ID:</span>
+            <span class="info-value">{{ bill.bookingId }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Total Amount:</span>
+            <span class="info-value">{{ formatCurrency(bill.totalAmount) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Generated At:</span>
+            <span class="info-value">{{ bill.generatedAt | date:'medium' }}</span>
+          </div>
+          <div class="info-row" *ngIf="bill.paidAt">
+            <span class="info-label">Paid At:</span>
+            <span class="info-value">{{ bill.paidAt | date:'medium' }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="bill.status === 'PENDING'" class="payment-section">
+          <h3>Mark as Paid</h3>
+          <p class="info-message">After marking this bill as paid, the booking will be automatically confirmed.</p>
+          <form (ngSubmit)="onMarkBillAsPaid()">
+            <div class="form-group">
+              <label class="form-label">Payment Method *</label>
+              <select class="form-input" [(ngModel)]="paymentForm.paymentMethod" name="paymentMethod" required>
+                <option value="">Select payment method</option>
+                <option value="CASH">Cash</option>
+                <option value="CARD">Card</option>
+                <option value="UPI">UPI</option>
+                <option value="NET_BANKING">Net Banking</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Transaction ID (Optional)</label>
+              <input type="text" class="form-input" [(ngModel)]="paymentForm.transactionId" name="transactionId">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment Reference (Optional)</label>
+              <input type="text" class="form-input" [(ngModel)]="paymentForm.paymentReference" name="paymentReference">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Notes (Optional)</label>
+              <textarea class="form-input" [(ngModel)]="paymentForm.notes" name="notes" rows="3"></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" (click)="closeBillModal()">Cancel</button>
+              <button type="submit" class="btn-primary">Mark as Paid</button>
+            </div>
+          </form>
+        </div>
+
+        <div *ngIf="bill.status === 'PAID'" class="success-message">
+          <p>✅ Bill has been paid. The booking is confirmed.</p>
+        </div>
+      </div>
+      <div *ngIf="!isLoadingBill && !bill" class="error-message">
+        Bill not found. Please wait a moment and try again, or contact support.
+      </div>
+    </div>
+    <div class="modal-footer" *ngIf="!bill || bill.status === 'PAID'">
+      <button type="button" class="btn-secondary" (click)="closeBillModal()">Close</button>
     </div>
   </div>
 </div>

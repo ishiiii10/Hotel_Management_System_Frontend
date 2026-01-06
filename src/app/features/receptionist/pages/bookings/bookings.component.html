@@ -60,7 +60,17 @@
                 <button class="btn-action" (click)="openDetailsModal(booking)">View</button>
                 <button class="btn-action btn-pay-bill" *ngIf="canPayBill(booking)" (click)="openBillModal(booking.id)">Pay Bill</button>
                 <button class="btn-action btn-view-bill" *ngIf="hasBill(booking) && !canPayBill(booking)" (click)="openBillModal(booking.id)">View Bill</button>
-                <button class="btn-action" *ngIf="canCheckIn(booking)" (click)="openCheckInModal(booking)">Check-in</button>
+                <button 
+                  class="btn-action" 
+                  *ngIf="booking.status === 'CONFIRMED'" 
+                  [disabled]="!canCheckIn(booking)"
+                  (click)="openCheckInModal(booking)"
+                  [title]="!canCheckIn(booking) ? getCheckInDateStatus(booking) : 'Check-in guest'">
+                  Check-in
+                </button>
+                <span *ngIf="booking.status === 'CONFIRMED' && !canCheckIn(booking)" class="check-in-status-hint">
+                  {{ getCheckInDateStatus(booking) }}
+                </span>
                 <button class="btn-action" *ngIf="canCheckOut(booking)" (click)="openCheckOutModal(booking)">Check-out</button>
               </div>
             </td>
@@ -271,11 +281,11 @@
   </div>
 </div>
 
-<!-- Bill Modal for Walk-in Bookings -->
+<!-- Bill Modal -->
 <div class="modal-overlay" *ngIf="showBillModal" (click)="closeBillModal()">
   <div class="modal-content bill-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Bill Payment</h2>
+      <h2>Bill Details</h2>
       <button class="close-button" (click)="closeBillModal()">X</button>
     </div>
     <div class="modal-body">
@@ -309,7 +319,7 @@
 
         <div *ngIf="bill.status === 'PENDING'" class="payment-section">
           <h3>Mark as Paid</h3>
-          <p class="info-message">After marking this bill as paid, the booking will be automatically confirmed and can be checked in.</p>
+          <p class="info-message">After marking this bill as paid, the booking will be automatically confirmed.</p>
           <form (ngSubmit)="onMarkBillAsPaid()">
             <div class="form-group">
               <label class="form-label">Payment Method *</label>
@@ -341,12 +351,15 @@
         </div>
 
         <div *ngIf="bill.status === 'PAID'" class="success-message">
-          <p>✅ Bill has been paid. The booking is confirmed and ready for check-in.</p>
+          <p>✅ Bill has been paid. The booking is confirmed.</p>
         </div>
       </div>
       <div *ngIf="!isLoadingBill && !bill" class="error-message">
         Bill not found. Please wait a moment and try again, or contact support.
       </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeBillModal()">Close</button>
     </div>
   </div>
 </div>

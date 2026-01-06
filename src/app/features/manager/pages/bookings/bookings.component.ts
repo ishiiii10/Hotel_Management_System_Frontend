@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ManagerService, Booking } from '../../services/manager.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ManagerSidebarComponent } from '../../sidebar/sidebar.component';
+import { BillingService, BillResponse, MarkBillPaidRequest } from '../../../../shared/services/billing.service';
 
 @Component({
   selector: 'app-manager-bookings',
@@ -19,26 +20,35 @@ export class ManagerBookingsComponent implements OnInit {
   isLoading = false;
 
   showDetailsModal = false;
-  showCheckInModal = false;
   showCheckOutModal = false;
   showCancelModal = false;
+  showBillModal = false;
   selectedBooking: Booking | null = null;
 
   searchBookingId: number | null = null;
   searchStatus = '';
 
-  checkInNotes = '';
   checkOutNotes = '';
   checkOutRating: number | null = null;
   checkOutFeedback = '';
   checkOutLate = false;
   cancelReason = '';
 
+  bill: BillResponse | null = null;
+  isLoadingBill = false;
+  paymentForm: MarkBillPaidRequest = {
+    paymentMethod: '',
+    transactionId: '',
+    paymentReference: '',
+    notes: ''
+  };
+
   statuses = ['CREATED', 'CONFIRMED', 'CHECKED_IN', 'CHECKED_OUT', 'CANCELLED'];
 
   constructor(
     private managerService: ManagerService,
     private authService: AuthService,
+    private billingService: BillingService,
     private router: Router
   ) {}
 
@@ -90,34 +100,6 @@ export class ManagerBookingsComponent implements OnInit {
   closeDetailsModal() {
     this.showDetailsModal = false;
     this.selectedBooking = null;
-  }
-
-  openCheckInModal(booking: Booking) {
-    this.selectedBooking = booking;
-    this.checkInNotes = '';
-    this.showCheckInModal = true;
-  }
-
-  closeCheckInModal() {
-    this.showCheckInModal = false;
-    this.selectedBooking = null;
-    this.checkInNotes = '';
-  }
-
-  onCheckIn() {
-    if (!this.selectedBooking) return;
-
-    const request = this.checkInNotes.trim() ? { notes: this.checkInNotes } : {};
-    this.managerService.checkIn(this.selectedBooking.id, request).subscribe({
-      next: () => {
-        this.closeCheckInModal();
-        this.loadBookings();
-      },
-      error: (error) => {
-        console.error('Error checking in:', error);
-        alert('Error checking in guest');
-      }
-    });
   }
 
   openCheckOutModal(booking: Booking) {
@@ -198,10 +180,6 @@ export class ManagerBookingsComponent implements OnInit {
     });
   }
 
-  canCheckIn(booking: Booking): boolean {
-    return booking.status === 'CONFIRMED';
-  }
-
   canCheckOut(booking: Booking): boolean {
     return booking.status === 'CHECKED_IN';
   }
@@ -212,6 +190,84 @@ export class ManagerBookingsComponent implements OnInit {
 
   canConfirm(booking: Booking): boolean {
     return booking.status === 'CREATED';
+  }
+
+  hasBill(booking: Booking): boolean {
+    // Check if booking has a bill (for bookings with status CREATED, CONFIRMED, CHECKED_IN, or CHECKED_OUT)
+    return booking.status === 'CREATED' || booking.status === 'CONFIRMED' || 
+           booking.status === 'CHECKED_IN' || booking.status === 'CHECKED_OUT';
+  }
+
+  openBillModal(bookingId: number) {
+    this.showBillModal = true;
+    this.loadBill(bookingId);
+  }
+
+  closeBillModal() {
+    this.showBillModal = false;
+    this.bill = null;
+    this.paymentForm = {
+      paymentMethod: '',
+      transactionId: '',
+      paymentReference: '',
+      notes: ''
+    };
+  }
+
+  loadBill(bookingId: number) {
+    this.isLoadingBill = true;
+    this.billingService.getBillByBookingId(bookingId).subscribe({
+      next: (bill) => {
+        this.bill = bill;
+        this.isLoadingBill = false;
+      },
+      error: (error: any) => {
+        console.error('Error loading bill:', error);
+        const errorMessage = error?.error?.message || '';
+        if (errorMessage.includes('Bill not found') || errorMessage.includes('not found')) {
+          // Try to manually generate the bill
+          this.billingService.manuallyGenerateBill(bookingId).subscribe({
+            next: (bill) => {
+              this.bill = bill;
+              this.isLoadingBill = false;
+            },
+            error: (genError: any) => {
+              console.error('Error generating bill:', genError);
+              const genErrorMessage = genError?.error?.message || genError?.message || 'Unknown error';
+              alert('Bill not found. ' + genErrorMessage + ' Please ensure the booking exists and try again.');
+              this.isLoadingBill = false;
+              this.closeBillModal();
+            }
+          });
+        } else {
+          const errorMsg = error?.error?.message || error?.message || 'Unknown error';
+          alert('Error loading bill: ' + errorMsg);
+          this.isLoadingBill = false;
+          this.closeBillModal();
+        }
+      }
+    });
+  }
+
+  onMarkBillAsPaid() {
+    if (!this.bill || !this.paymentForm.paymentMethod) {
+      alert('Please select a payment method');
+      return;
+    }
+
+    this.billingService.markBillAsPaid(this.bill.id, this.paymentForm).subscribe({
+      next: (updatedBill) => {
+        alert('Bill marked as paid successfully! Booking has been confirmed.');
+        this.bill = updatedBill;
+        this.closeBillModal();
+        this.loadBookings();
+      },
+      error: (error: any) => {
+        console.error('Error marking bill as paid:', error);
+        const errorMessage = error?.error?.message || error?.message || 'Failed to mark bill as paid';
+        alert(errorMessage);
+      }
+    });
   }
 
   formatCurrency(value: number): string {
