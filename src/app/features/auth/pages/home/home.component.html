@@ -3,8 +3,8 @@
   <header class="header">
     <div class="logo">BELLE VUE</div>
     <nav class="nav">
-      <a routerLink="/" class="nav-item">Find a Hotel</a>
-      <a routerLink="/dashboard" class="nav-item" *ngIf="isAuthenticated">My Dashboard</a>
+      <a routerLink="/about" class="nav-item">About</a>
+      <a routerLink="/" class="nav-item">Explore</a>
       <a routerLink="/help" class="nav-item">Help</a>
     </nav>
     <div class="user-actions">
@@ -146,32 +146,43 @@
   <footer class="footer">
     <div class="footer-grid">
       <div class="footer-column">
-        <div class="footer-title">COMPANY</div>
-        <div class="footer-link">About Us</div>
-        <div class="footer-link">Contact</div>
-        <div class="footer-link">Blog</div>
-      </div>
-      <div class="footer-column">
-        <div class="footer-title">HELP</div>
-        <div class="footer-link">FAQ</div>
-        <div class="footer-link">Support</div>
-        <div class="footer-link">Guide</div>
-      </div>
-      <div class="footer-column">
-        <div class="footer-title">LEGAL</div>
-        <div class="footer-link">Terms</div>
-        <div class="footer-link">Privacy</div>
-        <div class="footer-link">Policy</div>
+        <div class="footer-title">ABOUT</div>
+        <div class="footer-about-content">
+          <p class="footer-about-text">
+            Welcome to <strong>BELLE VUE</strong>, where luxury meets comfort and every stay is a celebration of beautiful views and quiet elegance. 
+            We are dedicated to providing exceptional hospitality experiences that create lasting memories for our guests.
+          </p>
+          <p class="footer-about-text">
+            Our carefully curated collection of premium hotels, resorts, and villas offers unparalleled comfort, world-class amenities, 
+            and breathtaking locations. Whether you're seeking a romantic getaway, a family vacation, or a business retreat, 
+            BELLE VUE ensures your journey is nothing short of extraordinary.
+          </p>
+          <p class="footer-about-text">
+            At BELLE VUE, we believe that travel is not just about the destination—it's about the experience. 
+            Every detail matters, from the moment you book until you check out, we're committed to making your stay unforgettable.
+          </p>
+        </div>
       </div>
       <div class="footer-column">
         <div class="footer-title">CONTACT</div>
-        <div class="footer-link">Phone</div>
-        <div class="footer-link">Email</div>
-        <div class="footer-link">Address</div>
+        <div class="footer-contact-content">
+          <div class="contact-item">
+            <div class="contact-label">Company</div>
+            <div class="contact-value">Chubb</div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-label">Email</div>
+            <a href="mailto:ishiii25arya@gmail.com" class="contact-value contact-link">ishiii25arya&#64;gmail.com</a>
+          </div>
+          <div class="contact-item">
+            <div class="contact-label">Phone</div>
+            <a href="tel:8340457343" class="contact-value contact-link">8340457343</a>
+          </div>
+        </div>
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-copyright">© 2024 Hotel Management System | All rights reserved</div>
+      <div class="footer-copyright">© 2024 BELLE VUE | Chubb | All rights reserved</div>
     </div>
   </footer>
 </div>
