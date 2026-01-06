@@ -119,11 +119,97 @@
             </div>
           </div>
           
-          <button class="book-btn" (click)="onBookNow()" [disabled]="!selectedRoom || isBooking">
+          <button class="book-btn" (click)="onBookNow()" [disabled]="isBooking || (isAuthenticated && !selectedRoom)">
             {{ isBooking ? 'Booking...' : (isAuthenticated ? 'Book Now' : 'Login to Book') }}
           </button>
         </div>
       </aside>
+    </div>
+  </div>
+</div>
+
+<!-- Guest Details Modal -->
+<div class="modal-overlay" *ngIf="showGuestDetailsModal" (click)="closeGuestDetailsModal()">
+  <div class="modal-content guest-details-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Guest Details</h2>
+      <button class="close-button" (click)="closeGuestDetailsModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <p class="info-message">Please provide details for all guests staying in the room.</p>
+      
+      <form (ngSubmit)="onGuestDetailsSubmit()">
+        <div class="form-group">
+          <label class="form-label">Contact Phone Number *</label>
+          <input 
+            type="tel" 
+            class="form-input" 
+            [(ngModel)]="guestDetailsForm.guestPhone" 
+            name="guestPhone"
+            placeholder="e.g., +1 234-567-8900"
+            required>
+        </div>
+
+        <div class="guests-section">
+          <h3>Guest Information</h3>
+          <div class="guest-item" *ngFor="let guest of guestDetailsForm.guests; let i = index">
+            <div class="guest-header">
+              <h4>Guest {{ i + 1 }}</h4>
+            </div>
+            <div class="guest-fields">
+              <div class="form-group">
+                <label class="form-label">Full Name *</label>
+                <input 
+                  type="text" 
+                  class="form-input" 
+                  [(ngModel)]="guest.name" 
+                  [name]="'guestName' + i"
+                  placeholder="Enter full name"
+                  required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Age *</label>
+                <input 
+                  type="number" 
+                  class="form-input" 
+                  [(ngModel)]="guest.age" 
+                  [name]="'guestAge' + i"
+                  placeholder="Enter age"
+                  min="1"
+                  max="120"
+                  required>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Emergency Contact Name (Optional)</label>
+          <input 
+            type="text" 
+            class="form-input" 
+            [(ngModel)]="guestDetailsForm.emergencyContact" 
+            name="emergencyContact"
+            placeholder="Emergency contact name">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Emergency Contact Phone (Optional)</label>
+          <input 
+            type="tel" 
+            class="form-input" 
+            [(ngModel)]="guestDetailsForm.emergencyPhone" 
+            name="emergencyPhone"
+            placeholder="Emergency contact phone">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="closeGuestDetailsModal()">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="isBooking">
+            {{ isBooking ? 'Processing...' : 'Continue to Booking' }}
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

@@ -36,15 +36,22 @@ export class LoginComponent {
           console.log('Login successful:', response);
           this.isLoading = false;
           
-          const role = response.role;
-          if (role === 'ADMIN') {
-            this.router.navigate(['/admin/dashboard']);
-          } else if (role === 'MANAGER') {
-            this.router.navigate(['/manager/dashboard']);
-          } else if (role === 'RECEPTIONIST') {
-            this.router.navigate(['/receptionist/dashboard']);
+          // Only navigate on successful login
+          if (response && response.token && response.role) {
+            const role = response.role;
+            if (role === 'ADMIN') {
+              this.router.navigate(['/admin/dashboard']);
+            } else if (role === 'MANAGER') {
+              this.router.navigate(['/manager/dashboard']);
+            } else if (role === 'RECEPTIONIST') {
+              this.router.navigate(['/receptionist/dashboard']);
+            } else {
+              this.router.navigate(['/']);
+            }
           } else {
-            this.router.navigate(['/']);
+            // Invalid response format - treat as error
+            this.errorMessage = 'Invalid response from server. Please try again.';
+            this.isLoading = false;
           }
         },
         error: (error) => {
@@ -56,22 +63,44 @@ export class LoginComponent {
             error: error.error
           });
           
-          if (error.status === 0) {
+          // Stop loading and show error - DO NOT navigate
+          this.isLoading = false;
+          
+          // Handle different error types
+          if (error.status === 0 || error.status === undefined) {
             this.errorMessage = 'Unable to connect to server. Please check if the backend is running.';
-          } else if (error.status === 401) {
-            this.errorMessage = 'Invalid email or password. Please try again.';
+          } else if (error.status === 401 || error.status === 403) {
+            this.errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+          } else if (error.status === 400) {
+            if (error.error?.message) {
+              this.errorMessage = error.error.message;
+            } else if (error.error?.errors && Array.isArray(error.error.errors)) {
+              this.errorMessage = error.error.errors.join(', ');
+            } else {
+              this.errorMessage = 'Invalid request. Please check your input.';
+            }
           } else if (error.error?.message) {
             this.errorMessage = error.error.message;
           } else if (error.error?.errors && Array.isArray(error.error.errors)) {
             this.errorMessage = error.error.errors.join(', ');
+          } else if (error.message) {
+            this.errorMessage = error.message;
           } else {
-            this.errorMessage = error.error?.message || error.message || 'Login failed. Please check your credentials.';
+            this.errorMessage = 'Login failed. Please check your credentials and try again.';
           }
-          this.isLoading = false;
+          
+          // Clear password field for security
+          this.loginForm.patchValue({ password: '' });
         }
       });
     } else {
       this.loginForm.markAllAsTouched();
+      // Show validation errors
+      if (this.loginForm.get('email')?.invalid) {
+        this.errorMessage = 'Please enter a valid email address.';
+      } else if (this.loginForm.get('password')?.invalid) {
+        this.errorMessage = 'Please enter your password.';
+      }
     }
   }
 }

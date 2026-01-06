@@ -104,16 +104,6 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
   },
   {
-    path: 'receptionist/check-in',
-    loadComponent: () => import('./features/receptionist/pages/check-in/check-in.component').then(m => m.ReceptionistCheckInComponent),
-    canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
-  },
-  {
-    path: 'receptionist/check-out',
-    loadComponent: () => import('./features/receptionist/pages/check-out/check-out.component').then(m => m.ReceptionistCheckOutComponent),
-    canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
-  },
-  {
     path: 'receptionist/bookings',
     loadComponent: () => import('./features/receptionist/pages/bookings/bookings.component').then(m => m.ReceptionistBookingsComponent),
     canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
@@ -124,18 +114,8 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
   },
   {
-    path: 'receptionist/billing',
-    loadComponent: () => import('./features/receptionist/pages/billing/billing.component').then(m => m.ReceptionistBillingComponent),
-    canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
-  },
-  {
     path: 'receptionist/settings',
     loadComponent: () => import('./features/receptionist/pages/settings/settings.component').then(m => m.ReceptionistSettingsComponent),
-    canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
-  },
-  {
-    path: 'receptionist/dashboard',
-    loadComponent: () => import('./features/receptionist/dashboard/dashboard.component').then(m => m.ReceptionistDashboardComponent),
     canActivate: [authGuard, roleGuard(['RECEPTIONIST'])]
   }
 ];

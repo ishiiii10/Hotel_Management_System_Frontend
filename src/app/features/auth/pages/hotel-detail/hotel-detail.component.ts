@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { HotelSearchService, HotelDetail, AvailableRoom, HotelSearchResult } from '../../../../shared/services/hotel-search.service';
-import { BookingService, CreateBookingRequest, Booking } from '../../../../shared/services/booking.service';
+import { BookingService, CreateBookingRequest, Booking, GuestInfo } from '../../../../shared/services/booking.service';
 import { BillingService, BillResponse, MarkBillPaidRequest } from '../../../../shared/services/billing.service';
 import { AuthService } from '../../services/auth.service';
 
@@ -30,6 +30,7 @@ export class HotelDetailComponent implements OnInit {
   selectedRoom: AvailableRoom | null = null;
   isBooking = false;
   
+  showGuestDetailsModal = false;
   showBookingModal = false;
   createdBooking: Booking | null = null;
   bill: BillResponse | null = null;
@@ -39,6 +40,13 @@ export class HotelDetailComponent implements OnInit {
     transactionId: '',
     paymentReference: '',
     notes: ''
+  };
+  
+  guestDetailsForm = {
+    guestPhone: '',
+    guests: [] as GuestInfo[],
+    emergencyContact: '',
+    emergencyPhone: ''
   };
   
   get minDate(): string {
@@ -219,15 +227,66 @@ export class HotelDetailComponent implements OnInit {
       return;
     }
 
+    // Initialize guest details form
+    this.initializeGuestDetailsForm();
+    this.showGuestDetailsModal = true;
+  }
+
+  initializeGuestDetailsForm() {
+    const numberOfGuests = this.bookingForm.numberOfGuests || 1;
+    this.guestDetailsForm.guests = [];
+    for (let i = 0; i < numberOfGuests; i++) {
+      this.guestDetailsForm.guests.push({ name: '', age: 0 });
+    }
+    this.guestDetailsForm.guestPhone = '';
+    this.guestDetailsForm.emergencyContact = '';
+    this.guestDetailsForm.emergencyPhone = '';
+  }
+
+  onGuestDetailsSubmit() {
+    // Validate guest phone
+    if (!this.guestDetailsForm.guestPhone || this.guestDetailsForm.guestPhone.trim() === '') {
+      alert('Please enter a contact phone number');
+      return;
+    }
+
+    // Validate all guest names and ages
+    const invalidGuests = this.guestDetailsForm.guests.filter(
+      (guest, index) => !guest.name || guest.name.trim() === '' || !guest.age || guest.age <= 0
+    );
+
+    if (invalidGuests.length > 0) {
+      alert('Please enter valid name and age for all guests');
+      return;
+    }
+
+    // Create booking with guest details
+    this.createBookingWithGuestDetails();
+  }
+
+  createBookingWithGuestDetails() {
+    if (!this.hotelId || !this.selectedRoom) {
+      return;
+    }
+
+    // Prepare guest details JSON
+    const guestDetailsJson = JSON.stringify(this.guestDetailsForm.guests);
+
     const bookingRequest: CreateBookingRequest = {
       hotelId: this.hotelId,
       roomId: this.selectedRoom.roomId,
       checkInDate: this.bookingForm.checkInDate,
       checkOutDate: this.bookingForm.checkOutDate,
       numberOfGuests: this.bookingForm.numberOfGuests,
-      rooms: 1
+      rooms: 1,
+      guestPhone: this.guestDetailsForm.guestPhone,
+      guestDetails: guestDetailsJson,
+      specialRequests: this.guestDetailsForm.emergencyContact 
+        ? `Emergency Contact: ${this.guestDetailsForm.emergencyContact}${this.guestDetailsForm.emergencyPhone ? ` (${this.guestDetailsForm.emergencyPhone})` : ''}`
+        : undefined
     };
 
+    this.showGuestDetailsModal = false;
     this.isBooking = true;
     this.bookingService.createBooking(bookingRequest).subscribe({
       next: (booking) => {
@@ -245,6 +304,10 @@ export class HotelDetailComponent implements OnInit {
         alert(errorMessage);
       }
     });
+  }
+
+  closeGuestDetailsModal() {
+    this.showGuestDetailsModal = false;
   }
 
   loadBill(bookingId: number) {

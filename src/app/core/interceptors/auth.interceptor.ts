@@ -38,8 +38,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
-        // Token expired or invalid - logout user
+      // Don't logout on 401 for login/register endpoints - these are expected to fail with invalid credentials
+      const url = req.url.toLowerCase();
+      const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/register');
+      
+      if (error.status === 401 && !isAuthEndpoint) {
+        // Token expired or invalid - logout user (only for authenticated endpoints)
         authService.logout();
       }
       return throwError(() => error);

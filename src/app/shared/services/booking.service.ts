@@ -4,6 +4,11 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
+export interface GuestInfo {
+  name: string;
+  age: number;
+}
+
 export interface CreateBookingRequest {
   hotelId: number;
   roomId: number;
@@ -12,6 +17,8 @@ export interface CreateBookingRequest {
   numberOfGuests: number;
   rooms?: number;
   specialRequests?: string;
+  guestPhone?: string;
+  guestDetails?: string; // JSON string containing array of GuestInfo
 }
 
 export interface Booking {
@@ -31,6 +38,7 @@ export interface Booking {
   numberOfGuests: number;
   numberOfNights?: number;
   specialRequests?: string;
+  guestDetails?: string; // JSON string containing array of guest info
   cancellationReason?: string;
   cancelledAt?: string;
   checkedInAt?: string;

@@ -113,7 +113,7 @@
           <div *ngIf="!getHotelImage(booking.hotelId)" class="booking-image booking-image-placeholder">Hotel Image</div>
         </div>
         <div class="booking-actions">
-          <button class="action-btn">View Details</button>
+          <button type="button" class="action-btn" (click)="viewBookingDetails(booking)">View Details</button>
           <button 
             class="action-btn" 
             *ngIf="booking.status === 'CONFIRMED' || booking.status === 'CREATED'"
@@ -121,9 +121,10 @@
             Cancel Booking
           </button>
           <button 
-            class="action-btn" 
-            *ngIf="booking.status === 'CHECKED_IN' || booking.status === 'CHECKED_OUT'">
-            View Invoice
+            class="action-btn btn-view-bill" 
+            *ngIf="booking.status !== 'CANCELLED'"
+            (click)="openBillModal(booking.id)">
+            View Bill
           </button>
         </div>
       </div>
@@ -171,6 +172,304 @@
           {{ isChangingPassword ? 'Changing Password...' : 'Change Password' }}
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal-overlay" *ngIf="showBookingDetailsModal" (click)="closeBookingDetailsModal()">
+  <div class="modal-content booking-details-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Booking Details</h2>
+      <button class="close-button" (click)="closeBookingDetailsModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="isLoadingBookingDetails" class="loading-message">Loading booking details...</div>
+      
+      <div *ngIf="!isLoadingBookingDetails && selectedBooking">
+        <!-- Booking Status -->
+        <div class="details-section">
+          <div class="section-header">
+            <h3>Booking Information</h3>
+            <div class="booking-status-badge" [ngClass]="getStatusClass(selectedBooking.status)">
+              {{ selectedBooking.status }}
+            </div>
+          </div>
+          <div class="details-grid">
+            <div class="detail-item">
+              <div class="detail-label">Booking ID</div>
+              <div class="detail-value">#{{ selectedBooking.id }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Booking Date</div>
+              <div class="detail-value">{{ formatDate(selectedBooking.createdAt || '') }}</div>
+            </div>
+            <div class="detail-item" *ngIf="selectedBooking.numberOfNights">
+              <div class="detail-label">Number of Nights</div>
+              <div class="detail-value">{{ selectedBooking.numberOfNights }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Total Amount</div>
+              <div class="detail-value highlight">{{ formatCurrency(selectedBooking.totalAmount) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Information -->
+        <div class="details-section" *ngIf="selectedHotel">
+          <h3>Hotel Information</h3>
+          <div class="hotel-info">
+            <div class="hotel-image-container" *ngIf="selectedHotel.imageUrl">
+              <img [src]="selectedHotel.imageUrl" [alt]="selectedHotel.name" class="hotel-image-large">
+            </div>
+            <div class="hotel-details">
+              <div class="detail-item">
+                <div class="detail-label">Hotel Name</div>
+                <div class="detail-value">{{ selectedHotel.name }}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Address</div>
+                <div class="detail-value">{{ selectedHotel.address }}, {{ selectedHotel.city }}, {{ selectedHotel.country }}</div>
+              </div>
+              <div class="detail-item" *ngIf="selectedHotel.contactNumber">
+                <div class="detail-label">Contact Number</div>
+                <div class="detail-value">{{ selectedHotel.contactNumber }}</div>
+              </div>
+              <div class="detail-item" *ngIf="selectedHotel.category">
+                <div class="detail-label">Category</div>
+                <div class="detail-value">{{ selectedHotel.category }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room Information -->
+        <div class="details-section">
+          <h3>Room Information</h3>
+          <div class="details-grid">
+            <div class="detail-item">
+              <div class="detail-label">Room Number</div>
+              <div class="detail-value">{{ selectedBooking.roomNumber || 'N/A' }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Room Type</div>
+              <div class="detail-value">{{ selectedBooking.roomType }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Check-In Date</div>
+              <div class="detail-value">{{ formatDate(selectedBooking.checkInDate) }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Check-Out Date</div>
+              <div class="detail-value">{{ formatDate(selectedBooking.checkOutDate) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guest Information -->
+        <div class="details-section">
+          <h3>Guest Information</h3>
+          <div class="details-grid">
+            <div class="detail-item" *ngIf="selectedBooking.guestName">
+              <div class="detail-label">Primary Guest Name</div>
+              <div class="detail-value">{{ selectedBooking.guestName }}</div>
+            </div>
+            <div class="detail-item" *ngIf="selectedBooking.guestEmail">
+              <div class="detail-label">Email</div>
+              <div class="detail-value">{{ selectedBooking.guestEmail }}</div>
+            </div>
+            <div class="detail-item" *ngIf="selectedBooking.guestPhone">
+              <div class="detail-label">Phone Number</div>
+              <div class="detail-value">{{ selectedBooking.guestPhone }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Number of Guests</div>
+              <div class="detail-value">{{ selectedBooking.numberOfGuests }}</div>
+            </div>
+          </div>
+          
+          <!-- Guest Details List -->
+          <div *ngIf="selectedBooking.guestDetails" class="guest-details-list">
+            <h4>All Guests</h4>
+            <div class="guest-list">
+              <div class="guest-entry" *ngFor="let guest of parseGuestDetails(selectedBooking.guestDetails); let i = index">
+                <div class="guest-number">Guest {{ i + 1 }}</div>
+                <div class="guest-info">
+                  <div class="guest-name">{{ guest.name }}</div>
+                  <div class="guest-age">Age: {{ guest.age }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Special Requests -->
+        <div class="details-section" *ngIf="selectedBooking.specialRequests">
+          <h3>Special Requests</h3>
+          <div class="special-requests">
+            {{ selectedBooking.specialRequests }}
+          </div>
+        </div>
+
+        <!-- Booking Timeline -->
+        <div class="details-section">
+          <h3>Booking Timeline</h3>
+          <div class="timeline">
+            <div class="timeline-item" *ngIf="selectedBooking.createdAt">
+              <div class="timeline-date">{{ formatDate(selectedBooking.createdAt) }}</div>
+              <div class="timeline-event">Booking Created</div>
+            </div>
+            <div class="timeline-item" *ngIf="selectedBooking.checkedInAt">
+              <div class="timeline-date">{{ formatDate(selectedBooking.checkedInAt) }}</div>
+              <div class="timeline-event">Checked In</div>
+            </div>
+            <div class="timeline-item" *ngIf="selectedBooking.checkedOutAt">
+              <div class="timeline-date">{{ formatDate(selectedBooking.checkedOutAt) }}</div>
+              <div class="timeline-event">Checked Out</div>
+            </div>
+            <div class="timeline-item" *ngIf="selectedBooking.cancelledAt">
+              <div class="timeline-date">{{ formatDate(selectedBooking.cancelledAt) }}</div>
+              <div class="timeline-event">Cancelled</div>
+              <div class="timeline-note" *ngIf="selectedBooking.cancellationReason">
+                Reason: {{ selectedBooking.cancellationReason }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeBookingDetailsModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bill Modal -->
+<div class="modal-overlay" *ngIf="showBillModal" (click)="closeBillModal()">
+  <div class="modal-content bill-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Invoice Details</h2>
+      <button class="close-button" (click)="closeBillModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="isLoadingBill" class="loading-message">Loading bill...</div>
+      
+      <div *ngIf="!isLoadingBill && selectedBill" class="bill-content">
+        <!-- Bill Header Section -->
+        <div class="bill-header-section">
+          <div class="bill-header-top">
+            <div class="bill-number-section">
+              <div class="bill-label">Invoice Number</div>
+              <div class="bill-number">#{{ selectedBill.billNumber }}</div>
+            </div>
+            <div class="bill-status-badge" [class.pending]="selectedBill.status === 'PENDING'" [class.paid]="selectedBill.status === 'PAID'">
+              <span class="status-icon" *ngIf="selectedBill.status === 'PAID'">✓</span>
+              <span class="status-icon" *ngIf="selectedBill.status === 'PENDING'">⏳</span>
+              {{ selectedBill.status }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Information Section -->
+        <div class="bill-section">
+          <h3 class="section-title">Booking Information</h3>
+          <div class="bill-details-grid">
+            <div class="bill-detail-item">
+              <div class="bill-detail-label">Booking ID</div>
+              <div class="bill-detail-value">#{{ selectedBill.bookingId }}</div>
+            </div>
+            <div class="bill-detail-item">
+              <div class="bill-detail-label">Check-In Date</div>
+              <div class="bill-detail-value">{{ formatDate(selectedBill.checkInDate) }}</div>
+            </div>
+            <div class="bill-detail-item">
+              <div class="bill-detail-label">Check-Out Date</div>
+              <div class="bill-detail-value">{{ formatDate(selectedBill.checkOutDate) }}</div>
+            </div>
+            <div class="bill-detail-item">
+              <div class="bill-detail-label">Room ID</div>
+              <div class="bill-detail-value">#{{ selectedBill.roomId }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Summary Section -->
+        <div class="bill-section payment-summary">
+          <h3 class="section-title">Payment Summary</h3>
+          <div class="payment-summary-content">
+            <div class="payment-row">
+              <div class="payment-label">Subtotal</div>
+              <div class="payment-value">{{ formatCurrency(selectedBill.totalAmount) }}</div>
+            </div>
+            <div class="payment-row total-row">
+              <div class="payment-label">Total Amount</div>
+              <div class="payment-value total-amount">{{ formatCurrency(selectedBill.totalAmount) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Status Section -->
+        <div class="bill-section" *ngIf="selectedBill.status === 'PAID'">
+          <h3 class="section-title">Payment Information</h3>
+          <div class="payment-info">
+            <div class="payment-info-item">
+              <div class="payment-info-label">Payment Status</div>
+              <div class="payment-info-value paid-status">
+                <span class="status-icon">✓</span> Paid
+              </div>
+            </div>
+            <div class="payment-info-item" *ngIf="selectedBill.paidAt">
+              <div class="payment-info-label">Paid On</div>
+              <div class="payment-info-value">{{ selectedBill.paidAt | date:'fullDate' }}</div>
+            </div>
+            <div class="payment-info-item" *ngIf="selectedBill.paidAt">
+              <div class="payment-info-label">Paid At</div>
+              <div class="payment-info-value">{{ selectedBill.paidAt | date:'shortTime' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pending Payment Section -->
+        <div class="bill-section pending-payment" *ngIf="selectedBill.status === 'PENDING'">
+          <div class="pending-payment-alert">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+              <div class="alert-title">Payment Pending</div>
+              <div class="alert-message">This invoice is pending payment. Please complete the payment to confirm your booking.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div class="bill-section">
+          <h3 class="section-title">Timeline</h3>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <div class="timeline-event">Invoice Generated</div>
+                <div class="timeline-date">{{ selectedBill.generatedAt | date:'fullDate' }} at {{ selectedBill.generatedAt | date:'shortTime' }}</div>
+              </div>
+            </div>
+            <div class="timeline-item" *ngIf="selectedBill.paidAt">
+              <div class="timeline-marker paid"></div>
+              <div class="timeline-content">
+                <div class="timeline-event">Payment Completed</div>
+                <div class="timeline-date">{{ selectedBill.paidAt | date:'fullDate' }} at {{ selectedBill.paidAt | date:'shortTime' }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="!isLoadingBill && !selectedBill" class="error-state">
+        <div class="error-icon">📄</div>
+        <div class="error-title">Bill Not Found</div>
+        <div class="error-message">Bill not found for this booking. The booking may not be confirmed yet.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeBillModal()">Close</button>
     </div>
   </div>
 </div>

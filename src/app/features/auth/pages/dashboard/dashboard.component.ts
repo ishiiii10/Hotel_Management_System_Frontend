@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService, UserResponse, ChangePasswordRequest } from '../../services/auth.service';
 import { BookingService, Booking } from '../../../../shared/services/booking.service';
 import { HotelSearchService } from '../../../../shared/services/hotel-search.service';
+import { BillingService, BillResponse } from '../../../../shared/services/billing.service';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -30,11 +31,21 @@ export class UserDashboardComponent implements OnInit {
   passwordError = '';
   passwordSuccess = '';
   hotelImages: Map<number, string> = new Map();
+  
+  showBookingDetailsModal = false;
+  selectedBooking: Booking | null = null;
+  selectedHotel: any = null;
+  isLoadingBookingDetails = false;
+  
+  showBillModal = false;
+  selectedBill: BillResponse | null = null;
+  isLoadingBill = false;
 
   constructor(
     private authService: AuthService,
     private bookingService: BookingService,
     private hotelSearchService: HotelSearchService,
+    private billingService: BillingService,
     private router: Router
   ) {}
 
@@ -115,22 +126,43 @@ export class UserDashboardComponent implements OnInit {
 
   getFilteredBookings(): Booking[] {
     const now = new Date();
+    let filtered: Booking[] = [];
+    
     switch (this.bookingTab) {
       case 'upcoming':
-        return this.bookings.filter(b => {
+        filtered = this.bookings.filter(b => {
           const checkIn = new Date(b.checkInDate);
           return checkIn > now && b.status !== 'CANCELLED' && b.status !== 'CHECKED_OUT';
         });
+        break;
       case 'past':
-        return this.bookings.filter(b => {
+        filtered = this.bookings.filter(b => {
           const checkOut = new Date(b.checkOutDate);
           return checkOut < now || b.status === 'CHECKED_OUT';
         });
+        break;
       case 'cancelled':
-        return this.bookings.filter(b => b.status === 'CANCELLED');
+        filtered = this.bookings.filter(b => b.status === 'CANCELLED');
+        break;
       default:
-        return this.bookings;
+        filtered = this.bookings;
     }
+    
+    // Sort bookings by status priority: CHECKED_IN > CONFIRMED > CHECKED_OUT > CANCELLED
+    return filtered.sort((a, b) => {
+      const statusPriority: { [key: string]: number } = {
+        'CHECKED_IN': 1,
+        'CONFIRMED': 2,
+        'CREATED': 2, // Treat CREATED same as CONFIRMED
+        'CHECKED_OUT': 3,
+        'CANCELLED': 4
+      };
+      
+      const priorityA = statusPriority[a.status] || 5;
+      const priorityB = statusPriority[b.status] || 5;
+      
+      return priorityA - priorityB;
+    });
   }
 
   onChangePassword() {
@@ -207,10 +239,13 @@ export class UserDashboardComponent implements OnInit {
   formatDate(dateString: string): string {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return 'N/A';
     return date.toLocaleDateString('en-US', { 
       year: 'numeric', 
       month: 'long', 
-      day: 'numeric' 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   }
 
@@ -230,6 +265,93 @@ export class UserDashboardComponent implements OnInit {
     if (statusLower.includes('checked_out')) return 'status-completed';
     if (statusLower.includes('cancelled')) return 'status-cancelled';
     return 'status-default';
+  }
+
+  viewBookingDetails(booking: Booking) {
+    console.log('View booking details clicked for booking:', booking.id);
+    // Set initial booking data
+    this.selectedBooking = booking;
+    this.selectedHotel = null;
+    this.isLoadingBookingDetails = true;
+    this.showBookingDetailsModal = true;
+    
+    // Load full booking details
+    this.bookingService.getBookingById(booking.id).subscribe({
+      next: (fullBooking: Booking) => {
+        console.log('Full booking loaded:', fullBooking);
+        this.selectedBooking = fullBooking;
+        // Load hotel details
+        this.hotelSearchService.getHotelById(booking.hotelId).subscribe({
+          next: (hotel) => {
+            console.log('Hotel loaded:', hotel);
+            this.selectedHotel = hotel;
+            this.isLoadingBookingDetails = false;
+          },
+          error: (error) => {
+            console.error('Error loading hotel details:', error);
+            // Continue without hotel details
+            this.isLoadingBookingDetails = false;
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error loading booking details:', error);
+        // Show modal with the booking data we already have
+        this.isLoadingBookingDetails = false;
+        // Still try to load hotel
+        this.hotelSearchService.getHotelById(booking.hotelId).subscribe({
+          next: (hotel) => {
+            this.selectedHotel = hotel;
+          },
+          error: (hotelError) => {
+            console.error('Error loading hotel:', hotelError);
+          }
+        });
+      }
+    });
+  }
+
+  closeBookingDetailsModal() {
+    this.showBookingDetailsModal = false;
+    this.selectedBooking = null;
+    this.selectedHotel = null;
+  }
+
+  parseGuestDetails(guestDetailsJson: string | undefined): any[] {
+    if (!guestDetailsJson) return [];
+    try {
+      return JSON.parse(guestDetailsJson);
+    } catch (e) {
+      console.error('Error parsing guest details:', e);
+      return [];
+    }
+  }
+
+  openBillModal(bookingId: number) {
+    this.selectedBill = null;
+    this.isLoadingBill = true;
+    this.showBillModal = true;
+    this.loadBill(bookingId);
+  }
+
+  closeBillModal() {
+    this.showBillModal = false;
+    this.selectedBill = null;
+  }
+
+  loadBill(bookingId: number) {
+    this.isLoadingBill = true;
+    this.billingService.getBillByBookingId(bookingId).subscribe({
+      next: (bill) => {
+        this.selectedBill = bill;
+        this.isLoadingBill = false;
+      },
+      error: (error) => {
+        console.error('Error loading bill:', error);
+        this.selectedBill = null;
+        this.isLoadingBill = false;
+      }
+    });
   }
 
   logout() {

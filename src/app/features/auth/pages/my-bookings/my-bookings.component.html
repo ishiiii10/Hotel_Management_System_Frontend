@@ -67,9 +67,10 @@
         <div *ngIf="!getHotelImage(booking.hotelId)" class="booking-image booking-image-placeholder">Hotel Image</div>
       </div>
       <div class="booking-actions">
-        <button class="action-btn">View Details</button>
+        <button class="action-btn" type="button" (click)="viewBookingDetails(booking)">View Details</button>
         <button 
           class="action-btn btn-view-bill" 
+          type="button"
           (click)="viewBill(booking.id)">
           View Bill
         </button>
@@ -90,6 +91,174 @@
           Leave Review
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal-overlay" *ngIf="showBookingDetailsModal" (click)="closeBookingDetailsModal()">
+  <div class="modal-content booking-details-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Booking Details</h2>
+      <button class="close-button" (click)="closeBookingDetailsModal()">X</button>
+    </div>
+    <div class="modal-body">
+      <div *ngIf="isLoadingBookingDetails" class="loading-message">Loading booking details...</div>
+      
+      <div *ngIf="!isLoadingBookingDetails && selectedBooking">
+        <!-- Booking Status -->
+        <div class="details-section">
+          <div class="section-header">
+            <h3>Booking Information</h3>
+            <div class="booking-status-badge" [ngClass]="getStatusClass(selectedBooking.status)">
+              {{ selectedBooking.status }}
+            </div>
+          </div>
+          <div class="details-grid">
+            <div class="detail-item">
+              <div class="detail-label">Booking ID</div>
+              <div class="detail-value">#{{ selectedBooking.id }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Booking Date</div>
+              <div class="detail-value">{{ formatDate(selectedBooking.createdAt || '') }}</div>
+            </div>
+            <div class="detail-item" *ngIf="selectedBooking.numberOfNights">
+              <div class="detail-label">Number of Nights</div>
+              <div class="detail-value">{{ selectedBooking.numberOfNights }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Total Amount</div>
+              <div class="detail-value highlight">{{ formatCurrency(selectedBooking.totalAmount) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hotel Information -->
+        <div class="details-section" *ngIf="selectedHotel">
+          <h3>Hotel Information</h3>
+          <div class="hotel-info">
+            <div class="hotel-image-container" *ngIf="selectedHotel.imageUrl">
+              <img [src]="selectedHotel.imageUrl" [alt]="selectedHotel.name" class="hotel-image-large">
+            </div>
+            <div class="hotel-details">
+              <div class="detail-item">
+                <div class="detail-label">Hotel Name</div>
+                <div class="detail-value">{{ selectedHotel.name }}</div>
+              </div>
+              <div class="detail-item">
+                <div class="detail-label">Address</div>
+                <div class="detail-value">{{ selectedHotel.address }}, {{ selectedHotel.city }}, {{ selectedHotel.country }}</div>
+              </div>
+              <div class="detail-item" *ngIf="selectedHotel.contactNumber">
+                <div class="detail-label">Contact Number</div>
+                <div class="detail-value">{{ selectedHotel.contactNumber }}</div>
+              </div>
+              <div class="detail-item" *ngIf="selectedHotel.category">
+                <div class="detail-label">Category</div>
+                <div class="detail-value">{{ selectedHotel.category }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Room Information -->
+        <div class="details-section">
+          <h3>Room Information</h3>
+          <div class="details-grid">
+            <div class="detail-item">
+              <div class="detail-label">Room Number</div>
+              <div class="detail-value">{{ selectedBooking.roomNumber || 'N/A' }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Room Type</div>
+              <div class="detail-value">{{ selectedBooking.roomType }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Check-In Date</div>
+              <div class="detail-value">{{ formatDate(selectedBooking.checkInDate) }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Check-Out Date</div>
+              <div class="detail-value">{{ formatDate(selectedBooking.checkOutDate) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guest Information -->
+        <div class="details-section">
+          <h3>Guest Information</h3>
+          <div class="details-grid">
+            <div class="detail-item" *ngIf="selectedBooking.guestName">
+              <div class="detail-label">Primary Guest Name</div>
+              <div class="detail-value">{{ selectedBooking.guestName }}</div>
+            </div>
+            <div class="detail-item" *ngIf="selectedBooking.guestEmail">
+              <div class="detail-label">Email</div>
+              <div class="detail-value">{{ selectedBooking.guestEmail }}</div>
+            </div>
+            <div class="detail-item" *ngIf="selectedBooking.guestPhone">
+              <div class="detail-label">Phone Number</div>
+              <div class="detail-value">{{ selectedBooking.guestPhone }}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Number of Guests</div>
+              <div class="detail-value">{{ selectedBooking.numberOfGuests }}</div>
+            </div>
+          </div>
+          
+          <!-- Guest Details List -->
+          <div *ngIf="selectedBooking.guestDetails" class="guest-details-list">
+            <h4>All Guests</h4>
+            <div class="guest-list">
+              <div class="guest-entry" *ngFor="let guest of parseGuestDetails(selectedBooking.guestDetails); let i = index">
+                <div class="guest-number">Guest {{ i + 1 }}</div>
+                <div class="guest-info">
+                  <div class="guest-name">{{ guest.name }}</div>
+                  <div class="guest-age">Age: {{ guest.age }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Special Requests -->
+        <div class="details-section" *ngIf="selectedBooking.specialRequests">
+          <h3>Special Requests</h3>
+          <div class="special-requests">
+            {{ selectedBooking.specialRequests }}
+          </div>
+        </div>
+
+        <!-- Booking Timeline -->
+        <div class="details-section">
+          <h3>Booking Timeline</h3>
+          <div class="timeline">
+            <div class="timeline-item" *ngIf="selectedBooking.createdAt">
+              <div class="timeline-date">{{ formatDate(selectedBooking.createdAt) }}</div>
+              <div class="timeline-event">Booking Created</div>
+            </div>
+            <div class="timeline-item" *ngIf="selectedBooking.checkedInAt">
+              <div class="timeline-date">{{ formatDate(selectedBooking.checkedInAt) }}</div>
+              <div class="timeline-event">Checked In</div>
+            </div>
+            <div class="timeline-item" *ngIf="selectedBooking.checkedOutAt">
+              <div class="timeline-date">{{ formatDate(selectedBooking.checkedOutAt) }}</div>
+              <div class="timeline-event">Checked Out</div>
+            </div>
+            <div class="timeline-item" *ngIf="selectedBooking.cancelledAt">
+              <div class="timeline-date">{{ formatDate(selectedBooking.cancelledAt) }}</div>
+              <div class="timeline-event">Cancelled</div>
+              <div class="timeline-note" *ngIf="selectedBooking.cancellationReason">
+                Reason: {{ selectedBooking.cancellationReason }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeBookingDetailsModal()">Close</button>
     </div>
   </div>
 </div>

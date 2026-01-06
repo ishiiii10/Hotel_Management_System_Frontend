@@ -65,17 +65,23 @@ export class ReceptionistBookingsComponent implements OnInit {
   statuses = ['CREATED', 'CONFIRMED', 'CHECKED_IN', 'CHECKED_OUT', 'CANCELLED'];
 
   get minDate(): string {
+    // Walk-in bookings can only be created for today
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  }
+
+  get maxDate(): string {
+    // Walk-in bookings can only be created for today (no future dates)
     const today = new Date();
     return today.toISOString().split('T')[0];
   }
 
   get minCheckOutDate(): string {
-    if (!this.walkInForm.checkInDate) {
-      return this.minDate;
-    }
-    const checkIn = new Date(this.walkInForm.checkInDate);
-    checkIn.setDate(checkIn.getDate() + 1);
-    return checkIn.toISOString().split('T')[0];
+    // Check-out must be at least tomorrow (since check-in is today)
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
   }
 
   get minSearchCheckOutDate(): string {
@@ -183,11 +189,21 @@ export class ReceptionistBookingsComponent implements OnInit {
 
   openWalkInModal() {
     if (!this.hotelId) return;
+    
+    // Set check-in date to today (walk-in bookings can only be for today)
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    
+    // Set check-out date to tomorrow by default
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    
     this.walkInForm = {
       hotelId: this.hotelId,
       roomId: 0,
-      checkInDate: '',
-      checkOutDate: '',
+      checkInDate: todayStr, // Automatically set to today
+      checkOutDate: tomorrowStr, // Default to tomorrow
       guestName: '',
       guestEmail: '',
       guestPhone: '',
@@ -209,6 +225,36 @@ export class ReceptionistBookingsComponent implements OnInit {
     if (!this.walkInForm.guestName || !this.walkInForm.guestEmail || !this.walkInForm.roomId 
         || !this.walkInForm.checkInDate || !this.walkInForm.checkOutDate) {
       alert('Please fill all required fields');
+      return;
+    }
+
+    // Validate check-in date is today (walk-in bookings can only be for today)
+    const today = new Date();
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth();
+    const todayDay = today.getDate();
+    const todayStr = `${todayYear}-${String(todayMonth + 1).padStart(2, '0')}-${String(todayDay).padStart(2, '0')}`;
+    
+    // Parse check-in date
+    let checkInDateStr: string;
+    if (typeof this.walkInForm.checkInDate === 'string') {
+      checkInDateStr = this.walkInForm.checkInDate.split('T')[0].split(' ')[0];
+    } else {
+      const checkInDate = new Date(this.walkInForm.checkInDate);
+      checkInDateStr = `${checkInDate.getFullYear()}-${String(checkInDate.getMonth() + 1).padStart(2, '0')}-${String(checkInDate.getDate()).padStart(2, '0')}`;
+    }
+    
+    // Validate check-in date is today
+    if (checkInDateStr !== todayStr) {
+      alert('Walk-in bookings can only be created for today. Please use today\'s date for check-in.');
+      return;
+    }
+    
+    // Validate check-out date is after check-in date
+    const checkInDate = new Date(this.walkInForm.checkInDate);
+    const checkOutDate = new Date(this.walkInForm.checkOutDate);
+    if (checkOutDate <= checkInDate) {
+      alert('Check-out date must be after check-in date.');
       return;
     }
 

@@ -138,7 +138,8 @@
           </div>
           <div class="form-group">
             <label class="form-label">Check-in Date *</label>
-            <input type="date" class="form-input" [(ngModel)]="walkInForm.checkInDate" [min]="minDate" required>
+            <input type="date" class="form-input" [(ngModel)]="walkInForm.checkInDate" [min]="minDate" [max]="maxDate" required readonly>
+            <small class="form-hint">Walk-in bookings can only be created for today</small>
           </div>
           <div class="form-group">
             <label class="form-label">Check-out Date *</label>

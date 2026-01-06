@@ -23,6 +23,11 @@ export class MyBookingsComponent implements OnInit {
   selectedBill: BillResponse | null = null;
   isLoadingBill = false;
   hotelImages: Map<number, string> = new Map();
+  
+  showBookingDetailsModal = false;
+  selectedBooking: Booking | null = null;
+  selectedHotel: any = null;
+  isLoadingBookingDetails = false;
 
   constructor(
     private bookingService: BookingService,
@@ -109,11 +114,18 @@ export class MyBookingsComponent implements OnInit {
         filtered = this.bookings;
     }
     
-    // Sort: CONFIRMED bookings first, then others
+    // Sort by status: CHECKED_IN > CONFIRMED > CREATED > CHECKED_OUT > CANCELLED
     return filtered.sort((a, b) => {
-      if (a.status === 'CONFIRMED' && b.status !== 'CONFIRMED') return -1;
-      if (a.status !== 'CONFIRMED' && b.status === 'CONFIRMED') return 1;
-      return 0;
+      const statusOrder: { [key: string]: number } = {
+        'CHECKED_IN': 1,
+        'CONFIRMED': 2,
+        'CREATED': 3,
+        'CHECKED_OUT': 4,
+        'CANCELLED': 5
+      };
+      const orderA = statusOrder[a.status] || 99;
+      const orderB = statusOrder[b.status] || 99;
+      return orderA - orderB;
     });
   }
 
@@ -184,6 +196,66 @@ export class MyBookingsComponent implements OnInit {
     if (statusLower.includes('checked_out')) return 'status-completed';
     if (statusLower.includes('cancelled')) return 'status-cancelled';
     return 'status-default';
+  }
+
+  viewBookingDetails(booking: Booking) {
+    console.log('View booking details clicked for booking:', booking.id);
+    // Set initial booking data
+    this.selectedBooking = booking;
+    this.selectedHotel = null;
+    this.isLoadingBookingDetails = true;
+    this.showBookingDetailsModal = true;
+    
+    // Load full booking details
+    this.bookingService.getBookingById(booking.id).subscribe({
+      next: (fullBooking: Booking) => {
+        console.log('Full booking loaded:', fullBooking);
+        this.selectedBooking = fullBooking;
+        // Load hotel details
+        this.hotelSearchService.getHotelById(booking.hotelId).subscribe({
+          next: (hotel) => {
+            console.log('Hotel loaded:', hotel);
+            this.selectedHotel = hotel;
+            this.isLoadingBookingDetails = false;
+          },
+          error: (error) => {
+            console.error('Error loading hotel details:', error);
+            // Continue without hotel details
+            this.isLoadingBookingDetails = false;
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error loading booking details:', error);
+        // Show modal with the booking data we already have
+        this.isLoadingBookingDetails = false;
+        // Still try to load hotel
+        this.hotelSearchService.getHotelById(booking.hotelId).subscribe({
+          next: (hotel) => {
+            this.selectedHotel = hotel;
+          },
+          error: (hotelError) => {
+            console.error('Error loading hotel:', hotelError);
+          }
+        });
+      }
+    });
+  }
+
+  closeBookingDetailsModal() {
+    this.showBookingDetailsModal = false;
+    this.selectedBooking = null;
+    this.selectedHotel = null;
+  }
+
+  parseGuestDetails(guestDetailsJson: string | undefined): any[] {
+    if (!guestDetailsJson) return [];
+    try {
+      return JSON.parse(guestDetailsJson);
+    } catch (error) {
+      console.error('Error parsing guest details:', error);
+      return [];
+    }
   }
 }
 

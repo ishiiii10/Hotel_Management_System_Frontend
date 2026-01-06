@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ReceptionistService, HotelDetail, Room, Booking } from '../services/receptionist.service';
 import { AuthService } from '../../auth/services/auth.service';
@@ -8,7 +8,7 @@ import { ReceptionistSidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-receptionist-dashboard',
-  imports: [CommonModule, FormsModule, ReceptionistSidebarComponent],
+  imports: [CommonModule, FormsModule, RouterLink, ReceptionistSidebarComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
