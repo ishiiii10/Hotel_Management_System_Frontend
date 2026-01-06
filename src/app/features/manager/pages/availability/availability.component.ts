@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ManagerService, Room, BlockRoomRequest, UnblockRoomRequest } from '../../services/manager.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { ManagerSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-manager-availability',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule, ManagerSidebarComponent],
   templateUrl: './availability.component.html',
   styleUrl: './availability.component.css'
 })
@@ -199,8 +200,5 @@ export class ManagerAvailabilityComponent implements OnInit {
     });
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

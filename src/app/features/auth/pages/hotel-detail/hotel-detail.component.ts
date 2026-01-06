@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { HotelSearchService, HotelDetail, AvailableRoom } from '../../../../shared/services/hotel-search.service';
+import { HotelSearchService, HotelDetail, AvailableRoom, HotelSearchResult } from '../../../../shared/services/hotel-search.service';
 import { BookingService, CreateBookingRequest, Booking } from '../../../../shared/services/booking.service';
 import { BillingService, BillResponse, MarkBillPaidRequest } from '../../../../shared/services/billing.service';
 import { AuthService } from '../../services/auth.service';
@@ -90,11 +90,50 @@ export class HotelDetailComponent implements OnInit {
     this.hotelSearchService.getHotelById(this.hotelId).subscribe({
       next: (hotel: HotelDetail) => {
         this.hotel = hotel;
+        // If imageUrl is not in the response, try to get it from search results
+        if (!hotel.imageUrl) {
+          this.loadHotelImage();
+        }
         this.isLoading = false;
       },
       error: (error: any) => {
         console.error('Error loading hotel details:', error);
         this.isLoading = false;
+      }
+    });
+  }
+
+  loadHotelImage() {
+    // Try to get imageUrl from search service which includes it
+    // Search by city or category to find the hotel
+    if (this.hotel?.city) {
+      this.hotelSearchService.searchHotels({ city: this.hotel.city }).subscribe({
+        next: (hotels: HotelSearchResult[]) => {
+          const hotelWithImage = hotels.find(h => h.id === this.hotelId);
+          if (hotelWithImage?.imageUrl && this.hotel) {
+            this.hotel.imageUrl = hotelWithImage.imageUrl;
+          }
+        },
+        error: (error: any) => {
+          // Try without filters
+          this.tryGetImageFromAllHotels();
+        }
+      });
+    } else {
+      this.tryGetImageFromAllHotels();
+    }
+  }
+
+  tryGetImageFromAllHotels() {
+    this.hotelSearchService.getAllHotels().subscribe({
+      next: (hotels: HotelSearchResult[]) => {
+        const hotelWithImage = hotels.find(h => h.id === this.hotelId);
+        if (hotelWithImage?.imageUrl && this.hotel) {
+          this.hotel.imageUrl = hotelWithImage.imageUrl;
+        }
+      },
+      error: (error: any) => {
+        console.error('Error loading hotel image:', error);
       }
     });
   }

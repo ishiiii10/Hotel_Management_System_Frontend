@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ManagerService, Room, CreateRoomRequest } from '../../services/manager.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { ManagerSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-manager-rooms',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule, ManagerSidebarComponent],
   templateUrl: './rooms.component.html',
   styleUrl: './rooms.component.css'
 })
@@ -205,8 +206,5 @@ export class ManagerRoomsComponent implements OnInit {
     }).format(value);
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

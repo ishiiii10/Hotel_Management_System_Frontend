@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ReceptionistService, HotelDetail } from '../../services/receptionist.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { ReceptionistSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-receptionist-hotel-info',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ReceptionistSidebarComponent],
   templateUrl: './hotel-info.component.html',
   styleUrl: './hotel-info.component.css'
 })
@@ -46,8 +47,5 @@ export class ReceptionistHotelInfoComponent implements OnInit {
     });
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

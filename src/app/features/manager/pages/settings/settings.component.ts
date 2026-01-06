@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ManagerService } from '../../services/manager.service';
 import { AuthService, UserResponse } from '../../../auth/services/auth.service';
+import { ManagerSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-manager-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, ManagerSidebarComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
@@ -111,8 +112,5 @@ export class ManagerSettingsComponent implements OnInit {
     });
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

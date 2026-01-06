@@ -1,21 +1,6 @@
 <div class="dashboard-container">
   <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">BELLE VUE</div>
-    </div>
-    <nav class="sidebar-nav">
-      <a routerLink="/admin/dashboard" class="nav-item">Dashboard</a>
-      <a routerLink="/admin/hotels" class="nav-item">Hotels</a>
-      <a routerLink="/admin/users" class="nav-item">Users</a>
-      <a routerLink="/admin/bookings" class="nav-item active">Bookings</a>
-      <a routerLink="/admin/reports" class="nav-item">Reports</a>
-      <a routerLink="/admin/settings" class="nav-item">Settings</a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="logout-btn-sidebar" (click)="logout()">Logout</button>
-    </div>
-  </aside>
+  <app-admin-sidebar></app-admin-sidebar>
 
   <!-- Main Content -->
   <main class="main-content">

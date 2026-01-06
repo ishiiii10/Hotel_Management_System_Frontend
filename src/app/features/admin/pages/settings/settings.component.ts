@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AdminService, UserResponse } from '../../services/admin.service';
-import { AuthService } from '../../../auth/services/auth.service';
+import { AdminSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-admin-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, AdminSidebarComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
@@ -25,7 +25,6 @@ export class AdminSettingsComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
-    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -110,8 +109,5 @@ export class AdminSettingsComponent implements OnInit {
     });
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

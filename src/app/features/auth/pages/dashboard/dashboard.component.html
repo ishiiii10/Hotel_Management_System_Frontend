@@ -1,10 +1,12 @@
 <header class="header">
-  <div class="logo">BELLE VUE</div>
-  <nav class="nav">
-    <a routerLink="/" class="nav-item">Search Hotels</a>
-    <div class="nav-item active">My Dashboard</div>
-    <button class="nav-item logout-btn" (click)="logout()">Logout</button>
-  </nav>
+  <div class="header-content">
+    <div class="logo">BELLE VUE</div>
+    <nav class="nav">
+      <a routerLink="/" class="nav-item">Search Hotels</a>
+      <div class="nav-item active">My Dashboard</div>
+      <button class="nav-item logout-btn" (click)="logout()">Logout</button>
+    </nav>
+  </div>
 </header>
 
 <div class="container">
@@ -107,7 +109,8 @@
               <div class="detail-value">{{ formatCurrency(booking.totalAmount) }}</div>
             </div>
           </div>
-          <div class="booking-image">Hotel Image</div>
+          <img *ngIf="getHotelImage(booking.hotelId)" [src]="getHotelImage(booking.hotelId)" [alt]="'Hotel ' + booking.hotelId" class="booking-image">
+          <div *ngIf="!getHotelImage(booking.hotelId)" class="booking-image booking-image-placeholder">Hotel Image</div>
         </div>
         <div class="booking-actions">
           <button class="action-btn">View Details</button>

@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AdminService } from '../services/admin.service';
-import { AuthService } from '../../auth/services/auth.service';
+import { AdminSidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-admin-dashboard',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, AdminSidebarComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -30,7 +30,6 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
-    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -92,7 +91,4 @@ export class AdminDashboardComponent implements OnInit {
     return (revenue / maxRevenue) * 100;
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }

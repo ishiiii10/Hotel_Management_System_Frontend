@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { BookingService, Booking } from '../../../../shared/services/booking.service';
+import { BillingService, BillResponse } from '../../../../shared/services/billing.service';
+import { HotelSearchService } from '../../../../shared/services/hotel-search.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -17,8 +19,15 @@ export class MyBookingsComponent implements OnInit {
   isAuthenticated = false;
   activeTab = 'all';
 
+  showBillModal = false;
+  selectedBill: BillResponse | null = null;
+  isLoadingBill = false;
+  hotelImages: Map<number, string> = new Map();
+
   constructor(
     private bookingService: BookingService,
+    private billingService: BillingService,
+    private hotelSearchService: HotelSearchService,
     private authService: AuthService,
     private router: Router
   ) {}
@@ -39,6 +48,7 @@ export class MyBookingsComponent implements OnInit {
     this.bookingService.getMyBookings().subscribe({
       next: (bookings: Booking[]) => {
         this.bookings = bookings;
+        this.loadHotelImages(bookings);
         this.isLoading = false;
       },
       error: (error: any) => {
@@ -49,28 +59,83 @@ export class MyBookingsComponent implements OnInit {
     });
   }
 
+  loadHotelImages(bookings: Booking[]) {
+    const uniqueHotelIds = [...new Set(bookings.map(b => b.hotelId))];
+    uniqueHotelIds.forEach(hotelId => {
+      if (!this.hotelImages.has(hotelId)) {
+        this.hotelSearchService.getHotelById(hotelId).subscribe({
+          next: (hotel) => {
+            if (hotel.imageUrl) {
+              this.hotelImages.set(hotelId, hotel.imageUrl);
+            }
+          },
+          error: (error) => {
+            console.error(`Error loading hotel image for hotel ${hotelId}:`, error);
+          }
+        });
+      }
+    });
+  }
+
+  getHotelImage(hotelId: number): string | null {
+    return this.hotelImages.get(hotelId) || null;
+  }
+
   setTab(tab: string) {
     this.activeTab = tab;
   }
 
   getFilteredBookings(): Booking[] {
     const now = new Date();
+    let filtered: Booking[] = [];
+    
     switch (this.activeTab) {
       case 'upcoming':
-        return this.bookings.filter(b => {
+        filtered = this.bookings.filter(b => {
           const checkIn = new Date(b.checkInDate);
           return checkIn > now && b.status !== 'CANCELLED' && b.status !== 'CHECKED_OUT';
         });
+        break;
       case 'past':
-        return this.bookings.filter(b => {
+        filtered = this.bookings.filter(b => {
           const checkOut = new Date(b.checkOutDate);
           return checkOut < now || b.status === 'CHECKED_OUT';
         });
+        break;
       case 'cancelled':
-        return this.bookings.filter(b => b.status === 'CANCELLED');
+        filtered = this.bookings.filter(b => b.status === 'CANCELLED');
+        break;
       default:
-        return this.bookings;
+        filtered = this.bookings;
     }
+    
+    // Sort: CONFIRMED bookings first, then others
+    return filtered.sort((a, b) => {
+      if (a.status === 'CONFIRMED' && b.status !== 'CONFIRMED') return -1;
+      if (a.status !== 'CONFIRMED' && b.status === 'CONFIRMED') return 1;
+      return 0;
+    });
+  }
+
+  viewBill(bookingId: number) {
+    this.isLoadingBill = true;
+    this.billingService.getBillByBookingId(bookingId).subscribe({
+      next: (bill: BillResponse) => {
+        this.selectedBill = bill;
+        this.isLoadingBill = false;
+        this.showBillModal = true;
+      },
+      error: (error: any) => {
+        console.error('Error loading bill:', error);
+        this.isLoadingBill = false;
+        alert('Bill not found for this booking');
+      }
+    });
+  }
+
+  closeBillModal() {
+    this.showBillModal = false;
+    this.selectedBill = null;
   }
 
   cancelBooking(booking: Booking) {

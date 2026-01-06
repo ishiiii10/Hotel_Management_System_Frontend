@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ReceptionistService } from '../../services/receptionist.service';
 import { AuthService, UserResponse } from '../../../auth/services/auth.service';
+import { ReceptionistSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-receptionist-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, ReceptionistSidebarComponent],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css'
 })
@@ -111,8 +112,5 @@ export class ReceptionistSettingsComponent implements OnInit {
     });
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

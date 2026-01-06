@@ -15,6 +15,7 @@ export interface HotelSearchResult {
   amenities?: string;
   availableRooms: number;
   totalRooms: number;
+  imageUrl?: string;
 }
 
 export interface HotelDetail {
@@ -33,6 +34,7 @@ export interface HotelDetail {
   status: string;
   totalRooms: number;
   availableRooms: number;
+  imageUrl?: string;
 }
 
 export interface Room {

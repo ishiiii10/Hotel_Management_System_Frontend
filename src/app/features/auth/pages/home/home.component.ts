@@ -73,15 +73,74 @@ export class HomeComponent implements OnInit {
 
   loadFeaturedHotels() {
     this.isLoading = true;
-    this.hotelSearchService.searchHotels({ category: 'HOTEL' }).subscribe({
+    // Try to load all hotels first
+    this.hotelSearchService.getAllHotels().subscribe({
       next: (hotels: HotelSearchResult[]) => {
-        this.featuredHotels = hotels.slice(0, 6);
+        if (hotels.length >= 3) {
+          this.featuredHotels = hotels.slice(0, Math.max(3, hotels.length));
+        } else if (hotels.length > 0) {
+          this.featuredHotels = hotels;
+        } else {
+          // If no hotels, try searching by category
+          this.loadHotelsByCategory();
+          return;
+        }
         this.isLoading = false;
       },
       error: (error: any) => {
         console.error('Error loading featured hotels:', error);
-        this.featuredHotels = [];
-        this.isLoading = false;
+        // Fallback to category search
+        this.loadHotelsByCategory();
+      }
+    });
+  }
+
+  loadHotelsByCategory() {
+    // Try multiple categories to get at least 3 hotels
+    const categories = ['HOTEL', 'RESORT', 'VILLA'];
+    let completed = 0;
+    const allHotels: HotelSearchResult[] = [];
+
+    categories.forEach(category => {
+      this.hotelSearchService.searchHotels({ category }).subscribe({
+        next: (hotels: HotelSearchResult[]) => {
+          allHotels.push(...hotels);
+          completed++;
+          
+          if (completed === categories.length) {
+            // Remove duplicates
+            const uniqueHotels = Array.from(
+              new Map(allHotels.map(h => [h.id, h])).values()
+            );
+            this.featuredHotels = uniqueHotels.length >= 3 
+              ? uniqueHotels.slice(0, Math.max(3, uniqueHotels.length))
+              : uniqueHotels;
+            this.isLoading = false;
+          }
+        },
+        error: (error: any) => {
+          completed++;
+          if (completed === categories.length) {
+            if (allHotels.length > 0) {
+              const uniqueHotels = Array.from(
+                new Map(allHotels.map(h => [h.id, h])).values()
+              );
+              this.featuredHotels = uniqueHotels;
+            } else {
+              this.featuredHotels = [];
+            }
+            this.isLoading = false;
+          }
+        }
+      });
+    });
+  }
+
+  viewHotelDetails(hotelId: number) {
+    this.router.navigate(['/hotels', hotelId], {
+      queryParams: {
+        checkIn: this.searchForm.checkInDate || '',
+        checkOut: this.searchForm.checkOutDate || ''
       }
     });
   }

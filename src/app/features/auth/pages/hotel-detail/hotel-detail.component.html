@@ -1,9 +1,11 @@
 <header class="header">
-  <div class="logo">BELLE VUE</div>
-  <nav class="nav">
-    <a routerLink="/" class="nav-item">Back to Search</a>
-    <a routerLink="/my-bookings" class="nav-item" *ngIf="isAuthenticated">My Bookings</a>
-  </nav>
+  <div class="header-content">
+    <div class="logo">BELLE VUE</div>
+    <nav class="nav">
+      <a routerLink="/" class="nav-item">Back to Search</a>
+      <a routerLink="/my-bookings" class="nav-item" *ngIf="isAuthenticated">My Bookings</a>
+    </nav>
+  </div>
 </header>
 
 <div class="container">
@@ -23,13 +25,12 @@
 
     <!-- Gallery -->
     <section class="gallery">
-      <div class="main-image">Main Hotel Image</div>
+      <img *ngIf="hotel.imageUrl" [src]="hotel.imageUrl" [alt]="hotel.name" class="main-image">
+      <div *ngIf="!hotel.imageUrl" class="main-image main-image-placeholder">Main Hotel Image</div>
       <div class="thumbnail-grid">
-        <div class="thumbnail"></div>
-        <div class="thumbnail"></div>
-        <div class="thumbnail"></div>
-        <div class="thumbnail"></div>
-        <div class="thumbnail"></div>
+        <div class="thumbnail" *ngFor="let i of [1,2,3,4,5]">
+          <img *ngIf="hotel.imageUrl" [src]="hotel.imageUrl" [alt]="hotel.name + ' thumbnail ' + i">
+        </div>
       </div>
     </section>
 
@@ -123,7 +124,7 @@
             </div>
           </div>
           
-          <button class="book-btn" (click)="onBookNow()" [disabled]="!selectedRoom || !isAuthenticated || isBooking">
+          <button class="book-btn" (click)="onBookNow()" [disabled]="!selectedRoom || isBooking">
             {{ isBooking ? 'Booking...' : (isAuthenticated ? 'Book Now' : 'Login to Book') }}
           </button>
         </div>

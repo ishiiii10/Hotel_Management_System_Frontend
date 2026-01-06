@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AdminService, Booking } from '../../services/admin.service';
-import { AuthService } from '../../../auth/services/auth.service';
+import { AdminSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-admin-bookings',
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule, AdminSidebarComponent],
   templateUrl: './bookings.component.html',
   styleUrl: './bookings.component.css'
 })
@@ -29,7 +29,6 @@ export class AdminBookingsComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
-    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -108,8 +107,5 @@ export class AdminBookingsComponent implements OnInit {
     return booking.status !== 'CHECKED_IN' && booking.status !== 'CHECKED_OUT' && booking.status !== 'CANCELLED';
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

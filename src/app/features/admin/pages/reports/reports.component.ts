@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AdminService } from '../../services/admin.service';
-import { AuthService } from '../../../auth/services/auth.service';
+import { AdminSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-admin-reports',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, AdminSidebarComponent],
   templateUrl: './reports.component.html',
   styleUrl: './reports.component.css'
 })
@@ -17,7 +17,6 @@ export class AdminReportsComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
-    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -48,8 +47,5 @@ export class AdminReportsComponent implements OnInit {
     }).format(value);
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

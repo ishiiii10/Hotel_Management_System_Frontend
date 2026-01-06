@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ManagerService, HotelDetail } from '../../services/manager.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { ManagerSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-manager-hotel-info',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ManagerSidebarComponent],
   templateUrl: './hotel-info.component.html',
   styleUrl: './hotel-info.component.css'
 })
@@ -46,8 +47,5 @@ export class ManagerHotelInfoComponent implements OnInit {
     });
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

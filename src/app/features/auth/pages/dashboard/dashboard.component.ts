@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, UserResponse, ChangePasswordRequest } from '../../services/auth.service';
 import { BookingService, Booking } from '../../../../shared/services/booking.service';
+import { HotelSearchService } from '../../../../shared/services/hotel-search.service';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -28,10 +29,12 @@ export class UserDashboardComponent implements OnInit {
   isChangingPassword = false;
   passwordError = '';
   passwordSuccess = '';
+  hotelImages: Map<number, string> = new Map();
 
   constructor(
     private authService: AuthService,
     private bookingService: BookingService,
+    private hotelSearchService: HotelSearchService,
     private router: Router
   ) {}
 
@@ -64,6 +67,7 @@ export class UserDashboardComponent implements OnInit {
     this.bookingService.getMyBookings().subscribe({
       next: (bookings: Booking[]) => {
         this.bookings = bookings;
+        this.loadHotelImages(bookings);
         this.isLoadingBookings = false;
       },
       error: (error: any) => {
@@ -72,6 +76,28 @@ export class UserDashboardComponent implements OnInit {
         this.isLoadingBookings = false;
       }
     });
+  }
+
+  loadHotelImages(bookings: Booking[]) {
+    const uniqueHotelIds = [...new Set(bookings.map(b => b.hotelId))];
+    uniqueHotelIds.forEach(hotelId => {
+      if (!this.hotelImages.has(hotelId)) {
+        this.hotelSearchService.getHotelById(hotelId).subscribe({
+          next: (hotel) => {
+            if (hotel.imageUrl) {
+              this.hotelImages.set(hotelId, hotel.imageUrl);
+            }
+          },
+          error: (error) => {
+            console.error(`Error loading hotel image for hotel ${hotelId}:`, error);
+          }
+        });
+      }
+    });
+  }
+
+  getHotelImage(hotelId: number): string | null {
+    return this.hotelImages.get(hotelId) || null;
   }
 
   setTab(tab: 'profile' | 'bookings' | 'password') {

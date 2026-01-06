@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ManagerService, BillResponse, PaymentResponse } from '../../services/manager.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { ManagerSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-manager-billing',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule, ManagerSidebarComponent],
   templateUrl: './billing.component.html',
   styleUrl: './billing.component.css'
 })
@@ -76,8 +77,5 @@ export class ManagerBillingComponent implements OnInit {
     }).format(value);
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

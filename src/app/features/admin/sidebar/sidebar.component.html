@@ -1,0 +1,16 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">BELLE VUE</div>
+  </div>
+  <nav class="sidebar-nav">
+    <a routerLink="/admin/dashboard" class="nav-item" [class.active]="isActiveRoute('/admin/dashboard')">Dashboard</a>
+    <a routerLink="/admin/hotels" class="nav-item" [class.active]="isActiveRoute('/admin/hotels')">Hotels</a>
+    <a routerLink="/admin/users" class="nav-item" [class.active]="isActiveRoute('/admin/users')">Users</a>
+    <a routerLink="/admin/bookings" class="nav-item" [class.active]="isActiveRoute('/admin/bookings')">Bookings</a>
+    <a routerLink="/admin/reports" class="nav-item" [class.active]="isActiveRoute('/admin/reports')">Reports</a>
+    <a routerLink="/admin/settings" class="nav-item" [class.active]="isActiveRoute('/admin/settings')">Settings</a>
+  </nav>
+  <div class="sidebar-footer">
+    <button class="logout-btn-sidebar" (click)="onLogout()">Logout</button>
+  </div>
+</aside>

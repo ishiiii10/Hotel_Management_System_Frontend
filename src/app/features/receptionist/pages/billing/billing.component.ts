@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ReceptionistService, BillResponse, PaymentResponse } from '../../services/receptionist.service';
 import { AuthService } from '../../../auth/services/auth.service';
+import { ReceptionistSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-receptionist-billing',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule, ReceptionistSidebarComponent],
   templateUrl: './billing.component.html',
   styleUrl: './billing.component.css'
 })
@@ -76,8 +77,5 @@ export class ReceptionistBillingComponent implements OnInit {
     }).format(value);
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

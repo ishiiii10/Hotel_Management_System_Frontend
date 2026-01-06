@@ -62,48 +62,84 @@
 
   <!-- Featured Hotels Section -->
   <section class="section" *ngIf="!hasSearched">
-    <h2 class="section-title">Featured Hotels on our Listing</h2>
+    <div class="section-header">
+      <h2 class="section-title">Luxury Hotels & Resorts</h2>
+      <p class="section-subtitle">{{ featuredHotels.length }} {{ featuredHotels.length === 1 ? 'hotel' : 'hotels' }} available</p>
+    </div>
     
     <div *ngIf="isLoading" class="loading-message">Loading featured hotels...</div>
-    <div class="hotel-grid" *ngIf="!isLoading && featuredHotels.length > 0">
-      <div class="hotel-card" *ngFor="let hotel of featuredHotels" [routerLink]="['/hotels', hotel.id]">
-        <div class="hotel-image">Hotel Image</div>
-        <div class="hotel-content">
-          <div class="hotel-title">{{ hotel.name }}</div>
-          <div class="hotel-location">{{ hotel.address }}, {{ hotel.city }}</div>
-          <div class="hotel-price">$XXX / night</div>
+    <div class="hotels-grid" *ngIf="!isLoading && featuredHotels.length > 0">
+      <div class="hotel-card" *ngFor="let hotel of featuredHotels" (click)="viewHotelDetails(hotel.id)">
+        <div class="hotel-image-container">
+          <img *ngIf="hotel.imageUrl" [src]="hotel.imageUrl" [alt]="hotel.name" class="hotel-image">
+          <div *ngIf="!hotel.imageUrl" class="hotel-image hotel-image-placeholder">IMAGE</div>
+          <div class="category-tag">{{ hotel.category }}</div>
+        </div>
+        <div class="hotel-card-content">
+          <div class="hotel-card-header">
+            <div class="hotel-name">{{ hotel.name }}</div>
+            <div class="hotel-rating">
+              <span class="star-icon">⭐</span>
+              <span class="rating-value">{{ hotel.starRating || 'N/A' }}</span>
+            </div>
+          </div>
+          <div class="hotel-location">{{ hotel.city }}, {{ hotel.address }}</div>
           <div class="hotel-details">
-            <div class="detail-item">⭐ {{ hotel.starRating || 'N/A' }}</div>
-            <div class="detail-item">🛏️ {{ hotel.availableRooms }} Rooms</div>
-            <div class="detail-item">📍 {{ hotel.category }}</div>
+            <div class="detail-item">
+              <span class="detail-icon">🏨</span>
+              <span class="detail-text">{{ hotel.availableRooms }} rooms available</span>
+            </div>
+          </div>
+          <div class="hotel-card-footer">
+            <button class="btn-view-details" (click)="viewHotelDetails(hotel.id); $event.stopPropagation()">View Details</button>
           </div>
         </div>
       </div>
     </div>
-    <div *ngIf="!isLoading && featuredHotels.length === 0" class="empty-state">No featured hotels available.</div>
+    <div *ngIf="!isLoading && featuredHotels.length === 0" class="empty-state">
+      <p>No featured hotels available.</p>
+    </div>
   </section>
 
   <!-- Search Results Section -->
   <section class="section" *ngIf="hasSearched">
-    <h2 class="section-title">Search Results</h2>
+    <div class="section-header">
+      <h2 class="section-title">Search Results</h2>
+      <p class="section-subtitle">{{ searchResults.length }} {{ searchResults.length === 1 ? 'hotel' : 'hotels' }} found</p>
+    </div>
     
     <div *ngIf="isLoading" class="loading-message">Searching hotels...</div>
-    <div class="hotel-grid" *ngIf="!isLoading && searchResults.length > 0">
-      <div class="hotel-card" *ngFor="let hotel of searchResults" [routerLink]="['/hotels', hotel.id]">
-        <div class="hotel-image">Hotel Image</div>
-        <div class="hotel-content">
-          <div class="hotel-title">{{ hotel.name }}</div>
-          <div class="hotel-location">{{ hotel.address }}, {{ hotel.city }}</div>
-          <div class="hotel-price">$XXX / night</div>
+    <div class="hotels-grid" *ngIf="!isLoading && searchResults.length > 0">
+      <div class="hotel-card" *ngFor="let hotel of searchResults" (click)="viewHotelDetails(hotel.id)">
+        <div class="hotel-image-container">
+          <img *ngIf="hotel.imageUrl" [src]="hotel.imageUrl" [alt]="hotel.name" class="hotel-image">
+          <div *ngIf="!hotel.imageUrl" class="hotel-image hotel-image-placeholder">IMAGE</div>
+          <div class="category-tag">{{ hotel.category }}</div>
+        </div>
+        <div class="hotel-card-content">
+          <div class="hotel-card-header">
+            <div class="hotel-name">{{ hotel.name }}</div>
+            <div class="hotel-rating">
+              <span class="star-icon">⭐</span>
+              <span class="rating-value">{{ hotel.starRating || 'N/A' }}</span>
+            </div>
+          </div>
+          <div class="hotel-location">{{ hotel.city }}, {{ hotel.address }}</div>
           <div class="hotel-details">
-            <div class="detail-item">⭐ {{ hotel.starRating || 'N/A' }}</div>
-            <div class="detail-item">🛏️ {{ hotel.availableRooms }} Rooms</div>
-            <div class="detail-item">📍 {{ hotel.category }}</div>
+            <div class="detail-item">
+              <span class="detail-icon">🏨</span>
+              <span class="detail-text">{{ hotel.availableRooms }} rooms available</span>
+            </div>
+          </div>
+          <div class="hotel-card-footer">
+            <button class="btn-view-details" (click)="viewHotelDetails(hotel.id); $event.stopPropagation()">View Details</button>
           </div>
         </div>
       </div>
     </div>
-    <div *ngIf="!isLoading && searchResults.length === 0" class="empty-state">No hotels found matching your criteria.</div>
+    <div *ngIf="!isLoading && searchResults.length === 0" class="empty-state">
+      <p>No hotels found matching your criteria.</p>
+    </div>
   </section>
 
   <!-- Footer -->
@@ -139,3 +175,5 @@
     </div>
   </footer>
 </div>
+
+

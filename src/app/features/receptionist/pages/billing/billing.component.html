@@ -1,21 +1,5 @@
 <div class="dashboard-container">
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo">BELLE VUE</div>
-    </div>
-    <nav class="sidebar-nav">
-      <a routerLink="/receptionist/dashboard" class="nav-item">Dashboard</a>
-      <a routerLink="/receptionist/check-in" class="nav-item">Check In</a>
-      <a routerLink="/receptionist/check-out" class="nav-item">Check Out</a>
-      <a routerLink="/receptionist/bookings" class="nav-item">Bookings</a>
-      <a routerLink="/receptionist/hotel-info" class="nav-item">Hotel Info</a>
-      <a routerLink="/receptionist/billing" class="nav-item active">Billing</a>
-      <a routerLink="/receptionist/settings" class="nav-item">Settings</a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="logout-btn-sidebar" (click)="logout()">Logout</button>
-    </div>
-  </aside>
+  <app-receptionist-sidebar></app-receptionist-sidebar>
 
   <main class="main-content">
     <header class="page-header">

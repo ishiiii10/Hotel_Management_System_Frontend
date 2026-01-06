@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ReceptionistService, Booking, WalkInBookingRequest, Room } from '../../services/receptionist.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { BillingService, BillResponse, MarkBillPaidRequest } from '../../../../shared/services/billing.service';
+import { ReceptionistSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-receptionist-bookings',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule, ReceptionistSidebarComponent],
   templateUrl: './bookings.component.html',
   styleUrl: './bookings.component.css'
 })
@@ -456,8 +457,5 @@ export class ReceptionistBookingsComponent implements OnInit {
     }).format(value);
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

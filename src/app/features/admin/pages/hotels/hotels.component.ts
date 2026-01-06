@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AdminService, Hotel, CreateHotelRequest, CreateStaffRequest } from '../../services/admin.service';
-import { AuthService } from '../../../auth/services/auth.service';
+import { AdminSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-admin-hotels',
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule, AdminSidebarComponent],
   templateUrl: './hotels.component.html',
   styleUrl: './hotels.component.css'
 })
@@ -59,7 +59,6 @@ export class AdminHotelsComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
-    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -204,8 +203,5 @@ export class AdminHotelsComponent implements OnInit {
     });
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

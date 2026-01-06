@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ReceptionistService, Booking } from '../../services/receptionist.service';
 import { AuthService } from '../../../auth/services/auth.service';
 import { BookingService } from '../../../../shared/services/booking.service';
 import { BillingService, BillResponse, MarkBillPaidRequest } from '../../../../shared/services/billing.service';
+import { ReceptionistSidebarComponent } from '../../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-receptionist-check-in',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule, ReceptionistSidebarComponent],
   templateUrl: './check-in.component.html',
   styleUrl: './check-in.component.css'
 })
@@ -298,8 +299,5 @@ export class ReceptionistCheckInComponent implements OnInit {
     return filtered;
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
 

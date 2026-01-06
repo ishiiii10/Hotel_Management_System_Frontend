@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { ManagerService, Room } from '../services/manager.service';
 import { AuthService } from '../../auth/services/auth.service';
+import { ManagerSidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
   selector: 'app-manager-dashboard',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, ManagerSidebarComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -129,7 +130,4 @@ export class ManagerDashboardComponent implements OnInit {
     return Math.max(...this.availableRoomsByCategory.map(item => item.count), 1);
   }
 
-  logout() {
-    this.authService.logout();
-  }
 }
