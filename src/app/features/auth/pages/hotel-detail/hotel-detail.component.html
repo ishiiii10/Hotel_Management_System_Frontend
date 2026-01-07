@@ -2,8 +2,14 @@
   <div class="header-content">
     <div class="logo">BELLE VUE</div>
     <nav class="nav">
-      <a routerLink="/" class="nav-item">Back to Search</a>
-      <a routerLink="/my-bookings" class="nav-item" *ngIf="isAuthenticated">My Bookings</a>
+      <a routerLink="/hotels" class="nav-item">
+        <span class="nav-icon">←</span>
+        <span>Back to Search</span>
+      </a>
+      <a routerLink="/my-bookings" class="nav-item btn-bookings" *ngIf="isAuthenticated">
+        
+        <span>My Bookings</span>
+      </a>
     </nav>
   </div>
 </header>
@@ -14,22 +20,42 @@
   <div *ngIf="!isLoading && hotel">
     <!-- Hotel Header -->
     <section class="hotel-header">
-      <h1 class="hotel-title">{{ hotel.name }}</h1>
-      <div class="hotel-subtitle">{{ hotel.address }}, {{ hotel.city }}, {{ hotel.country }}</div>
-      <div class="hotel-meta">
-        <div class="meta-item" *ngIf="hotel.starRating">⭐ {{ hotel.starRating }}</div>
-        <div class="meta-item">📍 {{ hotel.category }}</div>
-        <div class="meta-item">📞 {{ hotel.contactNumber }}</div>
+      <div class="hotel-title-section">
+        <div class="hotel-title-wrapper">
+          <h1 class="hotel-title">{{ hotel.name }}</h1>
+          <div class="hotel-rating-stars">
+            <span *ngFor="let star of getStarArray(hotel.starRating)" class="star">⭐</span>
+            <span class="rating-text">{{ hotel.starRating }} Star Hotel</span>
+          </div>
+        </div>
+        <div class="hotel-category-badge">{{ hotel.category }}</div>
+      </div>
+      <div class="hotel-location-info">
+        <div class="location-item">
+          
+          <span>{{ hotel.address }}, {{ hotel.city }}, {{ hotel.country }}</span>
+        </div>
+        <div class="location-item" *ngIf="hotel.contactNumber">
+          <span class="location-icon">📞</span>
+          <span>{{ hotel.contactNumber }}</span>
+        </div>
       </div>
     </section>
 
-    <!-- Gallery -->
+    <!-- Enhanced Gallery -->
     <section class="gallery">
-      <img *ngIf="hotel.imageUrl" [src]="hotel.imageUrl" [alt]="hotel.name" class="main-image">
-      <div *ngIf="!hotel.imageUrl" class="main-image main-image-placeholder">Main Hotel Image</div>
+      <div class="main-image-wrapper">
+        <img *ngIf="hotel.imageUrl" [src]="hotel.imageUrl" [alt]="hotel.name" class="main-image">
+        <div *ngIf="!hotel.imageUrl" class="main-image main-image-placeholder">
+          
+          <div class="placeholder-text">Hotel Image</div>
+        </div>
+        <div class="image-badge">View All Photos</div>
+      </div>
       <div class="thumbnail-grid">
         <div class="thumbnail" *ngFor="let i of [1,2,3,4,5]">
           <img *ngIf="hotel.imageUrl" [src]="hotel.imageUrl" [alt]="hotel.name + ' thumbnail ' + i">
+          <div *ngIf="!hotel.imageUrl" class="thumbnail-placeholder"></div>
         </div>
       </div>
     </section>
@@ -58,34 +84,68 @@
 
         <section class="rooms-list" *ngIf="availableRooms.length > 0">
           <h2 class="section-title">Available Rooms</h2>
+          <p class="section-subtitle">Choose the perfect room for your stay</p>
           
           <div class="room-card" *ngFor="let room of availableRooms" [class.selected]="selectedRoom?.roomId === room.roomId">
-            <div class="room-header">
-              <div class="room-title">{{ room.roomType }}</div>
-              <div class="room-price">{{ formatCurrency(room.pricePerNight) }}/night</div>
+            <div class="room-card-content">
+              <div class="room-header">
+                <div class="room-title-wrapper">
+                  <h3 class="room-title">{{ room.roomType }}</h3>
+                  <div class="room-price-display">
+                    <span class="price-amount">{{ formatCurrency(room.pricePerNight) }}</span>
+                    <span class="price-unit">/night</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="room-features">
+                <div class="feature-tag">
+                  <span class="feature-icon">🛏️</span>
+                  <span>Max {{ room.maxOccupancy }} Guests</span>
+                </div>
+                <div class="feature-tag" *ngIf="room.amenities">
+                  <span class="feature-icon">✨</span>
+                  <span>{{ room.amenities.split(',')[0] || 'Standard amenities' }}</span>
+                </div>
+              </div>
+              
+              <div class="room-description">
+                <p>{{ room.description || 'Comfortable room with all essential amenities for a relaxing stay' }}</p>
+              </div>
+              
+              <div class="room-card-actions">
+                <button class="select-btn" [class.selected-btn]="selectedRoom?.roomId === room.roomId" (click)="selectRoom(room)">
+                  <span *ngIf="selectedRoom?.roomId === room.roomId">✓ Selected</span>
+                  <span *ngIf="selectedRoom?.roomId !== room.roomId">Select Room</span>
+                </button>
+              </div>
             </div>
-            <div class="room-details">
-              <div class="detail-item">🛏️ Max Occupancy: {{ room.maxOccupancy }}</div>
-              <div class="detail-item">📐 Size: Standard</div>
-              <div class="detail-item">🛁 Features: {{ room.amenities || 'Standard amenities' }}</div>
-            </div>
-            <div class="room-description">
-              {{ room.description || 'Comfortable room with all essential amenities' }}
-            </div>
-            <button class="select-btn" (click)="selectRoom(room)">Select Room</button>
+          </div>
+        </section>
+        
+        <section class="rooms-empty" *ngIf="availableRooms.length === 0 && bookingForm.checkInDate && bookingForm.checkOutDate">
+          <div class="empty-room-message">
+            <div class="empty-icon">🛏️</div>
+            <h3>No rooms available</h3>
+            <p>Try selecting different dates to find available rooms</p>
           </div>
         </section>
       </div>
 
-      <!-- Booking Sidebar -->
+      <!-- Enhanced Booking Sidebar -->
       <aside class="booking-sidebar">
-        <div class="price-box" *ngIf="selectedRoom">
-          <div class="price-label">Price per night</div>
-          <div class="price">{{ formatCurrency(selectedRoom.pricePerNight) }}</div>
-        </div>
+        <div class="booking-card">
+          <div class="price-highlight" *ngIf="selectedRoom">
+            <div class="price-label">Price per night</div>
+            <div class="price-large">{{ formatCurrency(selectedRoom.pricePerNight) }}</div>
+            <div class="price-note">+ taxes and fees</div>
+          </div>
 
-        <div class="booking-form">
-          <h3>Book Now</h3>
+          <div class="booking-form">
+            <h3 class="booking-title">
+              
+              Book Your Stay
+            </h3>
           
           <div class="form-group">
             <label class="form-label">Check In</label>
@@ -102,7 +162,10 @@
             <input type="number" class="form-input" [(ngModel)]="bookingForm.numberOfGuests" min="1" placeholder="Number of guests">
           </div>
 
-          <button type="button" class="btn-check-availability" (click)="onAvailabilitySearch()">Check Availability</button>
+            <button type="button" class="btn-check-availability" (click)="onAvailabilitySearch()">
+              
+              <span>Check Availability</span>
+            </button>
           
           <div class="price-summary" *ngIf="selectedRoom && bookingForm.checkInDate && bookingForm.checkOutDate">
             <div class="price-row">
@@ -119,9 +182,13 @@
             </div>
           </div>
           
-          <button type="button" class="book-btn" (click)="onBookNow()" [disabled]="isBooking || (isAuthenticated && !selectedRoom)">
-            {{ isBooking ? 'Booking...' : (isAuthenticated ? 'Book Now' : 'Login to Book') }}
-          </button>
+            <button type="button" class="book-btn" (click)="onBookNow()" [disabled]="isBooking || (isAuthenticated && !selectedRoom)">
+              
+              <span *ngIf="!isBooking && isAuthenticated && selectedRoom" class="btn-text">Book Now</span>
+              <span *ngIf="!isBooking && isAuthenticated && !selectedRoom" class="btn-text">Select a Room</span>
+              <span *ngIf="!isBooking && !isAuthenticated" class="btn-text">Login to Book</span>
+            </button>
+          </div>
         </div>
       </aside>
     </div>
@@ -132,81 +199,123 @@
 <div class="modal-overlay" *ngIf="showGuestDetailsModal" (click)="closeGuestDetailsModal()">
   <div class="modal-content guest-details-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Guest Details</h2>
-      <button class="close-button" (click)="closeGuestDetailsModal()">X</button>
+      <div class="modal-header-content">
+        <div class="modal-icon">👤</div>
+        <div>
+          <h2>Guest Information</h2>
+          <p class="modal-subtitle">Please provide details for all guests</p>
+        </div>
+      </div>
+      <button class="close-button" (click)="closeGuestDetailsModal()" aria-label="Close">
+        <span>×</span>
+      </button>
     </div>
     <div class="modal-body">
-      <p class="info-message">Please provide details for all guests staying in the room.</p>
+      <div class="info-banner">
+       
+        <div class="info-text">All guest information is required for check-in purposes</div>
+      </div>
       
-      <form (ngSubmit)="onGuestDetailsSubmit()">
-        <div class="form-group">
-          <label class="form-label">Contact Phone Number *</label>
-          <input 
-            type="tel" 
-            class="form-input" 
-            [(ngModel)]="guestDetailsForm.guestPhone" 
-            name="guestPhone"
-            placeholder="e.g., +1 234-567-8900"
-            required>
+      <form (ngSubmit)="onGuestDetailsSubmit()" class="guest-form">
+        <div class="form-section">
+          <div class="section-header">
+            
+            <h3 class="section-title">Contact Information</h3>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <span class="label-text">Contact Phone Number</span>
+              <span class="required-indicator">*</span>
+            </label>
+            <input 
+              type="tel" 
+              class="form-input" 
+              [(ngModel)]="guestDetailsForm.guestPhone" 
+              name="guestPhone"
+              placeholder="e.g., +1 234-567-8900"
+              required>
+          </div>
         </div>
 
-        <div class="guests-section">
-          <h3>Guest Information</h3>
-          <div class="guest-item" *ngFor="let guest of guestDetailsForm.guests; let i = index">
-            <div class="guest-header">
-              <h4>Guest {{ i + 1 }}</h4>
-            </div>
-            <div class="guest-fields">
-              <div class="form-group">
-                <label class="form-label">Full Name *</label>
-                <input 
-                  type="text" 
-                  class="form-input" 
-                  [(ngModel)]="guest.name" 
-                  [name]="'guestName' + i"
-                  placeholder="Enter full name"
-                  required>
+        <div class="form-section">
+          <div class="section-header">
+            
+            <h3 class="section-title">Guest Details</h3>
+          </div>
+          <div class="guests-container">
+            <div class="guest-card" *ngFor="let guest of guestDetailsForm.guests; let i = index">
+              <div class="guest-card-header">
+                <div class="guest-number-badge">Guest {{ i + 1 }}</div>
               </div>
-              <div class="form-group">
-                <label class="form-label">Age *</label>
-                <input 
-                  type="number" 
-                  class="form-input" 
-                  [(ngModel)]="guest.age" 
-                  [name]="'guestAge' + i"
-                  placeholder="Enter age"
-                  min="1"
-                  max="120"
-                  required>
+              <div class="guest-fields">
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Full Name</span>
+                    <span class="required-indicator">*</span>
+                  </label>
+                  <input 
+                    type="text" 
+                    class="form-input" 
+                    [(ngModel)]="guest.name" 
+                    [name]="'guestName' + i"
+                    placeholder="Enter full name"
+                    required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="label-text">Age</span>
+                    <span class="required-indicator">*</span>
+                  </label>
+                  <input 
+                    type="number" 
+                    class="form-input" 
+                    [(ngModel)]="guest.age" 
+                    [name]="'guestAge' + i"
+                    placeholder="Enter age"
+                    min="1"
+                    max="120"
+                    required>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Emergency Contact Name (Optional)</label>
-          <input 
-            type="text" 
-            class="form-input" 
-            [(ngModel)]="guestDetailsForm.emergencyContact" 
-            name="emergencyContact"
-            placeholder="Emergency contact name">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Emergency Contact Phone (Optional)</label>
-          <input 
-            type="tel" 
-            class="form-input" 
-            [(ngModel)]="guestDetailsForm.emergencyPhone" 
-            name="emergencyPhone"
-            placeholder="Emergency contact phone">
+        <div class="form-section">
+          <div class="section-header">
+            
+            <h3 class="section-title">Emergency Contact (Optional)</h3>
+          </div>
+          <div class="form-row">
+            <div class="form-group form-group-half">
+              <label class="form-label">Emergency Contact Name</label>
+              <input 
+                type="text" 
+                class="form-input" 
+                [(ngModel)]="guestDetailsForm.emergencyContact" 
+                name="emergencyContact"
+                placeholder="Contact name">
+            </div>
+            <div class="form-group form-group-half">
+              <label class="form-label">Emergency Contact Phone</label>
+              <input 
+                type="tel" 
+                class="form-input" 
+                [(ngModel)]="guestDetailsForm.emergencyPhone" 
+                name="emergencyPhone"
+                placeholder="Phone number">
+            </div>
+          </div>
         </div>
 
         <div class="form-actions">
-          <button type="button" class="btn-secondary" (click)="closeGuestDetailsModal()">Cancel</button>
+          <button type="button" class="btn-secondary" (click)="closeGuestDetailsModal()">
+            <span>Cancel</span>
+          </button>
           <button type="submit" class="btn-primary" [disabled]="isBooking">
-            {{ isBooking ? 'Processing...' : 'Continue to Booking' }}
+            <span *ngIf="!isBooking" class="btn-icon">✓</span>
+            <span *ngIf="isBooking" class="btn-loading-spinner"></span>
+            <span>{{ isBooking ? 'Processing...' : 'Continue to Booking' }}</span>
           </button>
         </div>
       </form>
@@ -218,78 +327,160 @@
 <div class="modal-overlay" *ngIf="showBookingModal" (click)="closeBookingModal()">
   <div class="modal-content booking-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Booking Confirmation & Payment</h2>
-      <button class="close-button" (click)="closeBookingModal()">X</button>
+      <div class="modal-header-content">
+        
+        <div>
+          <h2>Booking Confirmation</h2>
+          <p class="modal-subtitle">Complete your payment to confirm</p>
+        </div>
+      </div>
+      <button class="close-button" (click)="closeBookingModal()" aria-label="Close">
+        <span>×</span>
+      </button>
     </div>
     <div class="modal-body">
-      <div *ngIf="createdBooking" class="booking-confirmation">
-        <div class="success-message">
-          <h3>✅ Booking Created Successfully!</h3>
-          <p>Booking ID: <strong>{{ createdBooking.id }}</strong></p>
+      <!-- Booking Success Banner -->
+      <div *ngIf="createdBooking" class="booking-success-banner">
+        <div class="success-icon">✓</div>
+        <div class="success-content">
+          <h3>Booking Created Successfully!</h3>
+          <div class="booking-id-display">
+            <span class="booking-id-label">Booking ID:</span>
+            <span class="booking-id-value">{{ createdBooking.id }}</span>
+          </div>
         </div>
       </div>
 
-      <div *ngIf="isLoadingBill" class="loading-message">Loading bill...</div>
+      <!-- Loading State -->
+      <div *ngIf="isLoadingBill" class="loading-container-modal">
+        <div class="loading-spinner-modal"></div>
+        <p class="loading-text">Generating your bill...</p>
+      </div>
       
-      <div *ngIf="!isLoadingBill && bill" class="bill-section">
-        <div class="bill-header">
-          <div class="bill-number">Bill #{{ bill.billNumber }}</div>
-          <div class="bill-status" [class.pending]="bill.status === 'PENDING'" [class.paid]="bill.status === 'PAID'">
-            {{ bill.status }}
+      <!-- Bill Display -->
+      <div *ngIf="!isLoadingBill && bill" class="bill-display">
+        <!-- Bill Summary Card -->
+        <div class="bill-summary-card">
+          <div class="bill-header-section">
+            <div class="bill-header-left">
+             
+              <div>
+                <div class="bill-number">Bill #{{ bill.billNumber }}</div>
+                <div class="bill-date">{{ bill.generatedAt | date:'medium' }}</div>
+              </div>
+            </div>
+            <div class="bill-status-badge" [class.status-pending]="bill.status === 'PENDING'" [class.status-paid]="bill.status === 'PAID'">
+              <span class="status-icon" *ngIf="bill.status === 'PENDING'">⏳</span>
+              <span class="status-icon" *ngIf="bill.status === 'PAID'">✓</span>
+              <span class="status-text">{{ bill.status }}</span>
+            </div>
           </div>
-        </div>
-        
-        <div class="bill-info">
-          <div class="info-row">
-            <span class="info-label">Total Amount:</span>
-            <span class="info-value">{{ formatCurrency(bill.totalAmount) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Generated At:</span>
-            <span class="info-value">{{ bill.generatedAt | date:'medium' }}</span>
+          
+          <div class="bill-amount-display">
+            <div class="amount-label">Total Amount</div>
+            <div class="amount-value">{{ formatCurrency(bill.totalAmount) }}</div>
           </div>
         </div>
 
-        <div *ngIf="bill.status === 'PENDING'" class="payment-section">
-          <h3>Complete Payment</h3>
-          <p class="info-message">After payment, your booking will be automatically confirmed.</p>
-          <form (ngSubmit)="onPayBill()">
-            <div class="form-group">
-              <label class="form-label">Payment Method *</label>
-              <select class="form-input" [(ngModel)]="paymentForm.paymentMethod" name="paymentMethod" required>
-                <option value="">Select payment method</option>
-                <option value="CASH">Cash</option>
-                <option value="CARD">Card</option>
-                <option value="UPI">UPI</option>
-                <option value="NET_BANKING">Net Banking</option>
-              </select>
+        <!-- Payment Form Section -->
+        <div *ngIf="bill.status === 'PENDING'" class="payment-form-section">
+          <div class="section-header">
+           
+            <h3 class="section-title">Payment Details</h3>
+          </div>
+          
+          <div class="payment-info-banner">
+            
+            <div class="info-text-small">After payment confirmation, your booking will be automatically confirmed</div>
+          </div>
+          
+          <form (ngSubmit)="onPayBill()" class="payment-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">
+                  <span class="label-text">Payment Method</span>
+                  <span class="required-indicator">*</span>
+                </label>
+                <div class="select-wrapper">
+                  <select class="form-input form-select" [(ngModel)]="paymentForm.paymentMethod" name="paymentMethod" required>
+                    <option value="">Select payment method</option>
+                    <option value="CASH">Cash</option>
+                    <option value="CARD">Card</option>
+                    <option value="UPI">UPI</option>
+                    <option value="NET_BANKING">Net Banking</option>
+                  </select>
+                  
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">Transaction ID (Optional)</label>
-              <input type="text" class="form-input" [(ngModel)]="paymentForm.transactionId" name="transactionId">
+            
+            <div class="form-row">
+              <div class="form-group form-group-half">
+                <label class="form-label">Transaction ID</label>
+                <input 
+                  type="text" 
+                  class="form-input" 
+                  [(ngModel)]="paymentForm.transactionId" 
+                  name="transactionId"
+                  placeholder="Enter transaction ID">
+              </div>
+              <div class="form-group form-group-half">
+                <label class="form-label">Payment Reference</label>
+                <input 
+                  type="text" 
+                  class="form-input" 
+                  [(ngModel)]="paymentForm.paymentReference" 
+                  name="paymentReference"
+                  placeholder="Enter reference number">
+              </div>
             </div>
+            
             <div class="form-group">
-              <label class="form-label">Payment Reference (Optional)</label>
-              <input type="text" class="form-input" [(ngModel)]="paymentForm.paymentReference" name="paymentReference">
+              <label class="form-label">Additional Notes</label>
+              <textarea 
+                class="form-input form-textarea" 
+                [(ngModel)]="paymentForm.notes" 
+                name="notes" 
+                rows="3"
+                placeholder="Any additional information..."></textarea>
             </div>
-            <div class="form-group">
-              <label class="form-label">Notes (Optional)</label>
-              <textarea class="form-input" [(ngModel)]="paymentForm.notes" name="notes" rows="3"></textarea>
-            </div>
+            
             <div class="form-actions">
-              <button type="button" class="btn-secondary" (click)="closeBookingModal()">Close</button>
-              <button type="submit" class="btn-primary">Pay Now</button>
+              <button type="button" class="btn-secondary" (click)="closeBookingModal()">
+                <span>Close</span>
+              </button>
+              <button type="submit" class="btn-primary btn-pay">
+                <span class="btn-icon">💳</span>
+                <span>Complete Payment</span>
+              </button>
             </div>
           </form>
         </div>
 
-        <div *ngIf="bill.status === 'PAID'" class="success-message">
-          <p>✅ Payment completed! Your booking is confirmed and ready for check-in.</p>
+        <!-- Payment Success State -->
+        <div *ngIf="bill.status === 'PAID'" class="payment-success-state">
+          <div class="success-icon-large">✓</div>
+          <h3 class="success-title">Payment Completed!</h3>
+          <p class="success-message-text">Your booking has been confirmed and is ready for check-in.</p>
+          <div class="success-details">
+            <div class="success-detail-item">
+              <span class="detail-label">Booking ID:</span>
+              <span class="detail-value">{{ createdBooking?.id }}</span>
+            </div>
+            <div class="success-detail-item">
+              <span class="detail-label">Amount Paid:</span>
+              <span class="detail-value">{{ formatCurrency(bill.totalAmount) }}</span>
+            </div>
+          </div>
         </div>
       </div>
       
-      <div *ngIf="!isLoadingBill && !bill" class="error-message">
-        Bill not found. Please wait a moment and try again.
+      <!-- Error State -->
+      <div *ngIf="!isLoadingBill && !bill" class="error-state">
+        <div class="error-icon">⚠️</div>
+        <h3 class="error-title">Bill Not Found</h3>
+        <p class="error-text">Please wait a moment and try again. The bill is being generated...</p>
+        <button type="button" class="btn-secondary" (click)="closeBookingModal()">Close</button>
       </div>
     </div>
   </div>

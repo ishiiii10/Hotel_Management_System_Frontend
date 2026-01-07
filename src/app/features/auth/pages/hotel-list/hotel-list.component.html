@@ -1,86 +1,170 @@
 <div class="hotel-list-container">
+  <!-- Modern Header -->
   <header class="header">
     <div class="header-content">
       <div class="logo">BELLE VUE</div>
       <nav class="nav-menu">
         <a routerLink="/" class="nav-link">Home</a>
         <a routerLink="/login" class="nav-link" *ngIf="!isAuthenticated">Login</a>
-        <a routerLink="/register" class="nav-link" *ngIf="!isAuthenticated">Register</a>
-        <a routerLink="/login" class="nav-link" *ngIf="isAuthenticated">Dashboard</a>
+        <a routerLink="/register" class="nav-link btn-register" *ngIf="!isAuthenticated">Sign Up</a>
+        <a routerLink="/login" class="nav-link btn-dashboard" *ngIf="isAuthenticated">Dashboard</a>
       </nav>
     </div>
   </header>
 
-  <div class="container">
-    <section class="search-section">
-      <div class="search-title">Search Hotels</div>
-      <div class="search-filters">
-        <div class="filter-group">
-          <label class="filter-label">City</label>
-          <select class="filter-select" [(ngModel)]="searchForm.city">
-            <option value="">Select City</option>
-            <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
-          </select>
+  <!-- Hero Section with Search -->
+  <section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Find Your Perfect Stay</h1>
+      <p class="hero-subtitle">Discover luxury hotels and resorts around the world</p>
+      
+      <!-- Enhanced Search Box -->
+      <div class="search-box">
+        <div class="search-filters">
+          <div class="filter-group">
+            <label class="filter-label">
+              
+              <span class="filter-label-text">Where</span>
+            </label>
+            <select class="filter-select" [(ngModel)]="searchForm.city">
+              <option value="">Select City</option>
+              <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">
+              
+              <span class="filter-label-text">Check In</span>
+            </label>
+            <input type="date" class="filter-input" [(ngModel)]="searchForm.checkInDate" [min]="minDate">
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">
+              
+              <span class="filter-label-text">Check Out</span>
+            </label>
+            <input type="date" class="filter-input" [(ngModel)]="searchForm.checkOutDate" [min]="minCheckOutDate">
+          </div>
+          
+          <div class="filter-group">
+            <label class="filter-label">
+              
+              <span class="filter-label-text">Category</span>
+            </label>
+            <select class="filter-select" [(ngModel)]="searchForm.category">
+              <option value="">All Categories</option>
+              <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+            </select>
+          </div>
+          
+          <div class="filter-group filter-group-button">
+            <button class="btn-search-hero" (click)="onSearch()">
+              <span class="btn-search-icon">🔍</span>
+              <span>Search</span>
+            </button>
+          </div>
         </div>
-        <div class="filter-group">
-          <label class="filter-label">Check In</label>
-          <input type="date" class="filter-input" [(ngModel)]="searchForm.checkInDate" [min]="minDate">
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">Check Out</label>
-          <input type="date" class="filter-input" [(ngModel)]="searchForm.checkOutDate" [min]="minCheckOutDate">
-        </div>
-        <div class="filter-group">
-          <label class="filter-label">Category</label>
-          <select class="filter-select" [(ngModel)]="searchForm.category">
-            <option value="">All Categories</option>
-            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
-          </select>
+        <div class="search-actions-bottom">
+          <button class="btn-reset-secondary" (click)="onReset()">Clear Filters</button>
         </div>
       </div>
-      <div class="search-actions">
-        <button class="btn-search" (click)="onSearch()">Search</button>
-        <button class="btn-reset" (click)="onReset()">Reset</button>
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <div class="container">
+    <section class="results-section" *ngIf="searchResults.length > 0 || isLoading || (!isLoading && searchResults.length === 0 && (searchForm.city || searchForm.category))">
+      <div class="results-header">
+        <div class="results-title-section">
+          <h2 class="section-title">
+            <span *ngIf="searchResults.length > 0">{{ searchResults.length }}</span>
+            <span *ngIf="searchResults.length > 0">{{ searchResults.length === 1 ? 'Hotel' : 'Hotels' }} Found</span>
+            <span *ngIf="searchResults.length === 0 && !isLoading">No Results</span>
+          </h2>
+          <p class="results-subtitle" *ngIf="searchResults.length > 0">Perfect accommodations for your stay</p>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-message">Searching hotels...</p>
+      </div>
+
+      <!-- No Results State -->
+      <div *ngIf="!isLoading && searchResults.length === 0" class="no-results">
+        
+        <h3 class="no-results-title">No hotels found</h3>
+        <p class="no-results-text">Try adjusting your search filters or browse different locations</p>
+        <button class="btn-explore" (click)="onReset()">Explore All Hotels</button>
+      </div>
+
+      <!-- Hotels Grid -->
+      <div class="hotels-grid" *ngIf="!isLoading && searchResults.length > 0">
+        <article class="hotel-card" *ngFor="let hotel of searchResults" (click)="viewHotelDetails(hotel.id)">
+          <div class="hotel-image-container">
+            <img *ngIf="hotel.imageUrl" [src]="hotel.imageUrl" [alt]="hotel.name" class="hotel-image">
+            <div *ngIf="!hotel.imageUrl" class="hotel-image hotel-image-placeholder">
+              
+              <div class="placeholder-text">Hotel Image</div>
+            </div>
+            <div class="category-badge">{{ hotel.category }}</div>
+            <div class="hotel-overlay">
+              <button class="btn-quick-view" (click)="viewHotelDetails(hotel.id); $event.stopPropagation()">
+                View Details
+              </button>
+            </div>
+          </div>
+          
+          <div class="hotel-card-content">
+            <div class="hotel-card-header">
+              <div class="hotel-name-wrapper">
+                <h3 class="hotel-name">{{ hotel.name }}</h3>
+                <div class="hotel-stars">
+                  <span *ngFor="let star of getStarArray(hotel.starRating)" class="star">⭐</span>
+                  <span class="star-rating-text">{{ hotel.starRating || 'N/A' }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="hotel-location">
+              <span class="location-icon">📍</span>
+              <span>{{ hotel.city }}</span>
+              <span class="location-separator">•</span>
+              <span>{{ hotel.address }}</span>
+            </div>
+            
+            <div class="hotel-features">
+              <div class="feature-badge" *ngIf="hotel.availableRooms > 0">
+                <span class="feature-icon">🛏️</span>
+                <span>{{ hotel.availableRooms }} Available</span>
+              </div>
+              <div class="feature-badge" *ngIf="hotel.starRating">
+                <span class="feature-icon">⭐</span>
+                <span>{{ hotel.starRating }}-Star</span>
+              </div>
+            </div>
+            
+            <div class="hotel-card-footer">
+              <button class="btn-view-details" (click)="viewHotelDetails(hotel.id); $event.stopPropagation()">
+                View Details & Book
+                <span class="btn-arrow">→</span>
+              </button>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
 
-    <section class="results-section">
-      <div class="results-header">
-        <h2 class="section-title">Luxury Hotels & Resorts</h2>
-        <p class="results-count">{{ searchResults.length }} {{ searchResults.length === 1 ? 'hotel' : 'hotels' }} found</p>
-      </div>
-      <div *ngIf="isLoading" class="loading-message">Searching hotels...</div>
-      <div *ngIf="!isLoading && searchResults.length === 0" class="no-results">
-        <p>No hotels found matching your criteria</p>
-        <p class="no-results-subtitle">Try adjusting your search filters</p>
-      </div>
-      <div class="hotels-grid" *ngIf="!isLoading && searchResults.length > 0">
-        <div class="hotel-card" *ngFor="let hotel of searchResults">
-          <div class="hotel-image-container">
-            <img *ngIf="hotel.imageUrl" [src]="hotel.imageUrl" [alt]="hotel.name" class="hotel-image">
-            <div *ngIf="!hotel.imageUrl" class="hotel-image hotel-image-placeholder">IMAGE</div>
-            <div class="category-tag">{{ hotel.category }}</div>
-          </div>
-          <div class="hotel-card-content">
-            <div class="hotel-card-header">
-              <div class="hotel-name">{{ hotel.name }}</div>
-              <div class="hotel-rating">
-                <span class="star-icon">⭐</span>
-                <span class="rating-value">{{ hotel.starRating || 'N/A' }}</span>
-              </div>
-            </div>
-            <div class="hotel-location">{{ hotel.city }}, {{ hotel.address }}</div>
-            <div class="hotel-details">
-              <div class="detail-item">
-                <span class="detail-icon">🏨</span>
-                <span class="detail-text">{{ hotel.availableRooms }} rooms available</span>
-              </div>
-            </div>
-            <div class="hotel-card-footer">
-              <button class="btn-view-details" (click)="viewHotelDetails(hotel.id)">View Details</button>
-            </div>
-          </div>
-        </div>
+    <!-- Empty State (Before Search) -->
+    <section class="empty-state" *ngIf="!isLoading && searchResults.length === 0 && !searchForm.city && !searchForm.category">
+      <div class="empty-state-content">
+        <div class="empty-icon">🔍</div>
+        <h2 class="empty-title">Start Your Search</h2>
+        <p class="empty-text">Use the search bar above to find the perfect hotel for your stay</p>
       </div>
     </section>
   </div>

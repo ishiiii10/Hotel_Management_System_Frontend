@@ -400,4 +400,9 @@ export class HotelDetailComponent implements OnInit {
     if (!this.hotel?.amenities) return [];
     return this.hotel.amenities.split(',').map(a => a.trim()).filter(a => a.length > 0);
   }
+
+  getStarArray(rating: number | undefined): number[] {
+    const stars = rating ? Math.floor(rating) : 0;
+    return Array.from({ length: stars }, (_, i) => i + 1);
+  }
 }

@@ -116,4 +116,9 @@ export class HotelListComponent implements OnInit {
       }
     });
   }
+
+  getStarArray(rating: number | undefined): number[] {
+    const stars = rating ? Math.floor(rating) : 0;
+    return Array.from({ length: stars }, (_, i) => i + 1);
+  }
 }

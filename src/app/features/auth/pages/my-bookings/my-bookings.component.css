@@ -813,11 +813,11 @@
   .booking-content {
     grid-template-columns: 1fr;
   }
-
+  
   .booking-details {
     grid-template-columns: 1fr;
   }
-
+  
   .booking-actions {
     flex-direction: column;
   }
@@ -825,7 +825,7 @@
   .action-btn {
     width: 100%;
   }
-
+  
   .tabs {
     flex-wrap: wrap;
   }
